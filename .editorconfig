@@ -1,0 +1,20 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.py]
+charset = utf-8
+indent_style = space
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+
+[*.ui]
+indent_style = space
+indent_size = 1
+
+[requirements.txt]
+charset = utf-16 LE
