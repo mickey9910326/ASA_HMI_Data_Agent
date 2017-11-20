@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(557, 661)
+        MainWindow.resize(557, 663)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -84,6 +84,12 @@ class Ui_MainWindow(object):
         self.buttonTerminalSend = QtWidgets.QPushButton(self.groupBox_Terminal)
         self.buttonTerminalSend.setObjectName("buttonTerminalSend")
         self.horizontalLayout.addWidget(self.buttonTerminalSend)
+        self.buttonTerminalClear = QtWidgets.QPushButton(self.groupBox_Terminal)
+        self.buttonTerminalClear.setObjectName("buttonTerminalClear")
+        self.horizontalLayout.addWidget(self.buttonTerminalClear)
+        self.buttonTerminalSave = QtWidgets.QPushButton(self.groupBox_Terminal)
+        self.buttonTerminalSave.setObjectName("buttonTerminalSave")
+        self.horizontalLayout.addWidget(self.buttonTerminalSave)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayout.addWidget(self.groupBox_Terminal)
         self.groupBox_SendRead = QtWidgets.QGroupBox(self.centralWidget)
@@ -184,7 +190,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -195,6 +201,8 @@ class Ui_MainWindow(object):
         self.buttonPortToggle.setText(_translate("MainWindow", "開啟串列埠"))
         self.groupBox_Terminal.setTitle(_translate("MainWindow", "文字對話區"))
         self.buttonTerminalSend.setText(_translate("MainWindow", "Send"))
+        self.buttonTerminalClear.setText(_translate("MainWindow", "清除對話框"))
+        self.buttonTerminalSave.setText(_translate("MainWindow", "儲存對話框"))
         self.groupBox_SendRead.setTitle(_translate("MainWindow", "資料送收區"))
         self.buttonSendClear.setText(_translate("MainWindow", "清除暫存區"))
         self.buttonSendStruct.setText(_translate("MainWindow", "傳送結構形式"))

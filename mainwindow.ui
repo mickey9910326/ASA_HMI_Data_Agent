@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>557</width>
-    <height>661</height>
+    <height>663</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -156,6 +156,20 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="buttonTerminalClear">
+             <property name="text">
+              <string>清除對話框</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="buttonTerminalSave">
+             <property name="text">
+              <string>儲存對話框</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -179,7 +193,7 @@
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tabSend">
             <attribute name="title">
