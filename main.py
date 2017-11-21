@@ -131,6 +131,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # Send line to serial
     @pyqtSlot()
     def serialSendLine(self):
+        if self.isPortOpen != True:
+            return False
         line = self.lineEditTerminalSend.text()
         self.lineEditTerminalSend.clear()
         print('sys : SendLine to devive: '+line)
@@ -154,16 +156,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         text = self.textEditSend.clear()
         pass
     def btnSendStruct(self):
-        # print(self.textEditSend.toPlainText())
-        self.textEditSend.append('f32 :')
-        self.textEditSend.append('  1,2,3,4,5,')
-        self.textEditSend.append('  1,2,3,4,5')
-        self.textEditSend.append('f32 :')
-        self.textEditSend.append('  1,2,3,4,5,')
-        self.textEditSend.append('  1,2,3,4,5')
         res = -1;
         try:
-            lineIdx, typeNum, dataList, res =decodeTextToStruct(self.textEditSend.toPlainText())
+            lineIdx, typeNumList, dataListList, res =decodeTextToStruct(self.textEditSend.toPlainText())
         except (ValueError,SyntaxError,TypeError):
             res = -1
             pass
@@ -172,6 +167,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print('sys : error')
         else:
             self.verifyOK()
+            if self.isPortOpen != True:
+                return False
+            structTypeString = str();
+            structTypeStringByte = 0;
+            structBytes = 0
+            chkSum = 0
+            for idx in range(len(typeNumList)):
+                structTypeString += getTypeStr(typeNumList[idx]) + 'x' + str(len(dataListList[idx]))
+                structBytes      += getTypeSize(typeNumList[idx]) * len(dataListList[idx])
+                if idx != len(typeNumList)-1:
+                    structTypeString += ','
+            structTypeStringByte = len(structTypeString)
+            structBytes += structTypeStringByte
+            if structBytes >= 255:
+                print ('sys : error bytes >= 255')
+                return False
+            self.ser.write(b'\xaa\xaa\xaa')
+            self.ser.write(pack('>B',structBytes))
+            self.ser.write(pack('>B',structTypeStringByte))
+            self.ser.write(bytes(structTypeString, encoding = "ascii"))
+            chkSum += sum(bytes(structTypeString, encoding = "ascii"));
+            print(bytes(structTypeString, encoding = "ascii"))
+            for idx, dataList in enumerate(dataListList):
+                for data in dataList:
+                    self.ser.write(pack('<'+decodePackStr(typeNum),data))
+                    chkSum += sum(pack('<'+decodePackStr(typeNumList[idx]),data));
+                    print(pack('<'+decodePackStr(typeNumList[idx]),data))
+            self.ser.write(pack('>B',chkSum%256))
+            print('chksum ' + str(chkSum%256))
+
+
+            # for value in variable:
+            #     pass
+            # print()
 
     def btnSendArray(self):
         # print(self.textEditSend.toPlainText())
@@ -188,6 +217,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.textEditSend.clear();
             self.textEditSend.append(resText)
             self.verifyOK()
+            if self.isPortOpen != True:
+                return False
             self.ser.write(b'\xab\xab\xab')
             self.ser.write(pack('>B',typeNum))
             print(pack('>B',typeNum))
