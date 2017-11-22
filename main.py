@@ -217,8 +217,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # self.ser.write(pack('>B',chkSum%256))
             print('chksum ' + str(chkSum%256))
             print(testData)
-            decode_struct(structBytes,structTypeString,testData)
-
+            print('formatString : ' + structTypeString)
+            typeNumList, dataListList = decode_struct(structBytes,structTypeString,testData)
+            self.textGetAppendStruct(typeNumList, dataListList)
             # for value in variable:
             #     pass
             # print()
@@ -291,21 +292,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.textTerminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
 
     # 顯示Struct data
-    def textGetAppendStruct(self,typeNum,struct):
-        self.textEditGet.append(getTypeStr(typeNum)+' : ')
-        s = '  '
-        for idx, data in enumerate(array):
-            s += str(data)
-            print(s)
-            print(str(data))
-            if idx+1 != len(array):
-                s += ',  '
-            else:
-                self.textEditGet.append(s)
-            if len(s) > 100: #換行
-                self.textEditGet.append(s)
-                s = '  '
-        self.textEditGet.append('')
+    def textGetAppendStruct(self,typeNumList, dataListList):
+        for idx in range(len(typeNumList)):
+            typeNum = typeNumList[idx]
+            dataList = dataListList[idx]
+            self.textEditGet.append(getTypeStr(typeNum)+' : ')
+            s = '  '
+            for idx2, data in enumerate(dataList):
+                s += str(data)
+                print(s)
+                print(str(data))
+                if idx2+1 != len(dataList):
+                    s += ',  '
+                else:
+                    self.textEditGet.append(s)
+                if len(s) > 100: #換行
+                    self.textEditGet.append(s)
+                    s = '  '
+            self.textEditGet.append('')
 
     # 檔案讀寫 function
     def file_open(self):

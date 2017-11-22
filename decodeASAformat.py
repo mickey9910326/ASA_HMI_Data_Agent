@@ -318,22 +318,20 @@ def decodeFormatString(s):
     typeDataNumList = list();
     for typeStr in typeStrs:
         deTypeStr = typeStr.split('x')
+        print(deTypeStr)
         typeNumList.append(getTypeNum(deTypeStr[0]))
         typeDataNumList.append(int(deTypeStr[1]))
     return typeNumList,typeDataNumList
 
 def decode_struct(totalBytes,formatString,data):
     dataBytes = totalBytes-len(formatString)-1;
-    typeNumList , typeDataNumList = decodeFormatString('ui8x4,f32x5')
+    typeNumList , typeDataNumList = decodeFormatString(formatString)
     dataIdx = 0;
     dataLastIdx = 0;
+    dataListList = list();
     for idx in range(len(typeNumList)):
-        print('str ' + decodePackStr(typeNumList[idx]))
-        print('num ' + str(typeDataNumList[idx]))
-
         dataLastIdx = dataIdx + getTypeSize(typeNumList[idx])*typeDataNumList[idx]
-        print('s ' + str(dataIdx))
-        print('e ' + str(dataLastIdx))
-        dataList = unpack('>'+str(typeDataNumList[idx])+decodePackStr(typeNumList[idx]), data[dataIdx:dataLastIdx])
+        dataList = unpack('<'+str(typeDataNumList[idx])+decodePackStr(typeNumList[idx]), data[dataIdx:dataLastIdx])
         dataIdx = dataLastIdx
-        print(dataList)
+        dataListList.append(dataList)
+    return typeNumList, dataListList
