@@ -44,7 +44,7 @@ class SerialThread(QThread):
                         chkSum += data[index];
                     getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
                     if (getChkSum != chkSum%256):
-                        print('Error')
+                        print('get array chksum Error')
                     else:
                         arr = decode_array(arrTypeNum,data)
                         print('sys : Get ArrayData from devive: ' + str(arr))
@@ -52,7 +52,21 @@ class SerialThread(QThread):
                         self.header = bytearray(b'\00\00\00')
 
                 if self.header == b'\xbb\xbb\xbb':
-                    print('struct')
+                    getBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                    getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                    chkSum = getBytes + getFormatBytes;
+                    data = bytearray()
+                    for index in range(0,getBytes-getFormatBytes-1):
+                        data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                        chkSum += data[index];
+                    getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                    if (getChkSum != chkSum%256):
+                        print('get struct chksum Error')
+                    else:
+                        arr = decode_array(arrTypeNum,data)
+                        print('sys : Get ArrayData from devive: ' + str(arr))
+                        self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                        self.header = bytearray(b'\00\00\00')
             else :
                 pass
 
@@ -156,6 +170,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         text = self.textEditSend.clear()
         pass
     def btnSendStruct(self):
+        self.textEditSend.append('ui8:')
+        self.textEditSend.append('  1,2,3,4,5')
+        self.textEditSend.append('f32:')
+        self.textEditSend.append('  1,2,3,4,5')
         res = -1;
         try:
             lineIdx, typeNumList, dataListList, res =decodeTextToStruct(self.textEditSend.toPlainText())
@@ -167,8 +185,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print('sys : error')
         else:
             self.verifyOK()
-            if self.isPortOpen != True:
-                return False
+            # if self.isPortOpen != True:
+            #     return False
             structTypeString = str();
             structTypeStringByte = 0;
             structBytes = 0
@@ -179,24 +197,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if idx != len(typeNumList)-1:
                     structTypeString += ','
             structTypeStringByte = len(structTypeString)
-            structBytes += structTypeStringByte
+            structBytes += structTypeStringByte+1
             if structBytes >= 255:
                 print ('sys : error bytes >= 255')
                 return False
-            self.ser.write(b'\xaa\xaa\xaa')
-            self.ser.write(pack('>B',structBytes))
-            self.ser.write(pack('>B',structTypeStringByte))
-            self.ser.write(bytes(structTypeString, encoding = "ascii"))
+            # self.ser.write(b'\xaa\xaa\xaa')
+            # self.ser.write(pack('>B',structBytes))
+            # self.ser.write(pack('>B',structTypeStringByte))
+            # self.ser.write(bytes(structTypeString, encoding = "ascii"))
+            testData = bytearray();
             chkSum += sum(bytes(structTypeString, encoding = "ascii"));
             print(bytes(structTypeString, encoding = "ascii"))
             for idx, dataList in enumerate(dataListList):
                 for data in dataList:
-                    self.ser.write(pack('<'+decodePackStr(typeNum),data))
+                    # self.ser.write(pack('<'+decodePackStr(typeNum),data))
                     chkSum += sum(pack('<'+decodePackStr(typeNumList[idx]),data));
+                    testData+=(pack('<'+decodePackStr(typeNumList[idx]),data))
                     print(pack('<'+decodePackStr(typeNumList[idx]),data))
-            self.ser.write(pack('>B',chkSum%256))
+            # self.ser.write(pack('>B',chkSum%256))
             print('chksum ' + str(chkSum%256))
-
+            print(testData)
+            decode_struct(structBytes,structTypeString,testData)
 
             # for value in variable:
             #     pass

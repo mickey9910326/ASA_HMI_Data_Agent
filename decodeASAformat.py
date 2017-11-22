@@ -311,3 +311,29 @@ def decodeDataLine(s,typeNum):
                     return resDataList, -1
             return resDataList, 1
     return resDataList, 0
+
+def decodeFormatString(s):
+    typeStrs = s.split(',')
+    typeNumList = list();
+    typeDataNumList = list();
+    for typeStr in typeStrs:
+        deTypeStr = typeStr.split('x')
+        typeNumList.append(getTypeNum(deTypeStr[0]))
+        typeDataNumList.append(int(deTypeStr[1]))
+    return typeNumList,typeDataNumList
+
+def decode_struct(totalBytes,formatString,data):
+    dataBytes = totalBytes-len(formatString)-1;
+    typeNumList , typeDataNumList = decodeFormatString('ui8x4,f32x5')
+    dataIdx = 0;
+    dataLastIdx = 0;
+    for idx in range(len(typeNumList)):
+        print('str ' + decodePackStr(typeNumList[idx]))
+        print('num ' + str(typeDataNumList[idx]))
+
+        dataLastIdx = dataIdx + getTypeSize(typeNumList[idx])*typeDataNumList[idx]
+        print('s ' + str(dataIdx))
+        print('e ' + str(dataLastIdx))
+        dataList = unpack('>'+str(typeDataNumList[idx])+decodePackStr(typeNumList[idx]), data[dataIdx:dataLastIdx])
+        dataIdx = dataLastIdx
+        print(dataList)
