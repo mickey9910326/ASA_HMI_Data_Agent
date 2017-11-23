@@ -9,7 +9,7 @@ from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 class SerialThread(QThread):
     signalGetLine = pyqtSignal(str)
     signalGetArrayData = pyqtSignal(int,int,tuple)
-    signalGetStructData = pyqtSignal(list)
+    signalGetStructData = pyqtSignal(list,list,str)
 
     #初始化
     def __init__(self, ser):
@@ -54,21 +54,31 @@ class SerialThread(QThread):
                 if self.header == b'\xbb\xbb\xbb':
                     getBytes = int.from_bytes(self.ser.read(1), byteorder='big')
                     getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                    dataBytes = getBytes-getFormatBytes-1
                     chkSum = getBytes + getFormatBytes;
+                    formatString = bytearray();
                     data = bytearray()
-                    for index in range(0,getBytes-getFormatBytes-1):
+                    for index in range(0,getFormatBytes):
+                        formatString += self.ser.read(1)
+                        chkSum += int(formatString[index]);
+                    formatString = formatString.decode("ascii")
+                    print(formatString)
+                    for index in range(0,dataBytes):
                         data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
                         chkSum += data[index];
                     getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
                     if (getChkSum != chkSum%256):
                         print('get struct chksum Error')
                     else:
-                        arr = decode_array(arrTypeNum,data)
-                        print('sys : Get ArrayData from devive: ' + str(arr))
-                        self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                        # arr = decode_array(arrTypeNum,data)
+                        # print('sys : Get ArrayData from devive: ' + str(arr))
                         self.header = bytearray(b'\00\00\00')
-            else :
-                pass
+                        typeNumList, dataListList = decode_struct(getBytes,formatString,data)
+                        self.signalGetStructData.emit(typeNumList, dataListList,formatString)
+
+                else :
+                    pass;
+
 
         #完成，發出信號（帶一個 list 參數）
         # self.signalGetLine.emit(nPath)
@@ -126,6 +136,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.SerialThread = SerialThread(self.ser)
             self.SerialThread.signalGetLine.connect(self.terminalAppendGetLine)
             self.SerialThread.signalGetArrayData.connect(self.textGetAppendArray)
+            self.SerialThread.signalGetStructData.connect(self.textGetAppendStruct)
             self.SerialThread.start()
             self.buttonPortToggle.setText("關閉串列埠")
             self.textTerminal.append('( log: Open '+self.ser.port +' succeed! )')
@@ -170,10 +181,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         text = self.textEditSend.clear()
         pass
     def btnSendStruct(self):
-        self.textEditSend.append('ui8:')
-        self.textEditSend.append('  1,2,3,4,5')
-        self.textEditSend.append('f32:')
-        self.textEditSend.append('  1,2,3,4,5')
         res = -1;
         try:
             lineIdx, typeNumList, dataListList, res =decodeTextToStruct(self.textEditSend.toPlainText())
@@ -185,8 +192,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print('sys : error')
         else:
             self.verifyOK()
-            # if self.isPortOpen != True:
-            #     return False
+            if self.isPortOpen != True:
+                return False
             structTypeString = str();
             structTypeStringByte = 0;
             structBytes = 0
@@ -197,29 +204,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if idx != len(typeNumList)-1:
                     structTypeString += ','
             structTypeStringByte = len(structTypeString)
-            structBytes += structTypeStringByte+1
             if structBytes >= 255:
                 print ('sys : error bytes >= 255')
                 return False
-            # self.ser.write(b'\xaa\xaa\xaa')
-            # self.ser.write(pack('>B',structBytes))
-            # self.ser.write(pack('>B',structTypeStringByte))
-            # self.ser.write(bytes(structTypeString, encoding = "ascii"))
+            self.ser.write(b'\xab\xab\xab')
+            self.ser.write(pack('>B',structBytes))
+            self.ser.write(pack('>B',structTypeStringByte))
+            self.ser.write(bytes(structTypeString, encoding = "ascii"))
             testData = bytearray();
             chkSum += sum(bytes(structTypeString, encoding = "ascii"));
             print(bytes(structTypeString, encoding = "ascii"))
             for idx, dataList in enumerate(dataListList):
                 for data in dataList:
-                    # self.ser.write(pack('<'+decodePackStr(typeNum),data))
+                    self.ser.write(pack('<'+decodePackStr(typeNumList[idx]),data))
                     chkSum += sum(pack('<'+decodePackStr(typeNumList[idx]),data));
                     testData+=(pack('<'+decodePackStr(typeNumList[idx]),data))
                     print(pack('<'+decodePackStr(typeNumList[idx]),data))
-            # self.ser.write(pack('>B',chkSum%256))
+            self.ser.write(pack('>B',chkSum%256))
             print('chksum ' + str(chkSum%256))
             print(testData)
             print('formatString : ' + structTypeString)
-            typeNumList, dataListList = decode_struct(structBytes,structTypeString,testData)
-            self.textGetAppendStruct(typeNumList, dataListList)
+            self.textEditSend.clear()
+            self.textTerminal.append('( log: send struct of ' + structTypeString +'. )')
+
+            # typeNumList, dataListList = decode_struct(structBytes,structTypeString,testData)
+            # self.textGetAppendStruct(typeNumList, dataListList)
             # for value in variable:
             #     pass
             # print()
@@ -292,7 +301,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.textTerminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
 
     # 顯示Struct data
-    def textGetAppendStruct(self,typeNumList, dataListList):
+    def textGetAppendStruct(self, typeNumList, dataListList, formatString):
         for idx in range(len(typeNumList)):
             typeNum = typeNumList[idx]
             dataList = dataListList[idx]
@@ -300,8 +309,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             s = '  '
             for idx2, data in enumerate(dataList):
                 s += str(data)
-                print(s)
-                print(str(data))
                 if idx2+1 != len(dataList):
                     s += ',  '
                 else:
@@ -310,6 +317,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.textEditGet.append(s)
                     s = '  '
             self.textEditGet.append('')
+        self.textTerminal.append('( log: get struct of ' + formatString +'. )')
 
     # 檔案讀寫 function
     def file_open(self):
