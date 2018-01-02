@@ -90,6 +90,8 @@ def getTypeStr(typeNum):
         return 'f32'
     elif typeNum == 9:
         return 'f64'
+    elif typeNum == 15:
+        return 's'
     else:
         return False
 
@@ -113,6 +115,8 @@ def getTypeSize(typeNum):
     elif typeNum == 8: # f32
         return 4
     elif typeNum == 9: # f64
+        return 8
+    elif typeNum == 15: # String
         return 8
     else:
         return False
@@ -138,6 +142,8 @@ def getTypeNum(typeString):
         return 8
     elif typeString == 'f64': # f64
         return 9
+    elif typeString == 's': # String
+        return 15
     else:
         return -1
 
@@ -335,3 +341,115 @@ def decode_struct(totalBytes,formatString,data):
         dataIdx = dataLastIdx
         dataListList.append(dataList)
     return typeNumList, dataListList
+
+def transUi8ToString(text):
+    # decode Data Type
+    lines =  text.split('\n')
+    res = 0
+    lineIdx = 0
+    dataList = list()
+    resText = str()
+
+    resTypeNumList = list()
+    resDataListList = list()
+    resArrayNums = 0
+
+    status = 1
+    for idx,s in enumerate(lines):
+        if status == 1:
+            if decodeIsSpaceLine(s):
+                resText += s
+                if idx+1 == len(lines):
+                    pass
+                else:
+                    resText += '\n'
+                pass
+            else:
+                typeNum = decodeTypeLine(s)
+                if typeNum == 4:
+                    resText += 's:'
+                    resText += '\n'
+                    status = 2;
+                    isContinued = 1;
+                else:
+                    resText += s
+                    resText += '\n'
+        elif status == 2:
+            if decodeIsSpaceLine(s):
+                resText += s
+                resText += '\n'
+                pass
+            elif (isContinued==1):
+                newList, isContinued = decodeDataLine(s,typeNum)
+                dataList += newList
+                status = 2;
+            if (isContinued==0):
+                # status = 3;
+                status = 1;
+                resText += '  \''
+                resText += bytes(dataList).decode("utf-8")
+                resText += '\'\n'
+                dataList = list()
+            if (isContinued==-1):
+                res = -1
+                return res, resText
+    return res, resText
+
+def transStringToUi8(text):
+    # decode Data Type
+    lines =  text.split('\n')
+    res = 0
+    lineIdx = 0
+    dataList = list()
+    resText = str()
+
+    resTypeNumList = list()
+    resDataListList = list()
+    resArrayNums = 0
+
+    status = 1
+    for idx,s in enumerate(lines):
+        if status == 1:
+            if decodeIsSpaceLine(s):
+                resText += s
+                if idx+1 == len(lines):
+                    pass
+                else:
+                    resText += '\n'
+                pass
+            else:
+                typeNum = decodeTypeLine(s)
+                if typeNum == 15:
+                    resText += 'ui8:'
+                    resText += '\n'
+                    status = 2;
+                    isContinued = 1;
+                else:
+                    resText += s
+                    resText += '\n'
+        elif status == 2:
+            start = s.find('\'')
+            end   = s.rfind('\'')
+            status = 3
+            print(start)
+            print(end)
+            datas = s[start+1:end]
+            print(datas)
+            print(datas.encode())
+            datas = s[start+1:end].encode()
+
+            s = '  '
+            for idx, data in enumerate(datas):
+                s += str((data))
+                if idx+1 != len(datas):
+                    s += ',  '
+                else:
+                    resText += s
+                    resText += '\n'
+                    s = '  '
+                if len(s) > 100: #換行
+                    resText += s
+                    resText += '\n'
+                    s = '  '
+            status = 1
+    return res, resText

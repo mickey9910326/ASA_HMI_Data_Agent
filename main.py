@@ -6,6 +6,7 @@ from listport import serial_ports
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 
+#
 class SerialThread(QThread):
     signalGetLine = pyqtSignal(str)
     signalGetArrayData = pyqtSignal(int,int,tuple)
@@ -111,6 +112,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.buttonSendArray.clicked.connect(self.btnSendArray)
         self.buttonSendReadFile.clicked.connect(self.btnSendReadFile)
         self.buttonSendSaveFile.clicked.connect(self.btnSendSaveFile)
+        self.buttonUi8ToString.clicked.connect(self.btnUi8ToString)
+        self.buttonStringToUi8.clicked.connect(self.btnStringToUi8)
         # 接收區功能
         self.buttonGetClear.clicked.connect(self.btnGetClear)
         self.buttonGetSaveFile.clicked.connect(self.btnGetSaveFile)
@@ -182,8 +185,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pass
     def btnSendStruct(self):
         res = -1;
+        res, resText = transStringToUi8(self.textEditSend.toPlainText())
         try:
-            lineIdx, typeNumList, dataListList, res =decodeTextToStruct(self.textEditSend.toPlainText())
+            lineIdx, typeNumList, dataListList, res =decodeTextToStruct(resText)
         except (ValueError,SyntaxError,TypeError):
             res = -1
             pass
@@ -271,6 +275,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         file = self.file_open()
         self.textEditSend.append(file.read())
         file.close()
+    def btnUi8ToString(self):
+        res, resText = transUi8ToString(self.textEditSend.toPlainText())
+        self.textEditSend.clear();
+        self.textEditSend.append(resText)
+    def btnStringToUi8(self):
+        res, resText = transStringToUi8(self.textEditSend.toPlainText())
+        self.textEditSend.clear();
+        self.textEditSend.append(resText)
+
     # 接收區功能 implement
     def btnGetClear(self):
         self.textEditGet.clear()
