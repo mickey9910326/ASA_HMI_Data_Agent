@@ -203,7 +203,7 @@
                 </sizepolicy>
                </property>
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="tabSend">
                 <attribute name="title">
@@ -218,9 +218,16 @@
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_5">
                      <item>
-                      <widget class="QPushButton" name="pushButton">
+                      <widget class="QPushButton" name="buttonUi8ToString">
                        <property name="text">
-                        <string>i8 轉 String</string>
+                        <string>ui8 轉 String</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="buttonStringToUi8">
+                       <property name="text">
+                        <string>String 轉 ui8</string>
                        </property>
                       </widget>
                      </item>
