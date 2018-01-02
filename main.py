@@ -30,8 +30,13 @@ class SerialThread(QThread):
             elif ch >= b'\x20' and ch <= b'\x7E':
                 self.line += ch.decode("ascii");
             elif ch == b'\x00':
-                pass
+                if len(self.line) > 0:
+                    self.signalGetLine.emit(self.line)
+                    self.line = str()
             elif ch > b'\x7E':
+                if len(self.line) > 0:
+                    self.signalGetLine.emit(self.line)
+                    self.line = str()
                 self.header[0] = self.header[1]
                 self.header[1] = self.header[2]
                 self.header[2] = int.from_bytes(ch, byteorder='big')
@@ -112,12 +117,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.buttonSendArray.clicked.connect(self.btnSendArray)
         self.buttonSendReadFile.clicked.connect(self.btnSendReadFile)
         self.buttonSendSaveFile.clicked.connect(self.btnSendSaveFile)
-        self.buttonUi8ToString.clicked.connect(self.btnUi8ToString)
-        self.buttonStringToUi8.clicked.connect(self.btnStringToUi8)
+        self.buttonSendUi8ToString.clicked.connect(self.btnSendUi8ToString)
+        self.buttonSendStringToUi8.clicked.connect(self.btnSendStringToUi8)
         # 接收區功能
         self.buttonGetClear.clicked.connect(self.btnGetClear)
         self.buttonGetSaveFile.clicked.connect(self.btnGetSaveFile)
         self.buttomGetMovetoSend.clicked.connect(self.btnGetMovetoSend)
+        self.buttonGetUi8ToString.clicked.connect(self.btnGetUi8ToString)
+        self.buttonGetStringToUi8.clicked.connect(self.btnGetStringToUi8)
 
 
     def updateSerialPortlist(self):
@@ -275,11 +282,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         file = self.file_open()
         self.textEditSend.append(file.read())
         file.close()
-    def btnUi8ToString(self):
+    def btnSendUi8ToString(self):
         res, resText = transUi8ToString(self.textEditSend.toPlainText())
         self.textEditSend.clear();
         self.textEditSend.append(resText)
-    def btnStringToUi8(self):
+    def btnSendStringToUi8(self):
         res, resText = transStringToUi8(self.textEditSend.toPlainText())
         self.textEditSend.clear();
         self.textEditSend.append(resText)
@@ -294,6 +301,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         text = self.textEditGet.toPlainText()
         self.textEditGet.clear()
         self.textEditSend.append(text)
+    def btnGetUi8ToString(self):
+        res, resText = transUi8ToString(self.textEditGet.toPlainText())
+        self.textEditGet.clear();
+        self.textEditGet.append(resText)
+    def btnGetStringToUi8(self):
+        res, resText = transStringToUi8(self.textEditGet.toPlainText())
+        self.textEditGet.clear();
+        self.textEditGet.append(resText)
 
     # SerialThread訊號槽function
     # 顯示array data

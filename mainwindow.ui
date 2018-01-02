@@ -218,14 +218,14 @@
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_5">
                      <item>
-                      <widget class="QPushButton" name="buttonUi8ToString">
+                      <widget class="QPushButton" name="buttonSendUi8ToString">
                        <property name="text">
                         <string>ui8 轉 String</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="buttonStringToUi8">
+                      <widget class="QPushButton" name="buttonSendStringToUi8">
                        <property name="text">
                         <string>String 轉 ui8</string>
                        </property>
@@ -377,6 +377,37 @@
                   <layout class="QVBoxLayout" name="verticalLayout_8">
                    <item>
                     <widget class="QTextEdit" name="textEditGet"/>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_7">
+                     <item>
+                      <widget class="QPushButton" name="buttonGetUi8ToString">
+                       <property name="text">
+                        <string>ui8 轉 String</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="buttonGetStringToUi8">
+                       <property name="text">
+                        <string>String 轉 ui8</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </item>
