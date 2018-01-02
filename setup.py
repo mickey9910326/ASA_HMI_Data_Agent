@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
 from PyInstaller.__main__ import run
 # -F:打包成一个EXE文件
 # -w:不带console输出控制台，window窗体格式
@@ -9,8 +10,9 @@ from PyInstaller.__main__ import run
 # --clean：清理掉临时文件
 
 if __name__ == '__main__':
-    opts = ['-F','-w', '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
-
+    os.system("rm -rf ./dist/ASA_HMI_Data_Agent")
+    opts = ['-w',
+            '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\plugins',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit',
             '--paths=C:\\Users\\Lite\\AppData\\Roaming\\pyinstaller\\bincache00_py36_32bit',
@@ -21,3 +23,5 @@ if __name__ == '__main__':
             'main.py']
 
     run(opts)
+    os.system("mv ./dist/main/main.exe ./dist/main/ASA_HMI_Data_Agent.exe")
+    os.system("mv ./dist/main ./dist/ASA_HMI_Data_Agent")
