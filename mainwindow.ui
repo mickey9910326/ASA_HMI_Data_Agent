@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>557</width>
-    <height>663</height>
+    <height>683</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -46,7 +46,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>60</height>
+          <height>75</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -193,7 +193,7 @@
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tabSend">
             <attribute name="title">
@@ -201,7 +201,35 @@
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
-              <widget class="QTextEdit" name="textEditSend"/>
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <widget class="QTextEdit" name="textEditSend"/>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="pushButton">
+                   <property name="text">
+                    <string>i8 轉 String</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </item>
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -329,7 +357,11 @@
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QTextEdit" name="textEditGet"/>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <widget class="QTextEdit" name="textEditGet"/>
+               </item>
+              </layout>
              </item>
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_6">
