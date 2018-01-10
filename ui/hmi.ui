@@ -114,7 +114,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QTextBrowser" name="textTerminal">
+       <widget class="QTextBrowser" name="text_terminal">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -132,7 +132,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QLineEdit" name="lineEditTerminalSend">
+         <widget class="QLineEdit" name="text_lineEditToBeSend">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -145,21 +145,21 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="buttonTerminalSend">
+         <widget class="QPushButton" name="text_btnSend">
           <property name="text">
            <string>Send</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="buttonTerminalClear">
+         <widget class="QPushButton" name="text_btnClearTerminal">
           <property name="text">
            <string>清除對話框</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="buttonTerminalSave">
+         <widget class="QPushButton" name="text_btnSaveTerminal">
           <property name="text">
            <string>儲存對話框</string>
           </property>

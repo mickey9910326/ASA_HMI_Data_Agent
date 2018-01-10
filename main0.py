@@ -33,15 +33,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # ---- Button Function Linking start -----------------------------------
         # ------ HMI start -----------------------------------------------------
-        # 串列埠
+        # 串列埠設定區
         self.updatePortlist()
         self.widgetHmi.btnPortToggle.clicked.connect(self.portToggle)
         self.widgetHmi.btnUpdatePortList.clicked.connect(self.updatePortlist)
-        # # 文字對話區
-        # self.lineEditTerminalSend.returnPressed.connect(self.serialSendLine)
-        # self.buttonTerminalSend.clicked.connect(self.serialSendLine)
-        # self.buttonTerminalSave.clicked.connect(self.terminalSave)
-        # self.buttonTerminalClear.clicked.connect(self.terminalClear)
+        # 文字對話區
+        self.widgetHmi.text_lineEditToBeSend.returnPressed.connect(self.text_sendLineToDevice)
+        self.widgetHmi.text_btnSend.clicked.connect(self.text_sendLineToDevice)
+        self.widgetHmi.text_btnClearTerminal.clicked.connect(self.text_terminalClear)
+        self.widgetHmi.text_btnSaveTerminal.clicked.connect(self.text_terminalSave)
         # # 發送區
         # self.buttonSendClear.clicked.connect(self.btnSendClear)
         # self.buttonSendStruct.clicked.connect(self.btnSendStruct)
@@ -63,7 +63,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     # ---- 串列埠設定區功能實現 start --------------------------------------------
-    # update port list in portComboBox
+    # Update port list in portComboBox
     @pyqtSlot()
     def updatePortlist(self):
         print('sys : Update port list in portComboBox, available port : ', end='')
@@ -73,12 +73,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for port in availablePorts:
             self.widgetHmi.portComboBox.addItem(port)
 
-    # open/close serial port
+    # Open/Close serial port
     @pyqtSlot()
     def portToggle(self):
-        print('sys' )
         if (self.widgetHmi.portComboBox.currentText() is '') and (self.isPortOpen is False) :
-            print('sys : Try to open port : ' )
             pass
         elif (self.isPortOpen is False):
             self.ser.port = self.widgetHmi.portComboBox.currentText()
@@ -89,11 +87,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print('sys : Open port ' + self.ser.port + ' failed ')
                 print('     Exception : ', end='')
                 print(e)
-                self.widgetHmi.textTerminal.append('( log : Open port ' + self.ser.port + ' failed! )')
+                self.widgetHmi.text_terminal.append('( log : Open port ' + self.ser.port + ' failed! )')
             else :
                 self.isPortOpen = True
                 self.widgetHmi.btnPortToggle.setText("關閉串列埠")
-                self.widgetHmi.textTerminal.append('( log: Open ' + self.ser.port +' success! )')
+                self.widgetHmi.text_terminal.append('( log: Open ' + self.ser.port +' success! )')
                 # SerialThread訊號槽
                 # self.SerialThread = SerialThread(self.ser)
                 # self.SerialThread.signalGetLine.connect(self.terminalAppendGetLine)
@@ -105,37 +103,60 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.ser.close()
             self.isPortOpen = False
             self.widgetHmi.btnPortToggle.setText("開啟串列埠")
-            self.widgetHmi.textTerminal.append('( log: Close ' + self.ser.port +' success! )')
+            self.widgetHmi.text_terminal.append('( log: Close ' + self.ser.port +' success! )')
             # SerialThread
             # self.SerialThread.terminate()
     # ---- 串列埠設定區功能實現 end ----------------------------------------------
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
+    # Append the line from serial in terminal
+    @pyqtSlot(str)
+    def text_terminalAppendLineFromDevice(self, line):
+        self.widgetHmi.text_terminal.append('>>  '+line)
+        print('sys : Get line from devive: ' + line)
+
+    # Send line to serial
+    @pyqtSlot()
+    def text_sendLineToDevice(self):
+        if self.isPortOpen is False:
+            return False
+        else:
+            line = self.widgetHmi.text_lineEditToBeSend.text()
+            self.widgetHmi.text_lineEditToBeSend.clear()
+            self.ser.write(bytes(line+'\n', encoding = "utf-8") )
+            self.widgetHmi.text_terminal.append('<<  '+line)
+            print('sys : Send line to devive: ' + line)
+
+    # Svae the text in text terminal
+    def text_terminalSave(self):
+        text = self.widgetHmi.text_terminal.toPlainText()
+        self.file_save(text)
+
+    # Clear the text in text terminal
+    def text_terminalClear(self):
+        text = self.widgetHmi.text_terminal.clear()
     # ---- 文字對話區功能實現 end ------------------------------------------------
-    #
-    # # append the line from serial in terminal
-    # @pyqtSlot(str)
-    # def terminalAppendGetLine(self, line):
-    #     self.textTerminal.append('>>  '+line)
-    #
+
+    # ---- 檔案讀寫 function start ----------------------------------------------
+    def file_open(self):
+        name, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'All Files (*);;Text Files (*.txt)' ,initialFilter='Text Files (*.txt)')
+        if name!='':
+            file = open(name,'r')
+            return file;
+        else:
+            return None
+    def file_save(self,text):
+        name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Text Files (*.txt)' ,initialFilter='Text Files (*.txt)')
+        if name == '':
+            pass
+        else:
+            file = open(''.join(name),'w')
+            file.write(text)
+            file.close()
+    # ---- 檔案讀寫 function end ------------------------------------------------
+
     # # 文字對話區功能
-    # # Send line to serial
-    # @pyqtSlot()
-    # def serialSendLine(self):
-    #     if self.isPortOpen != True:
-    #         return False
-    #     line = self.lineEditTerminalSend.text()
-    #     self.lineEditTerminalSend.clear()
-    #     print('sys : SendLine to devive: '+line)
-    #     if (self.isPortOpen == 1):
-    #         self.ser.write(bytes(line+'\n', encoding = "utf-8") )
-    #         self.textTerminal.append('<<  '+line)
-    # def terminalSave(self):
-    #     text = self.textTerminal.toPlainText()
-    #     self.file_save(text)
-    # def terminalClear(self):
-    #     text = self.textTerminal.clear()
-    #
+
     # # 發送區功能 implement
     # def verifyOK(self):
     #     self.textBrowserSendVerify.clear()
@@ -192,7 +213,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #         print(testData)
     #         print('formatString : ' + structTypeString)
     #         self.textEditSend.clear()
-    #         self.textTerminal.append('( log: send struct of ' + structTypeString +'. )')
+    #         self.widgetHmi.text_terminal.append('( log: send struct of ' + structTypeString +'. )')
     #
     #         # typeNumList, dataListList = decode_struct(structBytes,structTypeString,testData)
     #         # self.textGetAppendStruct(typeNumList, dataListList)
@@ -230,7 +251,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #             print(pack('<'+decodePackStr(typeNum),data))
     #             print(chkSum)
     #         self.ser.write(pack('>B',chkSum%256))
-    #         self.textTerminal.append('( log: send ' + str(dataBytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
+    #         self.widgetHmi.text_terminal.append('( log: send ' + str(dataBytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
     # def btnSendSaveFile(self):
     #     text = self.textEditSend.toPlainText()
     #     self.file_save(text)
@@ -282,7 +303,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #             self.textEditGet.append(s)
     #             s = '  '
     #     self.textEditGet.append('')
-    #     self.textTerminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
+    #     self.widgetHmi.text_terminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
     #
     # # 顯示Struct data
     # def textGetAppendStruct(self, typeNumList, dataListList, formatString):
@@ -301,24 +322,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #                 self.textEditGet.append(s)
     #                 s = '  '
     #         self.textEditGet.append('')
-    #     self.textTerminal.append('( log: get struct of ' + formatString +'. )')
+    #     self.widgetHmi.text_terminal.append('( log: get struct of ' + formatString +'. )')
     #
-    # # 檔案讀寫 function
-    # def file_open(self):
-    #     name, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'All Files (*);;Text Files (*.txt)' ,initialFilter='Text Files (*.txt)')
-    #     if name!='':
-    #         file = open(name,'r')
-    #         return file;
-    #     else:
-    #         return None
-    # def file_save(self,text):
-    #     name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Text Files (*.txt)' ,initialFilter='Text Files (*.txt)')
-    #     if name == '':
-    #         pass
-    #     else:
-    #         file = open(''.join(name),'w')
-    #         file.write(text)
-    #         file.close()
+
 
 
 if __name__ == "__main__":
