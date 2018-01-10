@@ -73,7 +73,14 @@
        <widget class="QComboBox" name="portComboBox"/>
       </item>
       <item>
-       <widget class="QPushButton" name="buttonPortToggle">
+       <widget class="QPushButton" name="btnUpdatePortList">
+        <property name="text">
+         <string>更新串列埠</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnPortToggle">
         <property name="text">
          <string>開啟串列埠</string>
         </property>
