@@ -25,10 +25,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # ---- init ui end -----------------------------------------------------
 
         # ---- Public Objects Start --------------------------------------------
-        self.ser = serial.Serial();
-        self.isPortOpen = False;
-        self.ser.baudrate = 38400;
-        self.ser.timeout = 10;
+        self.ser = serial.Serial()
+        self.isPortOpen = False
+        self.ser.baudrate = 38400
+        self.ser.timeout = 10
         # ---- Public Objects end ----------------------------------------------
 
         # ---- Button Function Linking start -----------------------------------
@@ -42,20 +42,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.widgetHmi.text_btnSend.clicked.connect(self.text_sendLineToDevice)
         self.widgetHmi.text_btnClearTerminal.clicked.connect(self.text_terminalClear)
         self.widgetHmi.text_btnSaveTerminal.clicked.connect(self.text_terminalSave)
-        # # 發送區
-        # self.buttonSendClear.clicked.connect(self.btnSendClear)
-        # self.buttonSendStruct.clicked.connect(self.btnSendStruct)
-        # self.buttonSendArray.clicked.connect(self.btnSendArray)
-        # self.buttonSendReadFile.clicked.connect(self.btnSendReadFile)
-        # self.buttonSendSaveFile.clicked.connect(self.btnSendSaveFile)
-        # self.buttonSendUi8ToString.clicked.connect(self.btnSendUi8ToString)
-        # self.buttonSendStringToUi8.clicked.connect(self.btnSendStringToUi8)
-        # # 接收區
-        # self.buttonGetClear.clicked.connect(self.btnGetClear)
-        # self.buttonGetSaveFile.clicked.connect(self.btnGetSaveFile)
-        # self.buttomGetMovetoSend.clicked.connect(self.btnGetMovetoSend)
-        # self.buttonGetUi8ToString.clicked.connect(self.btnGetUi8ToString)
-        # self.buttonGetStringToUi8.clicked.connect(self.btnGetStringToUi8)
+        # 接收區
+        self.widgetHmi.rec_btnClear.clicked.connect(self.rec_textEditClear)
+        self.widgetHmi.rec_btnSave.clicked.connect(self.rec_textEditSave)
+        self.widgetHmi.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
+        self.widgetHmi.rec_btnUi8ToString.clicked.connect(self.rec_textEditUi8ToString)
+        self.widgetHmi.rec_btnStringToUi8.clicked.connect(self.rec_textEditStringToUi8)
+        # 發送區
+        self.widgetHmi.send_btnClear.clicked.connect(self.send_textEditClear)
+        self.widgetHmi.send_btnSave.clicked.connect(self.send_textEditSave)
+        self.widgetHmi.send_btnReadFile.clicked.connect(self.send)
+        self.widgetHmi.send_btnUi8ToString.clicked.connect(self.send_textEditUi8ToString)
+        self.widgetHmi.send_btnStringToUi8.clicked.connect(self.send_textEditStringToUi8)
+        self.widgetHmi.send_btnSendStruct.clicked.connect(self.send)
+        self.widgetHmi.send_btnSendArray.clicked.connect(self.send)
         # ------ HMI end -----------------------------------------------------
         # ---- Button Function Linking end -------------------------------------
     # ---- __init__ end --------------------------------------------------------
@@ -155,18 +155,54 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             file.close()
     # ---- 檔案讀寫 function end ------------------------------------------------
 
-    # # 文字對話區功能
+    # ---- 接收區功能實現 start -------------------------------------------------
+    def rec_textEditClear(self):
+        self.widgetHmi.rec_textEdit.clear()
+    def rec_textEditSave(self):
+        text = self.widgetHmi.rec_textEdit.toPlainText()
+        self.file_save(text)
+    def rec_textEditMovetoSend(self):
+        text = self.widgetHmi.rec_textEdit.toPlainText()
+        self.widgetHmi.rec_textEdit.clear()
+        self.widgetHmi.textEditSend.append(text)
+    def rec_textEditUi8ToString(self):
+        res, resText = transUi8ToString(self.widgetHmi.rec_textEdit.toPlainText())
+        self.widgetHmi.rec_textEdit.clear()
+        self.widgetHmi.rec_textEdit.append(resText)
+    def rec_textEditStringToUi8(self):
+        res, resText = transStringToUi8(self.widgetHmi.rec_textEdit.toPlainText())
+        self.widgetHmi.rec_textEdit.clear()
+        self.widgetHmi.rec_textEdit.append(resText)
+    # ---- 接收區功能實現 end ---------------------------------------------------
 
-    # # 發送區功能 implement
-    # def verifyOK(self):
-    #     self.textBrowserSendVerify.clear()
-    #     self.textBrowserSendVerify.append('OK')
-    # def verifyFAIL(self):
-    #     self.textBrowserSendVerify.clear()
-    #     self.textBrowserSendVerify.append('FAIL')
-    # def btnSendClear(self):
-    #     text = self.textEditSend.clear()
-    #     pass
+    # ---- 發送區功能實現 start -------------------------------------------------
+    def send_textEditClear(self):
+        self.widgetHmi.send_textEdit.clear()
+    def send_textEditSave(self):
+        text = self.widgetHmi.send_textEdit.toPlainText()
+        self.file_save(text)
+    def send_textEditUi8ToString(self):
+        res, resText = transUi8ToString(self.widgetHmi.send_textEdit.toPlainText())
+        self.widgetHmi.send_textEdit.clear()
+        self.widgetHmi.send_textEdit.append(resText)
+    def send_textEditStringToUi8(self):
+        res, resText = transStringToUi8(self.widgetHmi.send_textEdit.toPlainText())
+        self.widgetHmi.send_textEdit.clear()
+        self.widgetHmi.send_textEdit.append(resText)
+    def send_btnSendArray(self):
+        # TODO implement
+        # sendArray()
+    def send_btnSendStruct(self):
+        # TODO implement
+        # sendStruct()
+    def send_verifyShowOK(self):
+        self.widgetHmi.send_textBrowserVerify.clear()
+        self.widgetHmi.send_textBrowserVerify.append('OK')
+    def send_verifyShowFAIL(self):
+        self.widgetHmi.send_textBrowserVerify.clear()
+        self.widgetHmi.send_textBrowserVerify.append('FAIL')
+    # ---- 發送區功能實現 end ---------------------------------------------------
+
     # def btnSendStruct(self):
     #     res = -1;
     #     res, resText = transStringToUi8(self.textEditSend.toPlainText())
@@ -252,41 +288,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #             print(chkSum)
     #         self.ser.write(pack('>B',chkSum%256))
     #         self.widgetHmi.text_terminal.append('( log: send ' + str(dataBytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
-    # def btnSendSaveFile(self):
-    #     text = self.textEditSend.toPlainText()
-    #     self.file_save(text)
-    # def btnSendReadFile(self):
-    #     file = self.file_open()
-    #     self.textEditSend.append(file.read())
-    #     file.close()
-    # def btnSendUi8ToString(self):
-    #     res, resText = transUi8ToString(self.textEditSend.toPlainText())
-    #     self.textEditSend.clear();
-    #     self.textEditSend.append(resText)
-    # def btnSendStringToUi8(self):
-    #     res, resText = transStringToUi8(self.textEditSend.toPlainText())
-    #     self.textEditSend.clear();
-    #     self.textEditSend.append(resText)
-    #
-    # # 接收區功能 implement
-    # def btnGetClear(self):
-    #     self.textEditGet.clear()
-    # def btnGetSaveFile(self):
-    #     text = self.textEditGet.toPlainText()
-    #     self.file_save(text)
-    # def btnGetMovetoSend(self):
-    #     text = self.textEditGet.toPlainText()
-    #     self.textEditGet.clear()
-    #     self.textEditSend.append(text)
-    # def btnGetUi8ToString(self):
-    #     res, resText = transUi8ToString(self.textEditGet.toPlainText())
-    #     self.textEditGet.clear();
-    #     self.textEditGet.append(resText)
-    # def btnGetStringToUi8(self):
-    #     res, resText = transStringToUi8(self.textEditGet.toPlainText())
-    #     self.textEditGet.clear();
-    #     self.textEditGet.append(resText)
-    #
+
     # # SerialThread訊號槽function
     # # 顯示array data
     # def textGetAppendArray(self,typeNum,bytes,array):
