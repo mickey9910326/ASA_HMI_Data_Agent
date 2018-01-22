@@ -1,11 +1,10 @@
 default: gui test
 
-
 UItest:
 	@py UItest.py
 
 test:
-	@py main0.py
+	@py main.py
 
 gui:
 	@pyuic5 ui/mainwindow.ui -o ui_mainwindow.py

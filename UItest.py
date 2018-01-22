@@ -15,12 +15,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
-        self.widgetHmi = Ui_MainWidgetHMI()
-        self.widgetAvrdude = Ui_MainWidgetAvrdude()
-        self.WidgetAsaProg = Ui_MainWidgetAsaProg()
-        self.widgetHmi.setupUi(self.tabHmi)
-        self.widgetAvrdude.setupUi(self.tabAvrdude)
-        self.WidgetAsaProg.setupUi(self.tabAsaProg)
+        widgetHmi = Ui_MainWidgetHMI()
+        widgetAvrdude = Ui_MainWidgetAvrdude()
+        WidgetAsaProg = Ui_MainWidgetAsaProg()
+        widgetHmi.setupUi(self.tabHmi)
+        widgetAvrdude.setupUi(self.tabAvrdude)
+        WidgetAsaProg.setupUi(self.tabAsaProg)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

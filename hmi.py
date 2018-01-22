@@ -4,6 +4,85 @@ from decodeASAformat import *
 from listport import serial_ports
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 
+# ---- class Serial Thread Start -----------------------------------------------
+class SerialThread(QThread):
+    signalGetLine = pyqtSignal(str)
+    signalGetArrayData = pyqtSignal(int,int,tuple)
+    signalGetStructData = pyqtSignal(list,list,str)
+
+    def __init__(self, ser):
+        QThread.__init__(self)
+        self.ser = ser
+        self.line = str()
+        self.header = bytearray(b'\00\00\00')
+
+    def run(self):
+        while (self.ser.isOpen is True):
+            ch = self.ser.read(1)
+            if ch == b'\n':
+                self.signalGetLine.emit(self.line)
+                self.line = str()
+            # 可顯示字元
+            elif ch >= b'\x20' and ch <= b'\x7E':
+                self.line += ch.decode("ascii");
+            elif ch == b'\x00':
+                if len(self.line) > 0:
+                    self.signalGetLine.emit(self.line)
+                    self.line = str()
+            elif ch > b'\x7E':
+                if len(self.line) > 0:
+                    self.signalGetLine.emit(self.line)
+                    self.line = str()
+                self.header[0] = self.header[1]
+                self.header[1] = self.header[2]
+                self.header[2] = int.from_bytes(ch, byteorder='big')
+                if self.header == b'\xaa\xaa\xaa':
+                    arrTypeNum = int.from_bytes(self.ser.read(1), byteorder='big')
+                    arrBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                    chkSum = arrBytes;
+                    data = bytearray()
+                    for index in range(0,arrBytes):
+                        data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                        chkSum += data[index];
+                    getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                    if (getChkSum != chkSum%256):
+                        print('get array chksum Error')
+                    else:
+                        arr = decode_array(arrTypeNum,data)
+                        print('sys : Get ArrayData from devive: ' + str(arr))
+                        self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                        self.header = bytearray(b'\00\00\00')
+
+                if self.header == b'\xbb\xbb\xbb':
+                    getBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                    getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                    dataBytes = getBytes-getFormatBytes-1
+                    chkSum = getBytes + getFormatBytes
+                    formatString = bytearray()
+                    data = bytearray()
+                    for index in range(0,getFormatBytes):
+                        formatString += self.ser.read(1)
+                        chkSum += int(formatString[index])
+                    formatString = formatString.decode("ascii")
+                    print(formatString)
+                    for index in range(0,dataBytes):
+                        data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                        chkSum += data[index];
+                    getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                    if (getChkSum != chkSum%256):
+                        print('get struct chksum Error')
+                    else:
+                        # arr = decode_array(arrTypeNum,data)
+                        # print('sys : Get ArrayData from devive: ' + str(arr))
+                        self.header = bytearray(b'\00\00\00')
+                        typeNumList, dataListList = decode_struct(getBytes,formatString,data)
+                        self.signalGetStructData.emit(typeNumList, dataListList,formatString)
+
+                else :
+                    pass
+# ---- class Serial Thread End -------------------------------------------------
+
+
 class HMI(object):
     # ---- __init__ start ------------------------------------------------------
     def __init__(self, widget, mainWindow):
@@ -18,6 +97,13 @@ class HMI(object):
         self.ser.timeout = 10
         self.ser.isOpen = False
         # ---- Serial object Init End ------------------------------------------
+
+        # ---- Serial Thread Init Start ----------------------------------------
+        self.SerialThread = SerialThread(self.ser)
+        self.SerialThread.signalGetLine[str].connect(self.text_terminalAppendLineFromDevice)
+        self.SerialThread.signalGetArrayData[int,int,tuple].connect(self.rec_AppendArray)
+        self.SerialThread.signalGetStructData.connect(self.rec_AppendStruct)
+        # ---- Serial Thread Init End ------------------------------------------
 
         # ---- Function Linking start ------------------------------------------
         # 串列埠設定區
@@ -41,8 +127,8 @@ class HMI(object):
         self.widget.send_btnReadFile.clicked.connect(self.send_textEditReadFile)
         self.widget.send_btnUi8ToString.clicked.connect(self.send_textEditUi8ToString)
         self.widget.send_btnStringToUi8.clicked.connect(self.send_textEditStringToUi8)
-        # self.widget.send_btnSendStruct.clicked.connect(self.send)
-        # self.widget.send_btnSendArray.clicked.connect(self.send)
+        self.widget.send_btnSendArray.clicked.connect(self.send_btnSendArray)
+        self.widget.send_btnSendStruct.clicked.connect(self.send_btnSendStruct)
         # ---- Function Linking end --------------------------------------------
 
     # ---- 串列埠設定區功能實現 start --------------------------------------------
@@ -76,12 +162,7 @@ class HMI(object):
                 self.ser.isOpen = True
                 self.widget.s_btnPortToggle.setText("關閉串列埠")
                 self.widget.text_terminal.append('( log: Open ' + self.ser.port +' success! )')
-                # SerialThread訊號槽
-                # self.SerialThread = SerialThread(self.ser)
-                # self.SerialThread.signalGetLine.connect(self.terminalAppendGetLine)
-                # self.SerialThread.signalGetArrayData.connect(self.textGetAppendArray)
-                # self.SerialThread.signalGetStructData.connect(self.textGetAppendStruct)
-                # self.SerialThread.start()
+                self.SerialThread.start()
         elif (self.ser.isOpen is True):
             print('sys : Try to close port : ' + self.ser.port )
             self.ser.close()
@@ -94,7 +175,6 @@ class HMI(object):
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
     # Append the line from serial in terminal
-    @pyqtSlot(str)
     def text_terminalAppendLineFromDevice(self, line):
         self.widget.text_terminal.append('>>  '+line)
         print('sys : Get line from devive: ' + line)
@@ -138,6 +218,38 @@ class HMI(object):
         res, resText = transStringToUi8(self.widget.rec_textEdit.toPlainText())
         self.widget.rec_textEdit.clear()
         self.widget.rec_textEdit.append(resText)
+    def rec_AppendArray(self,typeNum,bytes,array):
+        print('sys : textGet append array data:' + str(array))
+        self.widget.rec_textEdit.append(getTypeStr(typeNum)+' : ')
+        s = '  '
+        for idx, data in enumerate(array):
+            s += str(data)
+            if idx+1 != len(array):
+                s += ',  '
+            else:
+                self.widget.rec_textEdit.append(s)
+            if len(s) > 100: #換行
+                self.widget.rec_textEdit.append(s)
+                s = '  '
+        self.widget.rec_textEdit.append('')
+        self.widget.text_terminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
+    def rec_AppendStruct(self, typeNumList, dataListList, formatString):
+        for idx in range(len(typeNumList)):
+            typeNum = typeNumList[idx]
+            dataList = dataListList[idx]
+            self.widget.rec_textEdit.append(getTypeStr(typeNum)+' : ')
+            s = '  '
+            for idx2, data in enumerate(dataList):
+                s += str(data)
+                if idx2+1 != len(dataList):
+                    s += ',  '
+                else:
+                    self.widget.rec_textEdit.append(s)
+                if len(s) > 100: #換行
+                    self.widget.rec_textEdit.append(s)
+                    s = '  '
+            self.widget.rec_textEdit.append('')
+        self.widget.text_terminal.append('( log: get struct of ' + formatString +'. )')
     # ---- 接收區功能實現 end ---------------------------------------------------
 
     # ---- 發送區功能實現 start -------------------------------------------------
@@ -163,18 +275,87 @@ class HMI(object):
         res, resText = transStringToUi8(self.widget.send_textEdit.toPlainText())
         self.widget.send_textEdit.clear()
         self.widget.send_textEdit.append(resText)
-    def send_btnSendArray(self):
-        pass
-        # TODO implement
-        # sendArray()
-    def send_btnSendStruct(self):
-        pass
-        # TODO implement
-        # sendStruct()
     def send_verifyShowOK(self):
         self.widget.send_textBrowserVerify.clear()
         self.widget.send_textBrowserVerify.append('OK')
     def send_verifyShowFAIL(self):
         self.widget.send_textBrowserVerify.clear()
         self.widget.send_textBrowserVerify.append('FAIL')
+    def send_btnSendArray(self):
+        res = -1;
+        try:
+            typeNum, dataList, res, resText = decodeTextToArrey(self.widget.send_textEdit.toPlainText())
+        except (ValueError,SyntaxError,TypeError):
+            res = -1
+            pass
+        if res != 0:
+            self.send_verifyShowFAIL()
+            print('sys : error')
+        else:
+            self.widget.send_textEdit.clear();
+            self.widget.send_textEdit.append(resText)
+            self.send_verifyShowOK()
+            if self.ser.isOpen is False:
+                return False
+            self.ser.write(b'\xab\xab\xab')
+            self.ser.write(pack('>B',typeNum))
+            print(pack('>B',typeNum))
+            dataBytes =len(dataList)*getTypeSize(typeNum)
+            self.ser.write(pack('>B',dataBytes))
+            print(pack('>B',len(dataList)))
+            chkSum = 0
+            for data in dataList:
+                self.ser.write(pack('<'+decodePackStr(typeNum),data))
+                chkSum += sum(pack('<'+decodePackStr(typeNum),data));
+                print(pack('<'+decodePackStr(typeNum),data))
+                print(chkSum)
+            self.ser.write(pack('>B',chkSum%256))
+            self.widget.text_terminal.append('( log: send ' + str(dataBytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
+    def send_btnSendStruct(self):
+        res = -1;
+        res, resText = transStringToUi8(self.textEditSend.toPlainText())
+        try:
+            lineIdx, typeNumList, dataListList, res =decodeTextToStruct(resText)
+        except (ValueError,SyntaxError,TypeError):
+            res = -1
+            pass
+        if res != 0:
+            self.send_verifyShowFAIL()
+            print('sys : error')
+        else:
+            self.send_verifyShowOK()
+            if self.ser.isOpen is False:
+                return False
+            structTypeString = str();
+            structTypeStringByte = 0;
+            structBytes = 0
+            chkSum = 0
+            for idx in range(len(typeNumList)):
+                structTypeString += getTypeStr(typeNumList[idx]) + 'x' + str(len(dataListList[idx]))
+                structBytes      += getTypeSize(typeNumList[idx]) * len(dataListList[idx])
+                if idx != len(typeNumList)-1:
+                    structTypeString += ','
+            structTypeStringByte = len(structTypeString)
+            if structBytes >= 255:
+                print ('sys : error bytes >= 255')
+                return False
+            self.ser.write(b'\xab\xab\xab')
+            self.ser.write(pack('>B',structBytes))
+            self.ser.write(pack('>B',structTypeStringByte))
+            self.ser.write(bytes(structTypeString, encoding = "ascii"))
+            testData = bytearray();
+            chkSum += sum(bytes(structTypeString, encoding = "ascii"));
+            print(bytes(structTypeString, encoding = "ascii"))
+            for idx, dataList in enumerate(dataListList):
+                for data in dataList:
+                    self.ser.write(pack('<'+decodePackStr(typeNumList[idx]),data))
+                    chkSum += sum(pack('<'+decodePackStr(typeNumList[idx]),data));
+                    testData+=(pack('<'+decodePackStr(typeNumList[idx]),data))
+                    print(pack('<'+decodePackStr(typeNumList[idx]),data))
+            self.ser.write(pack('>B',chkSum%256))
+            print('chksum ' + str(chkSum%256))
+            print(testData)
+            print('formatString : ' + structTypeString)
+            self.widget.send_textEdit.clear()
+            self.widget.text_terminal.append('( log: send struct of ' + structTypeString +'. )')
     # ---- 發送區功能實現 end ---------------------------------------------------
