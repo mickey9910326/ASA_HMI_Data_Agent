@@ -70,17 +70,17 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="portComboBox"/>
+       <widget class="QComboBox" name="s_portComboBox"/>
       </item>
       <item>
-       <widget class="QPushButton" name="btnUpdatePortList">
+       <widget class="QPushButton" name="s_btnUpdatePortList">
         <property name="text">
          <string>更新串列埠</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnPortToggle">
+       <widget class="QPushButton" name="s_btnPortToggle">
         <property name="text">
          <string>開啟串列埠</string>
         </property>
@@ -198,19 +198,19 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
-             <widget class="QTextEdit" name="textEditSend"/>
+             <widget class="QTextEdit" name="send_textEdit"/>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
-               <widget class="QPushButton" name="buttonSendUi8ToString">
+               <widget class="QPushButton" name="send_btnUi8ToString">
                 <property name="text">
                  <string>ui8 轉 String</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="buttonSendStringToUi8">
+               <widget class="QPushButton" name="send_btnStringToUi8">
                 <property name="text">
                  <string>String 轉 ui8</string>
                 </property>
@@ -236,21 +236,21 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QPushButton" name="buttonSendClear">
+             <widget class="QPushButton" name="send_btnClear">
               <property name="text">
                <string>清除暫存區</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="buttonSendStruct">
+             <widget class="QPushButton" name="send_btnSendStruct">
               <property name="text">
                <string>傳送結構形式</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="buttonSendArray">
+             <widget class="QPushButton" name="send_btnSendArray">
               <property name="text">
                <string>傳送矩陣形式</string>
               </property>
@@ -273,14 +273,14 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="buttonSendSaveFile">
+             <widget class="QPushButton" name="send_btnSave">
               <property name="text">
                <string>儲存文字檔</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="buttonSendReadFile">
+             <widget class="QPushButton" name="send_btnReadFile">
               <property name="text">
                <string>讀取文字檔</string>
               </property>
@@ -328,7 +328,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QTextBrowser" name="textBrowserSendVerify">
+             <widget class="QTextBrowser" name="send_textBrowserVerify">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
@@ -361,19 +361,19 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
-             <widget class="QTextEdit" name="textEditGet"/>
+             <widget class="QTextEdit" name="rec_textEdit"/>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QPushButton" name="buttonGetUi8ToString">
+               <widget class="QPushButton" name="rec_btnUi8ToString">
                 <property name="text">
                  <string>ui8 轉 String</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="buttonGetStringToUi8">
+               <widget class="QPushButton" name="rec_btnStringToUi8">
                 <property name="text">
                  <string>String 轉 ui8</string>
                 </property>
@@ -399,21 +399,21 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
-             <widget class="QPushButton" name="buttonGetClear">
+             <widget class="QPushButton" name="rec_btnClear">
               <property name="text">
                <string>清除暫存區</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="buttonGetSaveFile">
+             <widget class="QPushButton" name="rec_btnSave">
               <property name="text">
                <string>儲存文字檔</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="buttomGetMovetoSend">
+             <widget class="QPushButton" name="rec_btnMoveToSend">
               <property name="text">
                <string>移動到發送區</string>
               </property>
