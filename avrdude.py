@@ -1,5 +1,7 @@
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog
+import serial
+from listport import serial_ports
 
 def radioButtonClick(btn):
     print(btn.text())
@@ -18,6 +20,20 @@ class Avrdude(object):
         # super(MainWindow, self).__init__(parent)
         self.widget = widget
         self.mainWindow = mainWindow
+
+
+        # ---- Serial object Init Start ----------------------------------------
+        self.ser = serial.Serial()
+        self.ser.baudrate = 38400
+        self.ser.timeout = 10
+        self.ser.isOpen = False
+        # ---- Serial object Init End ------------------------------------------
+
+        # ---- Serial Group start ----------------------------------------------
+        self.serial_updatePortlist()
+        self.widget.pushButton_updatePort.clicked.connect(self.serial_updatePortlist)
+        self.widget.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
+        # ---- Serial Group end ------------------------------------------------
 
         # ---- Flash Group start -----------------------------------------------
         self.widget.toolButton_flash.clicked.connect(self.flash_chooseBinaryFile)
@@ -45,6 +61,16 @@ class Avrdude(object):
     def updateCammand(self):
         # TODO: check all items and update cmd in line
         pass
+    # ---- Serial Group start --------------------------------------------------
+    # Update port list in s_portComboBox
+    def serial_updatePortlist(self):
+        availablePorts = serial_ports()
+        print('sys : Update port list in portComboBox, available port : ', end='')
+        print(availablePorts)
+        self.widget.comboBox_serialSetPort.clear()
+        for port in availablePorts:
+            self.widget.comboBox_serialSetPort.addItem(port)
+    # ---- Serial Group end ----------------------------------------------------
 
 
     # ---- Flash Group start ---------------------------------------------------
