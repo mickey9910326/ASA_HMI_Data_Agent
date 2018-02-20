@@ -17,10 +17,8 @@ def radioButtonClick(btn):
 class Avrdude(object):
     # ---- __init__ start ------------------------------------------------------
     def __init__(self, widget, mainWindow):
-        # super(MainWindow, self).__init__(parent)
         self.widget = widget
         self.mainWindow = mainWindow
-
 
         # ---- Serial object Init Start ----------------------------------------
         self.ser = serial.Serial()
@@ -33,6 +31,7 @@ class Avrdude(object):
         self.serial_updatePortlist()
         self.widget.pushButton_updatePort.clicked.connect(self.serial_updatePortlist)
         self.widget.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_serialSetBaud.setText("38400")
         # ---- Serial Group end ------------------------------------------------
 
         # ---- Flash Group start -----------------------------------------------
@@ -55,12 +54,58 @@ class Avrdude(object):
         self.widget.radioButton_eepromVerify.clicked.connect(lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromVerify))
         # ---- Eeprom Group end ------------------------------------------------
 
-        self.widget = widget
+        self.widget.checkBox_eraseChip.setChecked(True)
+        self.updateCammand()
+        self.widget.pushButton_startProgram.clicked.connect(self.updateCammand)
 
 
+
+    # check all items and update cmd in line
     def updateCammand(self):
-        # TODO: check all items and update cmd in line
-        pass
+        cmd = str()
+        cmd += 'avrdude'
+        cmd += ' -c stk500'
+
+        if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
+            cmd += ' -p ' + self.widget.comboBox_mcuSelect.currentText()
+
+        cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
+
+        if self.widget.comboBox_serialSetPort.currentText() is not '':
+            cmd += ' -P ' + self.widget.comboBox_serialSetPort.currentText()
+
+        if self.widget.checkBox_eraseChip.isChecked():
+            cmd += ' -e'
+
+        if self.widget.checkBox_cancelVerify.isChecked():
+            cmd += ' -V'
+
+        if self.widget.lineEdit_additionalParameter.text() is not '':
+            cmd += ' ' + self.widget.lineEdit_additionalParameter.text()
+
+        tmp = self.flash_radioButtonCheck()
+        if tmp is not '':
+            cmd += ' -U flash:' + tmp + ':' + self.widget.lineEdit_flash.text()
+            if tmp is 'r':
+                cmd += ':i'
+
+        tmp = self.eeprom_radioButtonCheck()
+        if tmp is not '':
+            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text()
+            if tmp is 'r':
+                cmd += ':i'
+
+        if self.widget.checkBox_fuseSet.isChecked():
+            cmd += ' -U hfuse:w:' + self.widget.lineEdit_fuseHigh.text()  + ':m'
+            cmd += ' -U lfuse:w:' + self.widget.lineEdit_fuseLow.text()   + ':m'
+            cmd += ' -U efuse:w:' + self.widget.lineEdit_fuseExtra.text() + ':m'
+
+        if self.widget.checkBox_lockSet.isChecked():
+            cmd += ' -U lock:w:' + self.widget.lineEdit_lock.text() + ':m'
+
+        self.widget.textBrowser_cmd.clear()
+        self.widget.textBrowser_cmd.append(cmd)
+
     # ---- Serial Group start --------------------------------------------------
     # Update port list in s_portComboBox
     def serial_updatePortlist(self):
@@ -72,11 +117,11 @@ class Avrdude(object):
             self.widget.comboBox_serialSetPort.addItem(port)
     # ---- Serial Group end ----------------------------------------------------
 
-
     # ---- Flash Group start ---------------------------------------------------
     def flash_chooseBinaryFile(self):
         name, _ = QFileDialog.getOpenFileName(self.mainWindow, 'Open File','', 'All Files (*);;Hex Files (*.hex)' ,initialFilter='Hex Files (*.hex)')
-        self.widget.lineEdit_flash.setText(name)
+        if name is not '':
+            self.widget.lineEdit_flash.setText(name)
 
     def flash_radioButtonClick(self,btn):
         if btn is not self.widget.radioButton_flashWrite:
@@ -87,6 +132,16 @@ class Avrdude(object):
             self.widget.radioButton_flashVerify.setChecked(0)
         self.updateCammand();
 
+    def flash_radioButtonCheck(self):
+        if self.widget.radioButton_flashWrite.isChecked():
+            return 'w'
+        elif self.widget.radioButton_flashRead.isChecked():
+            return 'r'
+        elif self.widget.radioButton_flashVerify.isChecked():
+            return 'v'
+        else:
+            return ''
+
     def flash_execute(self):
         pass
     # ---- Flash Group end -----------------------------------------------------
@@ -94,7 +149,8 @@ class Avrdude(object):
     # ---- Eeprom Group start --------------------------------------------------
     def eeprom_chooseBinaryFile(self):
         name, _ = QFileDialog.getOpenFileName(self.mainWindow, 'Open File','', 'All Files (*);;Hex Files (*.hex)' ,initialFilter='Hex Files (*.hex)')
-        self.widget.lineEdit_eeprom.setText(name)
+        if name is not '':
+            self.widget.lineEdit_eeprom.setText(name)
 
     def eeprom_radioButtonClick(self,btn):
         if btn is not self.widget.radioButton_eepromWrite:
@@ -104,6 +160,16 @@ class Avrdude(object):
         if btn is not self.widget.radioButton_eepromVerify:
             self.widget.radioButton_eepromVerify.setChecked(0)
         self.updateCammand();
+
+    def eeprom_radioButtonCheck(self):
+        if self.widget.radioButton_eepromWrite.isChecked():
+            return 'w'
+        elif self.widget.radioButton_eepromRead.isChecked():
+            return 'r'
+        elif self.widget.radioButton_eepromVerify.isChecked():
+            return 'v'
+        else:
+            return ''
 
     def eeprom_execute(self):
         pass
