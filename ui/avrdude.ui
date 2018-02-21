@@ -783,10 +783,17 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <family>Courier New</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
      <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
     </widget>
@@ -795,7 +802,8 @@
     <widget class="QTextBrowser" name="textBrowser_cmdterminal">
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <family>Courier New</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
     </widget>
