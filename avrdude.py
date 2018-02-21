@@ -2,6 +2,41 @@ from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog
 import serial
 from listport import serial_ports
+import subprocess
+import time
+
+# ---- class ShellThread Start -------------------------------------------------
+class ShellThread(QThread):
+
+    signalGetLine = pyqtSignal(str)
+
+    def __init__(self):
+        QThread.__init__(self)
+        self.cmd = str()
+
+    def setCmd(self, cmd):
+        self.cmd = cmd
+
+    def run(self):
+        times = time.strftime("%H:%M:%S", time.gmtime())
+        self.signalGetLine.emit('[' + times + '] ' + self.cmd + '\n')
+        self.shellIsRunning = True
+
+        self.p = subprocess.Popen(self.cmd , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        while True:
+            s = self.p.stderr.readline()
+            if(s.decode("utf-8") is not ''):
+                self.signalGetLine.emit(s.decode("utf-8"))
+
+    def stop(self):
+        if self.shellIsRunning:
+            self.shellIsRunning = False
+            self.p.kill()
+        else:
+            pass
+        self.terminate()
+
+# ---- class ShellThread End ---------------------------------------------------
 
 def radioButtonClick(btn):
     print(btn.text())
@@ -27,11 +62,16 @@ class Avrdude(object):
         self.ser.isOpen = False
         # ---- Serial object Init End ------------------------------------------
 
+        # ---- Shell Thread Init Start -----------------------------------------
+        self.shellThread = ShellThread()
+        self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
+        # ---- Shell Thread Init End -------------------------------------------
+
         # ---- Serial Group start ----------------------------------------------
         self.serial_updatePortlist()
         self.widget.pushButton_updatePort.clicked.connect(self.serial_updatePortlist)
         self.widget.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_serialSetBaud.setText("38400")
+        self.widget.lineEdit_serialSetBaud.setText('38400')
         # ---- Serial Group end ------------------------------------------------
 
         # ---- Flash Group start -----------------------------------------------
@@ -56,9 +96,16 @@ class Avrdude(object):
 
         self.widget.checkBox_eraseChip.setChecked(True)
         self.updateCammand()
-        self.widget.pushButton_startProgram.clicked.connect(self.updateCammand)
+        self.widget.pushButton_startProgram.clicked.connect(self.startProgram)
+        self.widget.pushButton_stopProgram.clicked.connect(self.stopProgram)
 
+    def startProgram(self):
+        self.updateCammand()
+        self.shellThread.setCmd(self.widget.textBrowser_cmd.toPlainText())
+        self.shellThread.start()
 
+    def stopProgram(self):
+        self.shellThread.stop()
 
     # check all items and update cmd in line
     def updateCammand(self):
@@ -105,6 +152,9 @@ class Avrdude(object):
 
         self.widget.textBrowser_cmd.clear()
         self.widget.textBrowser_cmd.append(cmd)
+
+    def terminalAppendLine(self, s):
+        self.widget.textBrowser_cmdterminal.insertPlainText(s)
 
     # ---- Serial Group start --------------------------------------------------
     # Update port list in s_portComboBox
