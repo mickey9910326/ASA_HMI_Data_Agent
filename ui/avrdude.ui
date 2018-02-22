@@ -15,6 +15,7 @@
     <widget class="QGroupBox" name="groupBox_config">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -26,6 +27,7 @@
        <widget class="QComboBox" name="comboBox_config">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -46,6 +48,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -64,6 +67,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -79,6 +83,7 @@
     <widget class="QGroupBox" name="groupBox_serial">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -90,6 +95,7 @@
        <widget class="QLabel" name="label_serialSetPort">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -102,6 +108,7 @@
        <widget class="QLabel" name="label_serialSetBaud">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -114,6 +121,7 @@
        <widget class="QLineEdit" name="lineEdit_serialSetBaud">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -123,6 +131,7 @@
        <widget class="QComboBox" name="comboBox_serialSetPort">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -130,6 +139,11 @@
       </item>
       <item row="0" column="0" rowspan="2">
        <widget class="QPushButton" name="pushButton_updatePort">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+         </font>
+        </property>
         <property name="text">
          <string>更新串列埠</string>
         </property>
@@ -142,6 +156,7 @@
     <widget class="QGroupBox" name="groupBox_mcu">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -159,6 +174,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -178,6 +194,7 @@
        <widget class="QLabel" name="label_mcuFlashSizeTitle">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -190,6 +207,7 @@
        <widget class="QLabel" name="label_mcuFlashSize">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -202,6 +220,7 @@
        <widget class="QLabel" name="label_mcuEepromSizeTitle">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -214,6 +233,7 @@
        <widget class="QLabel" name="label_mcuEepromSize">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -226,6 +246,7 @@
        <widget class="QPushButton" name="pushButton_mcuDetect">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -241,6 +262,7 @@
     <widget class="QGroupBox" name="groupBox_flash">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -252,6 +274,7 @@
        <widget class="QLineEdit" name="lineEdit_flash">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -261,6 +284,7 @@
        <widget class="QToolButton" name="toolButton_flash">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -273,6 +297,7 @@
        <widget class="QRadioButton" name="radioButton_flashRead">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -285,6 +310,7 @@
        <widget class="QRadioButton" name="radioButton_flashWrite">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -297,6 +323,7 @@
        <widget class="QRadioButton" name="radioButton_flashVerify">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -309,6 +336,7 @@
        <widget class="QPushButton" name="pushButton_flashGo">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -324,6 +352,7 @@
     <widget class="QGroupBox" name="groupBox_5">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -335,6 +364,7 @@
        <widget class="QPushButton" name="pushButton_fuseRead">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -365,6 +395,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -374,6 +405,7 @@
        <widget class="QLabel" name="label_fuseHigh">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -386,6 +418,7 @@
        <widget class="QPushButton" name="pushButton_fuseWrite">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -398,6 +431,7 @@
        <widget class="QLabel" name="label_fuseExtra">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -428,6 +462,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -437,6 +472,7 @@
        <widget class="QLabel" name="label_fuseLow">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -467,6 +503,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -476,6 +513,7 @@
        <widget class="QCheckBox" name="checkBox_fuseSet">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -491,6 +529,7 @@
     <widget class="QGroupBox" name="groupBox_eeprom">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -502,6 +541,7 @@
        <widget class="QLineEdit" name="lineEdit_eeprom">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -511,6 +551,7 @@
        <widget class="QToolButton" name="toolButton_eeprom">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -523,6 +564,7 @@
        <widget class="QRadioButton" name="radioButton_eepromRead">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -535,6 +577,7 @@
        <widget class="QRadioButton" name="radioButton_eepromWrite">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -547,6 +590,7 @@
        <widget class="QRadioButton" name="radioButton_eepromVerify">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -559,6 +603,7 @@
        <widget class="QPushButton" name="pushButton_eepromGo">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -574,6 +619,7 @@
     <widget class="QGroupBox" name="groupBox_else">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -585,6 +631,7 @@
        <widget class="QCheckBox" name="checkBox_cancelVerify">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -597,6 +644,7 @@
        <widget class="QCheckBox" name="checkBox_eraseChip">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -607,6 +655,11 @@
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_additionalParameter">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+         </font>
+        </property>
         <property name="text">
          <string>增加參數</string>
         </property>
@@ -616,6 +669,7 @@
        <widget class="QLineEdit" name="lineEdit_additionalParameter">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -628,6 +682,7 @@
     <widget class="QGroupBox" name="groupBox_lock">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -639,6 +694,7 @@
        <widget class="QLabel" name="label_lockTitle">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -669,6 +725,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -678,6 +735,7 @@
        <widget class="QPushButton" name="pushButton_lockWrite">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -690,6 +748,7 @@
        <widget class="QPushButton" name="pushButton_lockRead">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -702,6 +761,7 @@
        <widget class="QCheckBox" name="checkBox_lockSet">
         <property name="font">
          <font>
+          <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
         </property>
@@ -717,6 +777,7 @@
     <widget class="QPushButton" name="pushButton_startProgram">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -729,6 +790,7 @@
     <widget class="QPushButton" name="pushButton_stopProgram">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -741,6 +803,7 @@
     <widget class="QPushButton" name="pushButton_options">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -753,6 +816,7 @@
     <widget class="QPushButton" name="pushButton_bitSelector">
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
