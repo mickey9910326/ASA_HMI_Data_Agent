@@ -7,8 +7,8 @@
 #     def __init__(self):
 #         pass
 
-class AvrdudeConfPraser():
-    """docstring for AvrdudeConfPraser."""
+class AvrdudeConfParser():
+    """docstring for AvrdudeConfParser."""
 
     def __init__(self):
         self.confFile = 'avrdude.conf'

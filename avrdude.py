@@ -5,6 +5,8 @@ from listport import serial_ports
 import subprocess
 import time
 
+from avrdudeConfParser import AvrdudeConfParser
+
 # ---- class ShellThread Start -------------------------------------------------
 class ShellThread(QThread):
 
@@ -25,8 +27,8 @@ class ShellThread(QThread):
         self.p = subprocess.Popen(self.cmd , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
         while True:
             s = self.p.stderr.readline()
-            if(s.decode("utf-8") is not ''):
-                self.signalGetLine.emit(s.decode("utf-8"))
+            if(s.decode("big5") is not ''):
+                self.signalGetLine.emit(s.decode("big5"))
 
     def stop(self):
         if self.shellIsRunning:
@@ -94,6 +96,35 @@ class Avrdude(object):
         self.widget.radioButton_eepromVerify.clicked.connect(lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromVerify))
         # ---- Eeprom Group end ------------------------------------------------
 
+        # ---- MCU Group start -------------------------------------------------
+        self.praser = AvrdudeConfParser()
+        descList = self.praser.listAllPartDesc()
+
+        self.widget.comboBox_mcuSelect.clear()
+        self.widget.comboBox_mcuSelect.addItem('請選擇MCU...')
+        for desc in descList:
+            self.widget.comboBox_mcuSelect.addItem(desc)
+        # ---- MCU Group end ---------------------------------------------------
+
+        # ---- need updateCammand items start ----------------------------------
+        self.widget.comboBox_serialSetPort.currentIndexChanged.connect(self.updateCammand)
+        self.widget.comboBox_mcuSelect.currentIndexChanged.connect(self.updateCammand)
+
+        self.widget.checkBox_lockSet.clicked.connect(self.updateCammand)
+        self.widget.checkBox_fuseSet.clicked.connect(self.updateCammand)
+        self.widget.checkBox_eraseChip.clicked.connect(self.updateCammand)
+        self.widget.checkBox_cancelVerify.clicked.connect(self.updateCammand)
+
+        self.widget.lineEdit_lock.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_flash.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_eeprom.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_fuseHigh.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_fuseLow.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_fuseExtra.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
+        self.widget.lineEdit_additionalParameter.textChanged.connect(self.updateCammand)
+        # ---- need updateCammand items end ------------------------------------
+
         self.widget.checkBox_eraseChip.setChecked(True)
         self.updateCammand()
         self.widget.pushButton_startProgram.clicked.connect(self.startProgram)
@@ -114,7 +145,9 @@ class Avrdude(object):
         cmd += ' -c stk500'
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
-            cmd += ' -p ' + self.widget.comboBox_mcuSelect.currentText()
+            desc = self.widget.comboBox_mcuSelect.currentText()
+            desc, id, signature = self.praser.GetBasicInfoByDesc(desc)
+            cmd += ' -p ' + id
 
         cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
 
