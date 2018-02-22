@@ -1,14 +1,12 @@
 import avrdudeConfParser
 
 praser = avrdudeConfParser.AvrdudeConfPraser()
-part = praser.findPartByName(name = 'AT90CAN128')
 
-print(part)
-print(part.flashSize)
-print(part.id)
-print(part.desc)
-print(part.signature)
-print(type(part.signature))
+s1,s2,s3 = praser.GetBasicInfoByDesc('ATmega128')
+
+print(s1)
+print(s2)
+print(s3)
 
 
 descList = praser.listAllPartDesc()
