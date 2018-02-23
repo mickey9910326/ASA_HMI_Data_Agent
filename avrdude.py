@@ -78,9 +78,7 @@ class Avrdude(object):
 
         # ---- Flash Group start -----------------------------------------------
         self.widget.toolButton_flash.clicked.connect(self.flash_chooseBinaryFile)
-        self.widget.radioButton_flashWrite.setAutoExclusive(False)
-        self.widget.radioButton_flashRead.setAutoExclusive(False)
-        self.widget.radioButton_flashVerify.setAutoExclusive(False)
+        self.widget.pushButton_flashGo.clicked.connect(self.flash_execute)
         self.widget.radioButton_flashWrite.clicked.connect (lambda:self.flash_radioButtonClick(self.widget.radioButton_flashWrite))
         self.widget.radioButton_flashRead.clicked.connect  (lambda:self.flash_radioButtonClick(self.widget.radioButton_flashRead))
         self.widget.radioButton_flashVerify.clicked.connect(lambda:self.flash_radioButtonClick(self.widget.radioButton_flashVerify))
@@ -88,9 +86,7 @@ class Avrdude(object):
 
         # ---- Eeprom Group start ----------------------------------------------
         self.widget.toolButton_eeprom.clicked.connect(self.eeprom_chooseBinaryFile)
-        self.widget.radioButton_eepromWrite.setAutoExclusive(False)
-        self.widget.radioButton_eepromRead.setAutoExclusive(False)
-        self.widget.radioButton_eepromVerify.setAutoExclusive(False)
+        self.widget.pushButton_eepromGo.clicked.connect(self.eeprom_execute)
         self.widget.radioButton_eepromWrite.clicked.connect (lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromWrite))
         self.widget.radioButton_eepromRead.clicked.connect  (lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromRead))
         self.widget.radioButton_eepromVerify.clicked.connect(lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromVerify))
@@ -137,6 +133,22 @@ class Avrdude(object):
 
     def stopProgram(self):
         self.shellThread.stop()
+
+    def getBasicParameter(self):
+        cmd = str()
+        cmd += 'avrdude'
+        cmd += ' -c stk500'
+
+        if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
+            desc = self.widget.comboBox_mcuSelect.currentText()
+            desc, id, signature = self.praser.GetBasicInfoByDesc(desc)
+            cmd += ' -p ' + id
+
+        cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
+
+        if self.widget.comboBox_serialSetPort.currentText() is not '':
+            cmd += ' -P ' + self.widget.comboBox_serialSetPort.currentText()
+        return cmd
 
     # check all items and update cmd in line
     def updateCammand(self):
@@ -222,7 +234,14 @@ class Avrdude(object):
             return ''
 
     def flash_execute(self):
-        pass
+        cmd = self.getBasicParameter()
+        tmp = self.flash_radioButtonCheck()
+        if tmp is not '':
+            cmd += ' -U flash:' + tmp + ':"' + self.widget.lineEdit_flash.text() + '":i'
+        times = time.strftime("%H:%M:%S", time.gmtime())
+        self.terminalAppendLine('[' + times + '] ' + 'Flash Go!' + '\n')
+        self.shellThread.setCmd(cmd)
+        self.shellThread.start()
     # ---- Flash Group end -----------------------------------------------------
 
     # ---- Eeprom Group start --------------------------------------------------
@@ -251,5 +270,12 @@ class Avrdude(object):
             return ''
 
     def eeprom_execute(self):
-        pass
+        cmd = self.getBasicParameter()
+        tmp = self.eeprom_radioButtonCheck()
+        if tmp is not '':
+            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + '":i'
+        times = time.strftime("%H:%M:%S", time.gmtime())
+        self.terminalAppendLine('[' + times + '] ' + 'EEPROM Go!' + '\n')
+        self.shellThread.setCmd(cmd)
+        self.shellThread.start()
     # ---- Eeprom Group end ----------------------------------------------------
