@@ -92,6 +92,13 @@ class Avrdude(object):
         self.widget.radioButton_eepromVerify.clicked.connect(lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromVerify))
         # ---- Eeprom Group end ------------------------------------------------
 
+        # ---- Fuse & Lock Group start ---------------------------------------
+        self.widget.lineEdit_lock.setText('0x00')
+        self.widget.lineEdit_fuseHigh.setText('0x00')
+        self.widget.lineEdit_fuseLow.setText('0x00')
+        self.widget.lineEdit_fuseExtra.setText('0x00')
+        # ---- Fuse & Lock Group end -----------------------------------------
+
         # ---- MCU Group start -------------------------------------------------
         self.praser = AvrdudeConfParser()
         descList = self.praser.listAllPartDesc()
