@@ -21,3 +21,6 @@
     -  完成燒錄特定檔案功能
 
 ## 高 DPI 介面顯示問題
+對ASA_HMI_Data_Agent.exe點選右鍵->內容->相容性  
+勾選`覆蓋高DPI縮放行為`，並選擇`系統(增強)`
+![](https://i.imgur.com/wIiLdOJ.png)
