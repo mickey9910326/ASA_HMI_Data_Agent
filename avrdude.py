@@ -165,15 +165,11 @@ class Avrdude(object):
 
         tmp = self.flash_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U flash:' + tmp + ':' + self.widget.lineEdit_flash.text()
-            if tmp is 'r':
-                cmd += ':i'
+            cmd += ' -U flash:' + tmp + ':"' + self.widget.lineEdit_flash.text() + '":i'
 
         tmp = self.eeprom_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text()
-            if tmp is 'r':
-                cmd += ':i'
+            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + '":i'
 
         if self.widget.checkBox_fuseSet.isChecked():
             cmd += ' -U hfuse:w:' + self.widget.lineEdit_fuseHigh.text()  + ':m'
