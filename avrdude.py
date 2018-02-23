@@ -40,6 +40,7 @@ class ShellThread(QThread):
 
 # ---- class ShellThread End ---------------------------------------------------
 
+# ---- class radioButtonClick Start --------------------------------------------
 def radioButtonClick(btn):
     print(btn.text())
     # print(btn.isChecked())
@@ -286,3 +287,4 @@ class Avrdude(object):
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
     # ---- Eeprom Group end ----------------------------------------------------
+# ---- class radioButtonClick End ----------------------------------------------
