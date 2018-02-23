@@ -9,6 +9,7 @@ from ui_avrdude import Ui_MainWidgetAvrdude
 from ui_asa_prog import Ui_MainWidgetAsaProg
 from hmi import HMI
 from avrdude import Avrdude
+from asaprog import Asaprog
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     # ---- __init__ start ------------------------------------------------------
@@ -25,6 +26,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # ---- init ui end -----------------------------------------------------
         self.HMI = HMI(widgetHmi,self)
         self.Avrdude = Avrdude(widgetAvrdude,self)
+        self.Asaprog = Asaprog(WidgetAsaProg,self)
 
     def file_open(self):
         name, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'All Files (*);;Text Files (*.txt)' ,initialFilter='Text Files (*.txt)')
