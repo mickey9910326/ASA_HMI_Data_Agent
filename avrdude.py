@@ -25,13 +25,13 @@ class ShellThread(QThread):
         self.shellIsRunning = True
 
         self.p = subprocess.Popen(self.cmd , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-        while True:
+        while self.p.poll() is None:
             s = self.p.stderr.readline()
             if(s.decode("big5") is not ''):
                 self.signalGetLine.emit(s.decode("big5"))
 
     def stop(self):
-        if self.shellIsRunning:
+        if self.shellIsRunning or self.p.poll() is None:
             self.shellIsRunning = False
             self.p.kill()
         else:
