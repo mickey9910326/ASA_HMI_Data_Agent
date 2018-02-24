@@ -58,6 +58,9 @@ class Ui_MainWidgetHMI(object):
         sizePolicy.setHeightForWidth(self.text_terminal.sizePolicy().hasHeightForWidth())
         self.text_terminal.setSizePolicy(sizePolicy)
         self.text_terminal.setMinimumSize(QtCore.QSize(0, 60))
+        font = QtGui.QFont()
+        font.setFamily("Consolas")
+        self.text_terminal.setFont(font)
         self.text_terminal.setObjectName("text_terminal")
         self.verticalLayout_2.addWidget(self.text_terminal)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -65,6 +68,9 @@ class Ui_MainWidgetHMI(object):
         self.text_lineEditToBeSend = QtWidgets.QLineEdit(self.groupBox_Terminal)
         self.text_lineEditToBeSend.setEnabled(True)
         self.text_lineEditToBeSend.setMinimumSize(QtCore.QSize(0, 20))
+        font = QtGui.QFont()
+        font.setFamily("Consolas")
+        self.text_lineEditToBeSend.setFont(font)
         self.text_lineEditToBeSend.setObjectName("text_lineEditToBeSend")
         self.horizontalLayout.addWidget(self.text_lineEditToBeSend)
         self.text_btnSend = QtWidgets.QPushButton(self.groupBox_Terminal)
@@ -161,6 +167,9 @@ class Ui_MainWidgetHMI(object):
         self.verticalLayout_8 = QtWidgets.QVBoxLayout()
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.rec_textEdit = QtWidgets.QTextEdit(self.tabReceive)
+        font = QtGui.QFont()
+        font.setFamily("Consolas")
+        self.rec_textEdit.setFont(font)
         self.rec_textEdit.setObjectName("rec_textEdit")
         self.verticalLayout_8.addWidget(self.rec_textEdit)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
@@ -192,7 +201,7 @@ class Ui_MainWidgetHMI(object):
         self.topLayout.addWidget(self.groupBox_SendRead)
 
         self.retranslateUi(MainWidgetHMI)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWidgetHMI)
 
     def retranslateUi(self, MainWidgetHMI):

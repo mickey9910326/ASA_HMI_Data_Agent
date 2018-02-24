@@ -56,7 +56,13 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLineEdit" name="lineEdit_selectFile"/>
+       <widget class="QLineEdit" name="lineEdit_selectFile">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+         </font>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_selectFile">
@@ -93,7 +99,7 @@
       <item>
        <widget class="QPushButton" name="pushButton_progStk500">
         <property name="text">
-         <string>燒錄 &quot;M128_STK500燒錄軟體&quot; </string>
+         <string>燒錄 &quot;M128_STK500&quot; </string>
         </property>
        </widget>
       </item>
@@ -131,7 +137,13 @@
     </widget>
    </item>
    <item>
-    <widget class="QTextBrowser" name="textBrowser_terminal"/>
+    <widget class="QTextBrowser" name="textBrowser_terminal">
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+      </font>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
