@@ -1,5 +1,6 @@
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtGui import QTextCursor
 import serial
 from listport import serial_ports
 import subprocess
@@ -12,13 +13,19 @@ from configparser import ConfigParser
 class ShellThread(QThread):
 
     signalGetLine = pyqtSignal(str)
+    signalReadFuseDone = pyqtSignal()
+    signalReadLockDone = pyqtSignal()
 
     def __init__(self):
         QThread.__init__(self)
         self.cmd = str()
+        self.cmdType = 0
 
     def setCmd(self, cmd):
         self.cmd = cmd
+
+    def setCmdType(self, num):
+        self.cmdType = num
 
     def run(self):
         times = time.strftime("%H:%M:%S", time.gmtime())
@@ -30,8 +37,16 @@ class ShellThread(QThread):
             s = self.p.stderr.readline()
             if(s.decode("big5") is not ''):
                 self.signalGetLine.emit(s.decode("big5"))
+        # Send Complete singal if needed
+        if self.cmdType is 1:
+            self.cmdType = 0
+            self.signalReadFuseDone.emit()
+        if self.cmdType is 2:
+            self.cmdType = 0
+            self.signalReadLockDone.emit()
+        # Send Complete message
         times = time.strftime("%H:%M:%S", time.gmtime())
-        self.signalGetLine.emit('[' + times + '] ' +  'Complete!' + '\n')
+        self.signalGetLine.emit('[' + times + '] ' +  'Complete!' + '\n\n')
         self.shellIsRunning = False
 
     def stop(self):
@@ -110,10 +125,16 @@ class Avrdude(object):
         # ---- Eeprom Group end ------------------------------------------------
 
         # ---- Fuse & Lock Group start ---------------------------------------
+        self.shellThread.signalReadFuseDone.connect(self.fuse_update_from_tmp)
+        self.shellThread.signalReadLockDone.connect(self.lock_update_from_tmp)
         self.widget.lineEdit_lock.setText('0x00')
         self.widget.lineEdit_fuseHigh.setText('0x00')
         self.widget.lineEdit_fuseLow.setText('0x00')
         self.widget.lineEdit_fuseExtra.setText('0x00')
+        self.widget.pushButton_fuseRead.clicked.connect(self.fuse_read)
+        self.widget.pushButton_fuseWrite.clicked.connect(self.fuse_write)
+        self.widget.pushButton_lockRead.clicked.connect(self.lock_read)
+        self.widget.pushButton_flashGo.clicked.connect(self.lock_write)
         # ---- Fuse & Lock Group end -----------------------------------------
 
         # ---- MCU Group start -------------------------------------------------
@@ -220,8 +241,10 @@ class Avrdude(object):
         self.widget.textBrowser_cmd.append(cmd)
 
     def terminalAppendLine(self, s):
-        self.widget.textBrowser_cmdterminal.insertPlainText(s)
-
+        text = self.widget.textBrowser_cmdterminal.toPlainText() + s
+        self.widget.textBrowser_cmdterminal.clear()
+        self.widget.textBrowser_cmdterminal.setText(text)
+        self.widget.textBrowser_cmdterminal.moveCursor(QTextCursor.End)
     # ---- Settings Group start ------------------------------------------------
     def settingsListUpdate(self):
         self.conf.read(self.settingsFile)
@@ -412,4 +435,52 @@ class Avrdude(object):
         self.shellThread.start()
     # ---- MCU Group end -------------------------------------------------------
 
+    # ---- Fuse & Lock Group start ---------------------------------------------
+    def fuse_read(self):
+        cmd = self.getBasicParameter()
+        cmd += ' -U lfuse:r:' + 'tmp\\fuse_low.txt'   + ':h'
+        cmd += ' -U hfuse:r:' + 'tmp\\fuse_high.txt'  + ':h'
+        cmd += ' -U efuse:r:' + 'tmp\\fuse_extra.txt' + ':h'
+        self.shellThread.setCmdType(1)
+        self.shellThread.setCmd(cmd)
+        self.shellThread.start()
+
+    def fuse_update_from_tmp(self):
+        fl = open('tmp\\fuse_low.txt', 'r')
+        fh = open('tmp\\fuse_high.txt', 'r')
+        fe = open('tmp\\fuse_extra.txt', 'r')
+        # self.widget.lineEdit_lock.setText()
+        self.widget.lineEdit_fuseHigh.setText(fl.read(4))
+        self.widget.lineEdit_fuseLow.setText(fh.read(4))
+        self.widget.lineEdit_fuseExtra.setText(fe.read(4))
+        fl.close()
+        fh.close()
+        fe.close()
+
+    def fuse_write(self):
+        cmd = self.getBasicParameter()
+        cmd += ' -U lfuse:w:' + self.widget.lineEdit_fuseLow.text()   + ':m'
+        cmd += ' -U hfuse:w:' + self.widget.lineEdit_fuseHigh.text()  + ':m'
+        cmd += ' -U efuse:w:' + self.widget.lineEdit_fuseExtra.text() + ':m'
+        self.shellThread.setCmd(cmd)
+        self.shellThread.start()
+
+    def lock_read(self):
+        cmd = self.getBasicParameter()
+        cmd += ' -U lock:r:' + 'tmp\\lock.txt' + ':h'
+        self.shellThread.setCmd(cmd)
+        self.shellThread.start()
+
+    def lock_update_from_tmp(self):
+        f = open('tmp\\lock.txt', 'r')
+        self.widget.lineEdit_lock.setText(f.read(4))
+        f.close()
+
+    def lock_write(self):
+        cmd = self.getBasicParameter()
+        cmd += ' -U hfuse:w:' + self.widget.lineEdit_lock.text()  + ':m'
+        self.shellThread.setCmdType(2)
+        self.shellThread.setCmd(cmd)
+        self.shellThread.start()
+    # ---- Fuse & Lock Group end -----------------------------------------------
 # ---- class radioButtonClick End ----------------------------------------------
