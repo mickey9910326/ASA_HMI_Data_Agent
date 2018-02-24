@@ -165,8 +165,8 @@ class HMI(object):
                 self.SerialThread.start()
         elif (self.ser.isOpen is True):
             print('sys : Try to close port : ' + self.ser.port )
-            self.ser.close()
             self.ser.isOpen = False
+            self.ser.close()
             self.widget.s_btnPortToggle.setText("開啟串列埠")
             self.widget.text_terminal.append('( log: Close ' + self.ser.port +' success! )')
             # SerialThread
@@ -313,7 +313,7 @@ class HMI(object):
             self.widget.text_terminal.append('( log: send ' + str(dataBytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
     def send_btnSendStruct(self):
         res = -1;
-        res, resText = transStringToUi8(self.textEditSend.toPlainText())
+        res, resText = transStringToUi8(self.widget.send_textEdit.toPlainText())
         try:
             lineIdx, typeNumList, dataListList, res =decodeTextToStruct(resText)
         except (ValueError,SyntaxError,TypeError):
