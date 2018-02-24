@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>507</width>
+    <width>526</width>
     <height>700</height>
    </rect>
   </property>
@@ -30,6 +30,9 @@
           <family>Consolas</family>
           <pointsize>10</pointsize>
          </font>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
         </property>
         <item>
          <property name="text">
@@ -304,6 +307,9 @@
         <property name="text">
          <string>Read</string>
         </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -317,6 +323,9 @@
         <property name="text">
          <string>Write</string>
         </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="2">
@@ -329,6 +338,9 @@
         </property>
         <property name="text">
          <string>Verify</string>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -571,6 +583,9 @@
         <property name="text">
          <string>Read</string>
         </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -584,6 +599,9 @@
         <property name="text">
          <string>Write</string>
         </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="2">
@@ -596,6 +614,9 @@
         </property>
         <property name="text">
          <string>Verify</string>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
