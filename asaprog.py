@@ -26,6 +26,8 @@ class ShellThread(QThread):
             print(s)
             if(s.decode("utf-8", "replace") is not ''):
                 self.signalGetLine.emit(s.decode("utf-8", "replace"))
+        times = time.strftime("%H:%M:%S", time.gmtime())
+        self.signalGetLine.emit('\n' + '[' + times + '] ' + 'Complete!' + '\n')
         self.shellIsRunning = False
 
     def stop(self):
@@ -95,7 +97,7 @@ class Asaprog(object):
     # ---- Basic Tools Group start ---------------------------------------------
     def startProg(self):
         cmd = 'cmd_ASA_loader'
-        cmd += ' -p ' + self.widget.comboBox_selectPort.currentText()
+        cmd += ' -p ' + self.widget.comboBox_selectPort.currentText().split('COM')[1]
         cmd += ' -h ' + self.widget.lineEdit_selectFile.text()
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
