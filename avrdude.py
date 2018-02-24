@@ -30,9 +30,14 @@ class ShellThread(QThread):
             s = self.p.stderr.readline()
             if(s.decode("big5") is not ''):
                 self.signalGetLine.emit(s.decode("big5"))
+        times = time.strftime("%H:%M:%S", time.gmtime())
+        self.signalGetLine.emit('[' + times + '] ' +  'Complete!' + '\n')
+        self.shellIsRunning = False
 
     def stop(self):
         if self.shellIsRunning or self.p.poll() is None:
+            times = time.strftime("%H:%M:%S", time.gmtime())
+            self.signalGetLine.emit('[' + times + '] ' +  'Terminate program!' + '\n')
             self.shellIsRunning = False
             self.p.kill()
         else:
