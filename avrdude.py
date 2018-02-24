@@ -115,6 +115,7 @@ class Avrdude(object):
         self.praser = AvrdudeConfParser()
         descList = self.praser.listAllPartDesc()
 
+        self.widget.pushButton_mcuDetect.clicked.connect(self.mcu_detect)
         self.widget.comboBox_mcuSelect.clear()
         self.widget.comboBox_mcuSelect.addItem('請選擇MCU...')
         for desc in descList:
@@ -397,4 +398,13 @@ class Avrdude(object):
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
     # ---- Eeprom Group end ----------------------------------------------------
+
+    # ---- MCU Group start -----------------------------------------------------
+    # detect MCU is correct or wrong
+    def mcu_detect(self):
+        cmd = self.getBasicParameter()
+        self.shellThread.setCmd(cmd)
+        self.shellThread.start()
+    # ---- MCU Group end -------------------------------------------------------
+
 # ---- class radioButtonClick End ----------------------------------------------
