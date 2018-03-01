@@ -1,10 +1,11 @@
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtGui import QTextCursor
 import serial
 from listport import serial_ports
 import subprocess
 import time
+from ui_bit_selector import Ui_Dialog
 
 from avrdudeConfParser import AvrdudeConfParser
 from configparser import ConfigParser
@@ -135,6 +136,7 @@ class Avrdude(object):
         self.widget.pushButton_fuseWrite.clicked.connect(self.fuse_write)
         self.widget.pushButton_lockRead.clicked.connect(self.lock_read)
         self.widget.pushButton_flashGo.clicked.connect(self.lock_write)
+        self.widget.pushButton_bitSelector.clicked.connect(self.showBitSelector)
         # ---- Fuse & Lock Group end -----------------------------------------
 
         # ---- MCU Group start -------------------------------------------------
@@ -482,5 +484,11 @@ class Avrdude(object):
         self.shellThread.setCmdType(2)
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
+
+    def showBitSelector(self):
+        self.nd = QDialog()
+        self.bitSelector = Ui_Dialog()
+        self.bitSelector.setupUi(self.nd)
+        self.nd.show()
     # ---- Fuse & Lock Group end -----------------------------------------------
 # ---- class radioButtonClick End ----------------------------------------------

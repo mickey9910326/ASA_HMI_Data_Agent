@@ -16,6 +16,7 @@ if __name__ == '__main__':
     os.system('pyuic5 ui/hmi.ui -o ui_hmi.py')
     os.system('pyuic5 ui/avrdude.ui -o ui_avrdude.py')
     os.system('pyuic5 ui/asa_prog.ui -o ui_asa_prog.py')
+    os.system('pyuic5 ui/bit_selector.ui -o ui_bit_selector.py')
 
     opts = ['-w',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
