@@ -36,4 +36,5 @@ if __name__ == '__main__':
     os.system('cp -r ./tmp ./dist/ASA_HMI_Data_Agent/tmp')
     os.system('cp ./avrdude.conf ./dist/ASA_HMI_Data_Agent/avrdude.conf')
     os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent/avrdude_settings.ini')
+    os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent/bits_info.ini')
     os.system('cp ./tools/cmd_ASA_loader.exe ./dist/ASA_HMI_Data_Agent/cmd_ASA_loader.exe')

@@ -104,47 +104,70 @@ class BitsSelector(QDialog, Ui_BitSelector):
         self.chkLock.append(self.checkBox_lock5)
         self.chkLock.append(self.checkBox_lock6)
         self.chkLock.append(self.checkBox_lock7)
-        
-    def show(self):
-        super(QDialog, self).show()
-        try:
-            for bit in range(0,7):
-                self.chkFuseL[bit].setChecked(int(self.lineEdit_fuseLow.text(), 16) & (1<<bit))
-        except ValueError:
-            pass
-        try:
-            for bit in range(0,7):
-                self.chkFuseH[bit].setChecked(int(self.lineEdit_fuseHigh.text(), 16) & (1<<bit))
-        except ValueError:
-            pass
-        try:
-            for bit in range(0,7):
-                self.chkFuseE[bit].setChecked(int(self.lineEdit_fuseExtra.text(), 16) & (1<<bit))
-        except ValueError:
-            pass
-        try:
-            for bit in range(0,7):
-                self.chkLock [bit].setChecked(int(self.lineEdit_lock.text(), 16) & (1<<bit))
-        except ValueError:
-            pass
-        
+        self.lineEdit_fuseLow  .textChanged.connect(lambda: self.updateChkFromLine(self.chkFuseL, self.lineEdit_fuseLow))
+        self.lineEdit_fuseHigh .textChanged.connect(lambda: self.updateChkFromLine(self.chkFuseH, self.lineEdit_fuseHigh))
+        self.lineEdit_fuseExtra.textChanged.connect(lambda: self.updateChkFromLine(self.chkFuseE, self.lineEdit_fuseExtra))
+        self.lineEdit_lock     .textChanged.connect(lambda: self.updateChkFromLine(self.chkLock , self.lineEdit_lock))
+        for bit in range(0,8):
+            self.chkFuseL[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseLow, self.chkFuseL))
+        for bit in range(0,8):
+            self.chkFuseH[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseHigh, self.chkFuseH))
+        for bit in range(0,8):
+            self.chkFuseE[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseExtra, self.chkFuseE))
+        for bit in range(0,8):
+            self.chkLock[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_lock, self.chkLock))
     
-    def __bitIsSet(data,bit):
-        """Internal: return True or False based on list element value
-        """
+    def show(self, partDesc):
+        super(QDialog, self).show()
+        config = ConfigParser()
+        config.read('bits_info.ini')
         try:
-            return (data[bit] == '1')
-        except IndexError:
-            return False
-    # dialogShown = QtCore.pyqtSignal()
-    # 
-    # def showEvent(self, event):
-    #     super(Dialog, self).showEvent(event)
-    #     self.dialogShown.emit()
+            bitInfoList = config[partDesc]['fuse_l'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkFuseL[bit].setChecked(int(self.lineEdit_fuseLow.text(), 16) & (1<<bit))
+                self.chkFuseL[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
+        try:
+            bitInfoList = config[partDesc]['fuse_h'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkFuseH[bit].setChecked(int(self.lineEdit_fuseHigh.text(), 16) & (1<<bit))
+                self.chkFuseH[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
+        try:
+            bitInfoList = config[partDesc]['fuse_e'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkFuseE[bit].setChecked(int(self.lineEdit_fuseExtra.text(), 16) & (1<<bit))
+                self.chkFuseE[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
+        try:
+            bitInfoList = config[partDesc]['lock'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkLock[bit].setChecked(int(self.lineEdit_lock.text(), 16) & (1<<bit))
+                self.chkLock[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
         
+    def updateChkFromLine(self, chkList, lineEdit):
+        try:
+            for bit in range(0,8):
+                chkList[bit].setChecked(int(lineEdit.text(), 16) & (1<<bit))
+        except ValueError:
+            pass
+        
+    def updateLineFromChk(self, lineEdit, chkList):
+        try:
+            val = 0
+            for bit in range(0,8):
+                if chkList[bit].isChecked() is True:
+                    val = val + (1<<bit)
+            lineEdit.setText("0x%02X" % val)
+        except ValueError:
+            pass
 # ---- class BitsSelector End --------------------------------------------------
 
-# ---- class radioButtonClick Start --------------------------------------------
 def radioButtonClick(btn):
     print(btn.text())
     # print(btn.isChecked())
@@ -587,7 +610,7 @@ class Avrdude(object):
         self.bitsSelector.lineEdit_fuseLow  .setText(self.widget.lineEdit_fuseLow  .text())
         self.bitsSelector.lineEdit_fuseExtra.setText(self.widget.lineEdit_fuseExtra.text())
         self.bitsSelector.lineEdit_lock.setText(self.widget.lineEdit_lock.text())
-        self.bitsSelector.show()
+        self.bitsSelector.show(self.widget.comboBox_mcuSelect.currentText())
     # ---- BitsSelector end ----------------------------------------------------
     # ---- Methods Section end -------------------------------------------------
 # ---- class radioButtonClick End ----------------------------------------------

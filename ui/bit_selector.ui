@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>BitsSelector</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -27,7 +30,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QCheckBox" name="checkBox_fuseL0">
+       <widget class="QCheckBox" name="checkBox_fuseL7">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -35,72 +38,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Bit0</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseL1">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit1</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseL2">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit2</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseL3">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit3</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseL4">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit4</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseL5">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit5</string>
+         <string>Bit7</string>
         </property>
        </widget>
       </item>
@@ -118,100 +56,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_fuseL7">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit7</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QGroupBox" name="groupBox_fuseHigh">
-     <property name="font">
-      <font>
-       <family>Consolas</family>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="title">
-      <string>Fuse High</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseH0">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit0</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseH1">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit1</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseH2">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit2</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseH3">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit3</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseH4">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit4</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseH5">
+       <widget class="QCheckBox" name="checkBox_fuseL5">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -224,100 +69,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_fuseH6">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit6</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseH7">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit7</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QGroupBox" name="groupBox_fuseExtra">
-     <property name="font">
-      <font>
-       <family>Consolas</family>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="title">
-      <string>Fuse Extra</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseE0">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit0</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseE1">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit1</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseE2">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit2</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseE3">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit3</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_fuseE4">
+       <widget class="QCheckBox" name="checkBox_fuseL4">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -330,7 +82,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_fuseE5">
+       <widget class="QCheckBox" name="checkBox_fuseL3">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -338,12 +90,12 @@
          </font>
         </property>
         <property name="text">
-         <string>Bit5</string>
+         <string>Bit3</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_fuseE6">
+       <widget class="QCheckBox" name="checkBox_fuseL2">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -351,12 +103,12 @@
          </font>
         </property>
         <property name="text">
-         <string>Bit6</string>
+         <string>Bit2</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_fuseE7">
+       <widget class="QCheckBox" name="checkBox_fuseL1">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -364,7 +116,20 @@
          </font>
         </property>
         <property name="text">
-         <string>Bit7</string>
+         <string>Bit1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseL0">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit0</string>
         </property>
        </widget>
       </item>
@@ -384,7 +149,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <widget class="QCheckBox" name="checkBox_lock0">
+       <widget class="QCheckBox" name="checkBox_lock7">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -392,72 +157,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Bit0</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_lock1">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit1</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_lock2">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit2</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_lock3">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit3</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_lock4">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit4</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_lock5">
-        <property name="font">
-         <font>
-          <family>Consolas</family>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bit5</string>
+         <string>Bit7</string>
         </property>
        </widget>
       </item>
@@ -475,7 +175,100 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_lock7">
+       <widget class="QCheckBox" name="checkBox_lock5">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit5</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_lock4">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit4</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_lock3">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_lock2">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_lock1">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_lock0">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupBox_fuseHigh">
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="title">
+      <string>Fuse High</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH7">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -484,6 +277,97 @@
         </property>
         <property name="text">
          <string>Bit7</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH6">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit6</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH5">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit5</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH4">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit4</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH3">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH2">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH1">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseH0">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit0</string>
         </property>
        </widget>
       </item>
@@ -520,16 +404,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3">
-    <widget class="QLineEdit" name="lineEdit_lock">
-     <property name="font">
-      <font>
-       <family>Consolas</family>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0" colspan="3">
     <widget class="QLabel" name="label">
      <property name="font">
@@ -540,6 +414,16 @@
      </property>
      <property name="text">
       <string>Only support M128, M88 now!</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QLineEdit" name="lineEdit_lock">
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>12</pointsize>
+      </font>
      </property>
     </widget>
    </item>
@@ -556,44 +440,135 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="2">
+    <widget class="QGroupBox" name="groupBox_fuseExtra">
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="title">
+      <string>Fuse Extra</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE7">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit7</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE6">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit6</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE5">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit5</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE4">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit4</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE3">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE2">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE1">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fuseE0">
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bit0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>checkBox_fuseL0</tabstop>
-  <tabstop>checkBox_fuseL1</tabstop>
-  <tabstop>checkBox_fuseL2</tabstop>
-  <tabstop>checkBox_fuseL3</tabstop>
-  <tabstop>checkBox_fuseL4</tabstop>
-  <tabstop>checkBox_fuseL5</tabstop>
-  <tabstop>checkBox_fuseL6</tabstop>
   <tabstop>checkBox_fuseL7</tabstop>
   <tabstop>lineEdit_fuseLow</tabstop>
-  <tabstop>checkBox_fuseH0</tabstop>
-  <tabstop>checkBox_fuseH1</tabstop>
-  <tabstop>checkBox_fuseH2</tabstop>
-  <tabstop>checkBox_fuseH3</tabstop>
-  <tabstop>checkBox_fuseH4</tabstop>
-  <tabstop>checkBox_fuseH5</tabstop>
-  <tabstop>checkBox_fuseH6</tabstop>
   <tabstop>checkBox_fuseH7</tabstop>
   <tabstop>lineEdit_fuseHigh</tabstop>
-  <tabstop>checkBox_fuseE0</tabstop>
-  <tabstop>checkBox_fuseE1</tabstop>
-  <tabstop>checkBox_fuseE2</tabstop>
-  <tabstop>checkBox_fuseE3</tabstop>
-  <tabstop>checkBox_fuseE4</tabstop>
   <tabstop>checkBox_fuseE5</tabstop>
-  <tabstop>checkBox_fuseE6</tabstop>
-  <tabstop>checkBox_fuseE7</tabstop>
   <tabstop>lineEdit_fuseExtra</tabstop>
-  <tabstop>checkBox_lock0</tabstop>
-  <tabstop>checkBox_lock1</tabstop>
-  <tabstop>checkBox_lock2</tabstop>
-  <tabstop>checkBox_lock3</tabstop>
   <tabstop>checkBox_lock4</tabstop>
-  <tabstop>checkBox_lock5</tabstop>
-  <tabstop>checkBox_lock6</tabstop>
-  <tabstop>checkBox_lock7</tabstop>
   <tabstop>lineEdit_lock</tabstop>
   <tabstop>pushButton_close</tabstop>
  </tabstops>
