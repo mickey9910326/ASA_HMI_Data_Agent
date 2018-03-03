@@ -35,7 +35,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit0</string>
         </property>
        </widget>
       </item>
@@ -48,7 +48,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit1</string>
         </property>
        </widget>
       </item>
@@ -61,7 +61,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit2</string>
         </property>
        </widget>
       </item>
@@ -74,7 +74,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit3</string>
         </property>
        </widget>
       </item>
@@ -87,7 +87,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit4</string>
         </property>
        </widget>
       </item>
@@ -100,7 +100,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit5</string>
         </property>
        </widget>
       </item>
@@ -113,7 +113,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit6</string>
         </property>
        </widget>
       </item>
@@ -126,7 +126,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit7</string>
         </property>
        </widget>
       </item>
@@ -154,7 +154,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit0</string>
         </property>
        </widget>
       </item>
@@ -167,7 +167,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit1</string>
         </property>
        </widget>
       </item>
@@ -180,7 +180,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit2</string>
         </property>
        </widget>
       </item>
@@ -193,7 +193,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit3</string>
         </property>
        </widget>
       </item>
@@ -206,7 +206,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit4</string>
         </property>
        </widget>
       </item>
@@ -219,7 +219,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit5</string>
         </property>
        </widget>
       </item>
@@ -232,7 +232,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit6</string>
         </property>
        </widget>
       </item>
@@ -245,7 +245,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit7</string>
         </property>
        </widget>
       </item>
@@ -273,7 +273,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit0</string>
         </property>
        </widget>
       </item>
@@ -286,7 +286,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit1</string>
         </property>
        </widget>
       </item>
@@ -299,7 +299,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit2</string>
         </property>
        </widget>
       </item>
@@ -312,7 +312,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit3</string>
         </property>
        </widget>
       </item>
@@ -325,7 +325,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit4</string>
         </property>
        </widget>
       </item>
@@ -338,12 +338,12 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit5</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_fuseE5_2">
+       <widget class="QCheckBox" name="checkBox_fuseE6">
         <property name="font">
          <font>
           <family>Consolas</family>
@@ -351,7 +351,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit6</string>
         </property>
        </widget>
       </item>
@@ -364,7 +364,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit7</string>
         </property>
        </widget>
       </item>
@@ -392,7 +392,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit0</string>
         </property>
        </widget>
       </item>
@@ -405,7 +405,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit1</string>
         </property>
        </widget>
       </item>
@@ -418,7 +418,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit2</string>
         </property>
        </widget>
       </item>
@@ -431,7 +431,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit3</string>
         </property>
        </widget>
       </item>
@@ -444,7 +444,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit4</string>
         </property>
        </widget>
       </item>
@@ -457,7 +457,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit5</string>
         </property>
        </widget>
       </item>
@@ -470,7 +470,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit6</string>
         </property>
        </widget>
       </item>
@@ -483,7 +483,7 @@
          </font>
         </property>
         <property name="text">
-         <string>CheckBox</string>
+         <string>Bit7</string>
         </property>
        </widget>
       </item>
@@ -544,7 +544,7 @@
     </widget>
    </item>
    <item row="2" column="3">
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="pushButton_close">
      <property name="font">
       <font>
        <family>Consolas</family>
@@ -583,7 +583,7 @@
   <tabstop>checkBox_fuseE3</tabstop>
   <tabstop>checkBox_fuseE4</tabstop>
   <tabstop>checkBox_fuseE5</tabstop>
-  <tabstop>checkBox_fuseE5_2</tabstop>
+  <tabstop>checkBox_fuseE6</tabstop>
   <tabstop>checkBox_fuseE7</tabstop>
   <tabstop>lineEdit_fuseExtra</tabstop>
   <tabstop>checkBox_lock0</tabstop>
@@ -595,7 +595,7 @@
   <tabstop>checkBox_lock6</tabstop>
   <tabstop>checkBox_lock7</tabstop>
   <tabstop>lineEdit_lock</tabstop>
-  <tabstop>pushButton_2</tabstop>
+  <tabstop>pushButton_close</tabstop>
  </tabstops>
  <resources/>
  <connections/>
