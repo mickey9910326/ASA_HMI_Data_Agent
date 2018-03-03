@@ -16,6 +16,7 @@ if __name__ == '__main__':
     os.system('pyuic5 ui/hmi.ui -o ui_hmi.py')
     os.system('pyuic5 ui/avrdude.ui -o ui_avrdude.py')
     os.system('pyuic5 ui/asa_prog.ui -o ui_asa_prog.py')
+    os.system('pyuic5 ui/bit_selector.ui -o ui_bit_selector.py')
 
     opts = ['-w',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
@@ -35,4 +36,5 @@ if __name__ == '__main__':
     os.system('cp -r ./tmp ./dist/ASA_HMI_Data_Agent/tmp')
     os.system('cp ./avrdude.conf ./dist/ASA_HMI_Data_Agent/avrdude.conf')
     os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent/avrdude_settings.ini')
+    os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent/bits_info.ini')
     os.system('cp ./tools/cmd_ASA_loader.exe ./dist/ASA_HMI_Data_Agent/cmd_ASA_loader.exe')

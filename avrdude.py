@@ -1,10 +1,11 @@
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtGui import QTextCursor
 import serial
 from listport import serial_ports
 import subprocess
 import time
+from ui_bit_selector import Ui_BitSelector
 
 from avrdudeConfParser import AvrdudeConfParser
 from configparser import ConfigParser
@@ -61,7 +62,112 @@ class ShellThread(QThread):
 
 # ---- class ShellThread End ---------------------------------------------------
 
-# ---- class radioButtonClick Start --------------------------------------------
+# ---- class BitsSelector Start ------------------------------------------------
+class BitsSelector(QDialog, Ui_BitSelector):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.setupUi(self)
+        self.pushButton_close.clicked.connect(self.accept)
+        self.chkFuseL = list()
+        self.chkFuseL.append(self.checkBox_fuseL0)
+        self.chkFuseL.append(self.checkBox_fuseL1)
+        self.chkFuseL.append(self.checkBox_fuseL2)
+        self.chkFuseL.append(self.checkBox_fuseL3)
+        self.chkFuseL.append(self.checkBox_fuseL4)
+        self.chkFuseL.append(self.checkBox_fuseL5)
+        self.chkFuseL.append(self.checkBox_fuseL6)
+        self.chkFuseL.append(self.checkBox_fuseL7)
+        self.chkFuseH = list()
+        self.chkFuseH.append(self.checkBox_fuseH0)
+        self.chkFuseH.append(self.checkBox_fuseH1)
+        self.chkFuseH.append(self.checkBox_fuseH2)
+        self.chkFuseH.append(self.checkBox_fuseH3)
+        self.chkFuseH.append(self.checkBox_fuseH4)
+        self.chkFuseH.append(self.checkBox_fuseH5)
+        self.chkFuseH.append(self.checkBox_fuseH6)
+        self.chkFuseH.append(self.checkBox_fuseH7)
+        self.chkFuseE = list()
+        self.chkFuseE.append(self.checkBox_fuseE0)
+        self.chkFuseE.append(self.checkBox_fuseE1)
+        self.chkFuseE.append(self.checkBox_fuseE2)
+        self.chkFuseE.append(self.checkBox_fuseE3)
+        self.chkFuseE.append(self.checkBox_fuseE4)
+        self.chkFuseE.append(self.checkBox_fuseE5)
+        self.chkFuseE.append(self.checkBox_fuseE6)
+        self.chkFuseE.append(self.checkBox_fuseE7)
+        self.chkLock = list()
+        self.chkLock.append(self.checkBox_lock0)
+        self.chkLock.append(self.checkBox_lock1)
+        self.chkLock.append(self.checkBox_lock2)
+        self.chkLock.append(self.checkBox_lock3)
+        self.chkLock.append(self.checkBox_lock4)
+        self.chkLock.append(self.checkBox_lock5)
+        self.chkLock.append(self.checkBox_lock6)
+        self.chkLock.append(self.checkBox_lock7)
+        self.lineEdit_fuseLow  .textChanged.connect(lambda: self.updateChkFromLine(self.chkFuseL, self.lineEdit_fuseLow))
+        self.lineEdit_fuseHigh .textChanged.connect(lambda: self.updateChkFromLine(self.chkFuseH, self.lineEdit_fuseHigh))
+        self.lineEdit_fuseExtra.textChanged.connect(lambda: self.updateChkFromLine(self.chkFuseE, self.lineEdit_fuseExtra))
+        self.lineEdit_lock     .textChanged.connect(lambda: self.updateChkFromLine(self.chkLock , self.lineEdit_lock))
+        for bit in range(0,8):
+            self.chkFuseL[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseLow, self.chkFuseL))
+        for bit in range(0,8):
+            self.chkFuseH[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseHigh, self.chkFuseH))
+        for bit in range(0,8):
+            self.chkFuseE[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseExtra, self.chkFuseE))
+        for bit in range(0,8):
+            self.chkLock[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_lock, self.chkLock))
+    
+    def show(self, partDesc):
+        super(QDialog, self).show()
+        config = ConfigParser()
+        config.read('bits_info.ini')
+        try:
+            bitInfoList = config[partDesc]['fuse_l'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkFuseL[bit].setChecked(int(self.lineEdit_fuseLow.text(), 16) & (1<<bit))
+                self.chkFuseL[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
+        try:
+            bitInfoList = config[partDesc]['fuse_h'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkFuseH[bit].setChecked(int(self.lineEdit_fuseHigh.text(), 16) & (1<<bit))
+                self.chkFuseH[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
+        try:
+            bitInfoList = config[partDesc]['fuse_e'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkFuseE[bit].setChecked(int(self.lineEdit_fuseExtra.text(), 16) & (1<<bit))
+                self.chkFuseE[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
+        try:
+            bitInfoList = config[partDesc]['lock'].replace(' ', '').split(',')
+            for bit in range(0,8):
+                self.chkLock[bit].setChecked(int(self.lineEdit_lock.text(), 16) & (1<<bit))
+                self.chkLock[bit].setText(bitInfoList[bit])
+        except (ValueError, KeyError):
+            pass
+        
+    def updateChkFromLine(self, chkList, lineEdit):
+        try:
+            for bit in range(0,8):
+                chkList[bit].setChecked(int(lineEdit.text(), 16) & (1<<bit))
+        except ValueError:
+            pass
+        
+    def updateLineFromChk(self, lineEdit, chkList):
+        try:
+            val = 0
+            for bit in range(0,8):
+                if chkList[bit].isChecked() is True:
+                    val = val + (1<<bit)
+            lineEdit.setText("0x%02X" % val)
+        except ValueError:
+            pass
+# ---- class BitsSelector End --------------------------------------------------
+
 def radioButtonClick(btn):
     print(btn.text())
     # print(btn.isChecked())
@@ -135,6 +241,7 @@ class Avrdude(object):
         self.widget.pushButton_fuseWrite.clicked.connect(self.fuse_write)
         self.widget.pushButton_lockRead.clicked.connect(self.lock_read)
         self.widget.pushButton_flashGo.clicked.connect(self.lock_write)
+        self.widget.pushButton_bitSelector.clicked.connect(self.bitsSelectorShow)
         # ---- Fuse & Lock Group end -----------------------------------------
 
         # ---- MCU Group start -------------------------------------------------
@@ -171,7 +278,13 @@ class Avrdude(object):
         self.updateCammand()
         self.widget.pushButton_startProgram.clicked.connect(self.startProgram)
         self.widget.pushButton_stopProgram.clicked.connect(self.stopProgram)
-
+        
+        # ---- BitsSelector start ----------------------------------------------
+        self.bitsSelector = BitsSelector()
+        self.bitsSelector.accepted.connect(self.updateBitsFromSelector)
+        # ---- BitsSelector end ------------------------------------------------
+        
+    # ---- Methods Section start -----------------------------------------------
     def startProgram(self):
         self.updateCammand()
         self.shellThread.setCmd(self.widget.textBrowser_cmd.toPlainText())
@@ -483,4 +596,21 @@ class Avrdude(object):
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
     # ---- Fuse & Lock Group end -----------------------------------------------
+    
+    # ---- BitsSelector start --------------------------------------------------
+    def updateBitsFromSelector(self):
+        self.widget.lineEdit_fuseHigh .setText(self.bitsSelector.lineEdit_fuseHigh .text())
+        self.widget.lineEdit_fuseLow  .setText(self.bitsSelector.lineEdit_fuseLow  .text())
+        self.widget.lineEdit_fuseExtra.setText(self.bitsSelector.lineEdit_fuseExtra.text())
+        self.widget.lineEdit_lock     .setText(self.bitsSelector.lineEdit_lock.text())
+        
+        pass
+    def bitsSelectorShow(self):
+        self.bitsSelector.lineEdit_fuseHigh .setText(self.widget.lineEdit_fuseHigh .text())
+        self.bitsSelector.lineEdit_fuseLow  .setText(self.widget.lineEdit_fuseLow  .text())
+        self.bitsSelector.lineEdit_fuseExtra.setText(self.widget.lineEdit_fuseExtra.text())
+        self.bitsSelector.lineEdit_lock.setText(self.widget.lineEdit_lock.text())
+        self.bitsSelector.show(self.widget.comboBox_mcuSelect.currentText())
+    # ---- BitsSelector end ----------------------------------------------------
+    # ---- Methods Section end -------------------------------------------------
 # ---- class radioButtonClick End ----------------------------------------------
