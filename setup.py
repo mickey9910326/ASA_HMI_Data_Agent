@@ -3,13 +3,6 @@
 import os
 from PyInstaller.__main__ import run
 
-# -F:打包成一个EXE文件
-# -w:不带console输出控制台，window窗体格式
-# --paths：依赖包路径
-# --icon：图标
-# --noupx：不用upx压缩
-# --clean：清理掉临时文件
-
 if __name__ == '__main__':
     os.system('rm -rf ./dist/ASA_HMI_Data_Agent')
     os.system('pyuic5 ui/mainwindow.ui -o ui_mainwindow.py')
@@ -17,7 +10,7 @@ if __name__ == '__main__':
     os.system('pyuic5 ui/avrdude.ui -o ui_avrdude.py')
     os.system('pyuic5 ui/asa_prog.ui -o ui_asa_prog.py')
     os.system('pyuic5 ui/bit_selector.ui -o ui_bit_selector.py')
-
+    
     opts = ['-w',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\plugins',
@@ -38,3 +31,5 @@ if __name__ == '__main__':
     os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent/avrdude_settings.ini')
     os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent/bits_info.ini')
     os.system('cp ./tools/cmd_ASA_loader.exe ./dist/ASA_HMI_Data_Agent/cmd_ASA_loader.exe')
+    
+    os.system('tar -zc -C ./dist -f ./dist/ASA_HMI_Data_Agent.tar.gz ./ASA_HMI_Data_Agent')
