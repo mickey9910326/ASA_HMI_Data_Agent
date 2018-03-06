@@ -299,7 +299,7 @@ class Avrdude(object):
 
     def getBasicParameter(self):
         cmd = str()
-        cmd += 'avrdude'
+        cmd += 'tools/avrdude'
         cmd += ' -c stk500'
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
@@ -316,7 +316,7 @@ class Avrdude(object):
     # check all items and update cmd in line
     def updateCammand(self):
         cmd = str()
-        cmd += 'avrdude'
+        cmd += 'tools/avrdude'
         cmd += ' -c stk500'
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:

@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-
+"""
+Tis script will force compress libs into one file.
+And it is not stable now.
+"""
 import os
 from PyInstaller.__main__ import run
+import pathlib
 
 if __name__ == '__main__':
-    os.system('rm -rf ./dist/ASA_HMI_Data_Agent')
+    os.system('rm -rf ./dist/ASA_HMI_Data_Agent2')
     os.system('pyuic5 ui/mainwindow.ui -o ui_mainwindow.py')
     os.system('pyuic5 ui/hmi.ui -o ui_hmi.py')
     os.system('pyuic5 ui/avrdude.ui -o ui_avrdude.py')
@@ -12,6 +16,8 @@ if __name__ == '__main__':
     os.system('pyuic5 ui/bit_selector.ui -o ui_bit_selector.py')
     
     opts = ['-w',
+            '-F',
+            # '--debug',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\plugins',
             '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit',
@@ -24,13 +30,13 @@ if __name__ == '__main__':
             'main.py']
 
     run(opts)
-    os.system('mv ./dist/main/main.exe ./dist/main/ASA_HMI_Data_Agent.exe')
-    os.system('mv ./dist/main ./dist/ASA_HMI_Data_Agent')
-    
+
+    pathlib.Path("./dist/ASA_HMI_Data_Agent2").mkdir(parents=True, exist_ok=True)
+    os.system('mv ./dist/main.exe ./dist/ASA_HMI_Data_Agent2/ASA_HMI_Data_Agent.exe')
     # Related files
-    os.system('cp -r ./tmp ./dist/ASA_HMI_Data_Agent/tmp')
-    os.system('cp -r ./tools ./dist/ASA_HMI_Data_Agent/tools')
-    os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent/avrdude_settings.ini')
-    os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent/bits_info.ini')
+    os.system('cp -r ./tmp ./dist/ASA_HMI_Data_Agent2/tmp')
+    os.system('cp -r ./tools ./dist/ASA_HMI_Data_Agent2/tools')
+    os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent2/avrdude_settings.ini')
+    os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent2/bits_info.ini')
     
-    os.system('tar -zc -C ./dist -f ./dist/ASA_HMI_Data_Agent.tar.gz ./ASA_HMI_Data_Agent')
+    os.system('tar -zc -C ./dist -f ./dist/ASA_HMI_Data_Agent2.tar.gz ./ASA_HMI_Data_Agent2')

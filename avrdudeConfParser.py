@@ -11,7 +11,7 @@ class AvrdudeConfParser():
     """docstring for AvrdudeConfParser."""
 
     def __init__(self):
-        self.confFile = 'avrdude.conf'
+        self.confFile = 'tools/avrdude.conf'
 
     def setConfFile(self, s):
         self.confFile = s

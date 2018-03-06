@@ -96,7 +96,7 @@ class Asaprog(object):
 
     # ---- Basic Tools Group start ---------------------------------------------
     def startProg(self):
-        cmd = 'cmd_ASA_loader'
+        cmd = 'tools\cmd_ASA_loader'
         cmd += ' -p ' + self.widget.comboBox_selectPort.currentText().split('COM')[1]
         cmd += ' -h ' + self.widget.lineEdit_selectFile.text()
         self.shellThread.setCmd(cmd)
