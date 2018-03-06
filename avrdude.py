@@ -12,7 +12,8 @@ from configparser import ConfigParser
 
 # ---- class ShellThread Start -------------------------------------------------
 class ShellThread(QThread):
-
+    shellIsRunning = False
+    
     signalGetLine = pyqtSignal(str)
     signalReadFuseDone = pyqtSignal()
     signalReadLockDone = pyqtSignal()
@@ -51,13 +52,16 @@ class ShellThread(QThread):
         self.shellIsRunning = False
 
     def stop(self):
-        if self.shellIsRunning or self.p.poll() is None:
-            times = time.strftime("%H:%M:%S", time.gmtime())
-            self.signalGetLine.emit('[' + times + '] ' +  'Terminate program!' + '\n')
-            self.shellIsRunning = False
-            self.p.kill()
-        else:
-            pass
+        try:
+            if self.shellIsRunning or self.p.poll() is None:
+                times = time.strftime("%H:%M:%S", time.gmtime())
+                self.signalGetLine.emit('[' + times + '] ' +  'Terminate program!' + '\n')
+                self.shellIsRunning = False
+                self.p.kill()
+            else:
+                pass
+        except AttributeError as e:
+            pass 
         self.terminate()
 
 # ---- class ShellThread End ---------------------------------------------------
