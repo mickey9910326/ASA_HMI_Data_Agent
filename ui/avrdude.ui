@@ -565,7 +565,7 @@
       </font>
      </property>
      <property name="title">
-      <string>Fuse bits</string>
+      <string>Lock bits</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="0" column="0">

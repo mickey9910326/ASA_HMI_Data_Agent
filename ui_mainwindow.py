@@ -18,6 +18,9 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
+        font = QtGui.QFont()
+        font.setFamily("微軟正黑體")
+        self.centralWidget.setFont(font)
         self.centralWidget.setObjectName("centralWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralWidget)
         self.verticalLayout.setContentsMargins(11, 11, 11, 11)
@@ -46,5 +49,5 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "ASA_HMI_Data_Agent"))
         self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabHmi), _translate("MainWindow", "HMI"))
         self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabAsaProg), _translate("MainWindow", "燒錄M128"))
-        self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabAvrdude), _translate("MainWindow", "M128_STK500"))
+        self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabAvrdude), _translate("MainWindow", "STK500燒錄"))
 

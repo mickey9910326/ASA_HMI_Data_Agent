@@ -10,6 +10,11 @@
     <height>700</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>微軟正黑體</family>
+   </font>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QGroupBox" name="groupBox_serial">
@@ -82,8 +87,13 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QLabel" name="label_steps">
+        <property name="font">
+         <font>
+          <family>微軟正黑體</family>
+         </font>
+        </property>
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;1. 將ASA_M128與電腦連線。&lt;/p&gt;&lt;p&gt;2. 將ASA_M128指撥開關撥到&amp;quot;prog&amp;quot;，並按下reset按鈕。&lt;/p&gt;&lt;p&gt;3. 選擇串列埠。&lt;/p&gt;&lt;p&gt;4. 點選選擇檔案，並選取欲燒錄之檔案。&lt;/p&gt;&lt;p&gt;5. 點選開始燒錄。&lt;/p&gt;&lt;p&gt;6. 將ASA_M128指撥開關撥到&amp;quot;eun&amp;quot;，並按下reset按鈕，以執行程式。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;1. 將ASA_M128與電腦連線。&lt;/p&gt;&lt;p&gt;2. 將ASA_M128指撥開關撥到&amp;quot;prog&amp;quot;，並按下reset按鈕。&lt;/p&gt;&lt;p&gt;3. 選擇串列埠。&lt;/p&gt;&lt;p&gt;4. 點選選擇檔案，並選取欲燒錄之檔案。&lt;/p&gt;&lt;p&gt;5. 點選開始燒錄。&lt;/p&gt;&lt;p&gt;6. 將ASA_M128指撥開關撥到&amp;quot;run&amp;quot;，並按下reset按鈕，以執行程式。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>

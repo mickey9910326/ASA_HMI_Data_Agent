@@ -504,7 +504,7 @@ class Ui_MainWidgetAvrdude(object):
         self.comboBox_mcuSelect.setItemText(0, _translate("MainWidgetAvrdude", "請選擇MCU..."))
         self.comboBox_mcuSelect.setItemText(1, _translate("MainWidgetAvrdude", "ATmega88"))
         self.pushButton_mcuDetect.setText(_translate("MainWidgetAvrdude", "偵測"))
-        self.groupBox_lock.setTitle(_translate("MainWidgetAvrdude", "Fuse bits"))
+        self.groupBox_lock.setTitle(_translate("MainWidgetAvrdude", "Lock bits"))
         self.label_lockTitle.setText(_translate("MainWidgetAvrdude", "Lock"))
         self.pushButton_lockWrite.setText(_translate("MainWidgetAvrdude", "Write"))
         self.pushButton_lockRead.setText(_translate("MainWidgetAvrdude", "Read"))

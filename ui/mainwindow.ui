@@ -20,6 +20,11 @@
    <string>ASA_HMI_Data_Agent</string>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+    </font>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget_main">
@@ -38,7 +43,7 @@
       </widget>
       <widget class="QWidget" name="tabAvrdude">
        <attribute name="title">
-        <string>M128_STK500</string>
+        <string>STK500燒錄</string>
        </attribute>
       </widget>
      </widget>

@@ -12,6 +12,9 @@ class Ui_MainWidgetHMI(object):
     def setupUi(self, MainWidgetHMI):
         MainWidgetHMI.setObjectName("MainWidgetHMI")
         MainWidgetHMI.resize(500, 700)
+        font = QtGui.QFont()
+        font.setFamily("微軟正黑體")
+        MainWidgetHMI.setFont(font)
         self.topLayout = QtWidgets.QVBoxLayout(MainWidgetHMI)
         self.topLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.topLayout.setContentsMargins(-1, 0, -1, 0)
@@ -103,6 +106,9 @@ class Ui_MainWidgetHMI(object):
         self.verticalLayout_7 = QtWidgets.QVBoxLayout()
         self.verticalLayout_7.setObjectName("verticalLayout_7")
         self.send_textEdit = QtWidgets.QTextEdit(self.tabSend)
+        font = QtGui.QFont()
+        font.setFamily("Consolas")
+        self.send_textEdit.setFont(font)
         self.send_textEdit.setObjectName("send_textEdit")
         self.verticalLayout_7.addWidget(self.send_textEdit)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
@@ -156,6 +162,9 @@ class Ui_MainWidgetHMI(object):
         self.send_textBrowserVerify.setSizePolicy(sizePolicy)
         self.send_textBrowserVerify.setMinimumSize(QtCore.QSize(75, 25))
         self.send_textBrowserVerify.setMaximumSize(QtCore.QSize(75, 25))
+        self.send_textBrowserVerify.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.send_textBrowserVerify.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.send_textBrowserVerify.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.send_textBrowserVerify.setObjectName("send_textBrowserVerify")
         self.verticalLayout_5.addWidget(self.send_textBrowserVerify)
         self.horizontalLayout_4.addLayout(self.verticalLayout_5)
@@ -201,7 +210,7 @@ class Ui_MainWidgetHMI(object):
         self.topLayout.addWidget(self.groupBox_SendRead)
 
         self.retranslateUi(MainWidgetHMI)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWidgetHMI)
 
     def retranslateUi(self, MainWidgetHMI):
