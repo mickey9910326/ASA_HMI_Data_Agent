@@ -4,7 +4,7 @@ from PyInstaller.__main__ import run
 import pathlib
 
 if __name__ == '__main__':
-    patch = 'v0.2.0'
+    patch = 'v0.2.1'
     
     os.system('rm -rf ./dist/ASA_HMI_Data_Agent')
     os.system('pyuic5 ui/mainwindow.ui -o ui_mainwindow.py')
