@@ -120,7 +120,7 @@ class BitsSelector(QDialog, Ui_BitSelector):
             self.chkFuseE[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseExtra, self.chkFuseE))
         for bit in range(0,8):
             self.chkLock[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_lock, self.chkLock))
-    
+            
     def show(self, partDesc):
         super(QDialog, self).show()
         config = ConfigParser()
@@ -129,28 +129,48 @@ class BitsSelector(QDialog, Ui_BitSelector):
             bitInfoList = config[partDesc]['fuse_l'].replace(' ', '').split(',')
             for bit in range(0,8):
                 self.chkFuseL[bit].setChecked(int(self.lineEdit_fuseLow.text(), 16) & (1<<bit))
-                self.chkFuseL[bit].setText(bitInfoList[bit])
+                if bitInfoList[bit] is not '':
+                    self.chkFuseL[bit].setText(bitInfoList[bit])
+                    self.chkFuseL[bit].setStyleSheet("color: rgb(0, 0, 0);")
+                else:
+                    self.chkFuseL[bit].setText('bit' + str(bit))
+                    self.chkFuseL[bit].setStyleSheet("color: rgb(128, 128, 128);")
         except (ValueError, KeyError):
             pass
         try:
             bitInfoList = config[partDesc]['fuse_h'].replace(' ', '').split(',')
             for bit in range(0,8):
                 self.chkFuseH[bit].setChecked(int(self.lineEdit_fuseHigh.text(), 16) & (1<<bit))
-                self.chkFuseH[bit].setText(bitInfoList[bit])
+                if bitInfoList[bit] is not '':
+                    self.chkFuseH[bit].setText(bitInfoList[bit])
+                    self.chkFuseH[bit].setStyleSheet("color: rgb(0, 0, 0);")
+                else:
+                    self.chkFuseH[bit].setText('bit' + str(bit))
+                    self.chkFuseH[bit].setStyleSheet("color: rgb(128, 128, 128);")
         except (ValueError, KeyError):
             pass
         try:
             bitInfoList = config[partDesc]['fuse_e'].replace(' ', '').split(',')
             for bit in range(0,8):
                 self.chkFuseE[bit].setChecked(int(self.lineEdit_fuseExtra.text(), 16) & (1<<bit))
-                self.chkFuseE[bit].setText(bitInfoList[bit])
+                if bitInfoList[bit] is not '':
+                    self.chkFuseE[bit].setText(bitInfoList[bit])
+                    self.chkFuseE[bit].setStyleSheet("color: rgb(0, 0, 0);")
+                else:
+                    self.chkFuseE[bit].setText('bit' + str(bit))
+                    self.chkFuseE[bit].setStyleSheet("color: rgb(128, 128, 128);")
         except (ValueError, KeyError):
             pass
         try:
             bitInfoList = config[partDesc]['lock'].replace(' ', '').split(',')
             for bit in range(0,8):
                 self.chkLock[bit].setChecked(int(self.lineEdit_lock.text(), 16) & (1<<bit))
-                self.chkLock[bit].setText(bitInfoList[bit])
+                if bitInfoList[bit] is not '':
+                    self.chkLock[bit].setText(bitInfoList[bit])
+                    self.chkLock[bit].setStyleSheet("color: rgb(0, 0, 0);")
+                else:
+                    self.chkLock[bit].setText('bit' + str(bit))
+                    self.chkLock[bit].setStyleSheet("color: rgb(128, 128, 128);")
         except (ValueError, KeyError):
             pass
         
