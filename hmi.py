@@ -153,6 +153,8 @@ class HMI(object):
             print('sys : Try to open port : ' + self.ser.port )
             try:
                 self.ser.open()
+                self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   "+ self.ser.port +' is opened.')
+
             except serial.serialutil.SerialException as e:
                 print('sys : Open port ' + self.ser.port + ' failed ')
                 print('     Exception : ', end='')
@@ -167,6 +169,7 @@ class HMI(object):
             print('sys : Try to close port : ' + self.ser.port )
             self.ser.isOpen = False
             self.ser.close()
+            self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   "+ self.ser.port +' is closed.')
             self.widget.s_btnPortToggle.setText("開啟串列埠")
             self.widget.text_terminal.append('( log: Close ' + self.ser.port +' success! )')
             # SerialThread
