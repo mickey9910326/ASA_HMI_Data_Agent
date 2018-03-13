@@ -13,7 +13,7 @@ from configparser import ConfigParser
 # ---- class ShellThread Start -------------------------------------------------
 class ShellThread(QThread):
     shellIsRunning = False
-    
+
     signalGetLine = pyqtSignal(str)
     signalReadFuseDone = pyqtSignal()
     signalReadLockDone = pyqtSignal()
@@ -34,7 +34,8 @@ class ShellThread(QThread):
         self.signalGetLine.emit('[' + times + '] ' + self.cmd + '\n')
         self.shellIsRunning = True
 
-        self.p = subprocess.Popen(self.cmd , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        print(self.cmd.split(' '))
+        self.p = subprocess.Popen(self.cmd.split(' ') , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
         while self.p.poll() is None:
             s = self.p.stderr.readline()
             if(s.decode("big5") is not ''):
@@ -61,7 +62,7 @@ class ShellThread(QThread):
             else:
                 pass
         except AttributeError as e:
-            pass 
+            pass
         self.terminate()
 
 # ---- class ShellThread End ---------------------------------------------------
@@ -120,7 +121,7 @@ class BitsSelector(QDialog, Ui_BitSelector):
             self.chkFuseE[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_fuseExtra, self.chkFuseE))
         for bit in range(0,8):
             self.chkLock[bit].clicked.connect(lambda:self.updateLineFromChk(self.lineEdit_lock, self.chkLock))
-            
+
     def show(self, partDesc):
         super(QDialog, self).show()
         config = ConfigParser()
@@ -173,14 +174,14 @@ class BitsSelector(QDialog, Ui_BitSelector):
                     self.chkLock[bit].setStyleSheet("color: rgb(128, 128, 128);")
         except (ValueError, KeyError):
             pass
-        
+
     def updateChkFromLine(self, chkList, lineEdit):
         try:
             for bit in range(0,8):
                 chkList[bit].setChecked(int(lineEdit.text(), 16) & (1<<bit))
         except ValueError:
             pass
-        
+
     def updateLineFromChk(self, lineEdit, chkList):
         try:
             val = 0
@@ -302,12 +303,12 @@ class Avrdude(object):
         self.updateCammand()
         self.widget.pushButton_startProgram.clicked.connect(self.startProgram)
         self.widget.pushButton_stopProgram.clicked.connect(self.stopProgram)
-        
+
         # ---- BitsSelector start ----------------------------------------------
         self.bitsSelector = BitsSelector()
         self.bitsSelector.accepted.connect(self.updateBitsFromSelector)
         # ---- BitsSelector end ------------------------------------------------
-        
+
     # ---- Methods Section start -----------------------------------------------
     def startProgram(self):
         self.updateCammand()
@@ -319,7 +320,7 @@ class Avrdude(object):
 
     def getBasicParameter(self):
         cmd = str()
-        cmd += 'tools/avrdude'
+        cmd += 'tools\\avrdude'
         cmd += ' -c stk500'
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
@@ -336,7 +337,7 @@ class Avrdude(object):
     # check all items and update cmd in line
     def updateCammand(self):
         cmd = str()
-        cmd += 'tools/avrdude'
+        cmd += 'tools\\avrdude'
         cmd += ' -c stk500'
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
@@ -620,14 +621,14 @@ class Avrdude(object):
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
     # ---- Fuse & Lock Group end -----------------------------------------------
-    
+
     # ---- BitsSelector start --------------------------------------------------
     def updateBitsFromSelector(self):
         self.widget.lineEdit_fuseHigh .setText(self.bitsSelector.lineEdit_fuseHigh .text())
         self.widget.lineEdit_fuseLow  .setText(self.bitsSelector.lineEdit_fuseLow  .text())
         self.widget.lineEdit_fuseExtra.setText(self.bitsSelector.lineEdit_fuseExtra.text())
         self.widget.lineEdit_lock     .setText(self.bitsSelector.lineEdit_lock.text())
-        
+
         pass
     def bitsSelectorShow(self):
         self.bitsSelector.lineEdit_fuseHigh .setText(self.widget.lineEdit_fuseHigh .text())

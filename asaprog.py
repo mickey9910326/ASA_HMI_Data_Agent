@@ -20,7 +20,7 @@ class ShellThread(QThread):
         self.signalGetLine.emit('[' + times + '] ' + self.cmd + '\n')
         self.shellIsRunning = True
 
-        self.p = subprocess.Popen(self.cmd , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        self.p = subprocess.Popen(self.cmd.spilt(' ') , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
         while self.p.poll() is None:
             s = self.p.stderr.readline()
             print(s)
@@ -96,7 +96,7 @@ class Asaprog(object):
 
     # ---- Basic Tools Group start ---------------------------------------------
     def startProg(self):
-        cmd = 'tools\cmd_ASA_loader'
+        cmd = 'tools\\cmd_ASA_loader'
         cmd += ' -p ' + self.widget.comboBox_selectPort.currentText().split('COM')[1]
         cmd += ' -h ' + self.widget.lineEdit_selectFile.text()
         self.shellThread.setCmd(cmd)

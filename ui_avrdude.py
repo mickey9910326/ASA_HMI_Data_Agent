@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWidgetAvrdude(object):
     def setupUi(self, MainWidgetAvrdude):
         MainWidgetAvrdude.setObjectName("MainWidgetAvrdude")
-        MainWidgetAvrdude.resize(526, 700)
+        MainWidgetAvrdude.resize(557, 700)
         self.gridLayout_8 = QtWidgets.QGridLayout(MainWidgetAvrdude)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.groupBox_config = QtWidgets.QGroupBox(MainWidgetAvrdude)
@@ -497,7 +497,7 @@ class Ui_MainWidgetAvrdude(object):
         self.checkBox_cancelVerify.setText(_translate("MainWidgetAvrdude", "取消驗證"))
         self.checkBox_eraseChip.setText(_translate("MainWidgetAvrdude", "清除晶片"))
         self.label_additionalParameter.setText(_translate("MainWidgetAvrdude", "增加參數"))
-        self.pushButton_startProgram.setText(_translate("MainWidgetAvrdude", "開始燒錄！"))
+        self.pushButton_startProgram.setText(_translate("MainWidgetAvrdude", "START"))
         self.pushButton_stopProgram.setText(_translate("MainWidgetAvrdude", "強制終止"))
         self.pushButton_bitSelector.setText(_translate("MainWidgetAvrdude", "BitSelector"))
         self.groupBox_mcu.setTitle(_translate("MainWidgetAvrdude", "MCU"))
