@@ -20,7 +20,7 @@ class ShellThread(QThread):
         self.signalGetLine.emit('[' + times + '] ' + self.cmd + '\n')
         self.shellIsRunning = True
 
-        self.p = subprocess.Popen(self.cmd.spilt(' ') , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
+        self.p = subprocess.Popen(self.cmd.split(' ') , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
         while self.p.poll() is None:
             s = self.p.stderr.readline()
             print(s)
