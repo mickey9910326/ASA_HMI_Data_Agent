@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
+    <width>557</width>
     <height>700</height>
    </rect>
   </property>
@@ -425,7 +425,7 @@
       </font>
      </property>
      <property name="text">
-      <string>開始燒錄！</string>
+      <string>START</string>
      </property>
     </widget>
    </item>
