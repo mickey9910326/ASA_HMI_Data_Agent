@@ -15,6 +15,10 @@ class SerialThread(QThread):
         self.ser = ser
         self.line = str()
         self.header = bytearray(b'\00\00\00')
+        self.resumingMode = False
+        self.resumingType = None
+        self.resumingByte = 0
+        self.resumingData = None
 
     def run(self):
         while (self.ser.isOpen is True):
@@ -39,19 +43,85 @@ class SerialThread(QThread):
                 if self.header == b'\xaa\xaa\xaa':
                     arrTypeNum = int.from_bytes(self.ser.read(1), byteorder='big')
                     arrBytes = int.from_bytes(self.ser.read(1), byteorder='big')
-                    chkSum = arrBytes;
-                    data = bytearray()
-                    for index in range(0,arrBytes):
-                        data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
-                        chkSum += data[index];
-                    getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
-                    if (getChkSum != chkSum%256):
-                        print('get array chksum Error')
+
+                    if self.resumingMode is False:
+                        chkSum = arrBytes;
+                        data = bytearray()
+                        for index in range(0,arrBytes):
+                            data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                            chkSum += data[index];
+                        getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                        if (getChkSum != chkSum%256):
+                            print('get array chksum Error')
+                        else:
+                            arr = decode_array(arrTypeNum,data)
+                            print('sys : Get ArrayData from devive: ' + str(arr))
+                            self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                            self.header = bytearray(b'\00\00\00')
+                    elif (arrBytes > 32) and (self.resumingMode is False): # 續傳起頭
+                        self.resumingMode = True
+                        self.resumingByte = arrBytes
+                        self.resumingData = bytearray()
+                        chkSum = arrBytes;
+                        for index in range(0,32):
+                            self.resumingData.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                            chkSum += self.resumingData[index];
+                        getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                        if (getChkSum != chkSum%256):
+                            print('get array chksum Error1')
+                            print('get first of resuming array')
+                            self.header = bytearray(b'\00\00\00')
+                        else:
+                            print('get first of resuming array')
+                            self.header = bytearray(b'\00\00\00')
+                            # arr = decode_array(arrTypeNum,data)
+                            # print('sys : Get ArrayData from devive: ' + str(arr))
+                            # self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                            # self.header = bytearray(b'\00\00\00')
+
+                    elif (arrBytes == 0) and (self.resumingMode is True):
+                        self.resumingMode = True
+                        chkSum = arrBytes;
+                        self.resumingData = bytearray()
+                        for index in range(0,32):
+                            self.resumingData.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                            chkSum += self.resumingData[index];
+                        getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                        if (getChkSum != chkSum%256):
+                            print('get array chksum Error')
+                        else:
+                            print('get middle of resuming array')
+                            self.header = bytearray(b'\00\00\00')
+
+                    elif (arrBytes <= 32) and (self.resumingMode is True):
+                        self.resumingMode = False
+                        chkSum = arrBytes;
+                        self.resumingData = bytearray()
+                        for index in range(0,arrBytes):
+                            self.resumingData.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                            chkSum += self.resumingData[index];
+                        getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                        if (getChkSum != chkSum%256):
+                            print('get array chksum Error')
+                        else:
+                            print('get last of resuming array')
+                            arr = decode_array(arrTypeNum,data)
+                            print('sys : Get ArrayData from devive: ' + str(arr))
+                            self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                            self.header = bytearray(b'\00\00\00')
+
                     else:
-                        arr = decode_array(arrTypeNum,data)
-                        print('sys : Get ArrayData from devive: ' + str(arr))
-                        self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
-                        self.header = bytearray(b'\00\00\00')
+                        print('th1 error porint 1')
+                            # if (getChkSum != chkSum%256):
+                            #     print('get array chksum Error')
+                            # else:
+                            #     arr = decode_array(arrTypeNum,data)
+                            #     print('sys : Get ArrayData from devive: ' + str(arr))
+                            #     self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                            #     self.header = bytearray(b'\00\00\00')
+
+
+
 
                 if self.header == b'\xbb\xbb\xbb':
                     getBytes = int.from_bytes(self.ser.read(1), byteorder='big')
