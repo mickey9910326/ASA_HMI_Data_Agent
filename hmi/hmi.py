@@ -2,9 +2,8 @@ import sys
 import serial
 from decodeASAformat import *
 from listport import serial_ports
-from ui_hmi_save_diolog import Ui_HmiSaveDiolog
-from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
+from hmi.hmi_save_diolog import HmiSaveDiolog
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):
@@ -153,16 +152,6 @@ class SerialThread(QThread):
                 else :
                     pass
 # ---- class Serial Thread End -------------------------------------------------
-
-# ---- class BitsSelector Start ------------------------------------------------
-class HmiSaveDiolog(QDialog, Ui_HmiSaveDiolog):
-    def __init__(self):
-        QDialog.__init__(self)
-        self.setupUi(self)
-        self.pushButton_matClose.clicked.connect(self.accept)
-    def show(self):
-        super(QDialog, self).show()
-
 
 class HMI(object):
     # ---- __init__ start ------------------------------------------------------

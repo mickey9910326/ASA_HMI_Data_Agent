@@ -32,7 +32,7 @@
         </widget>
        </item>
        <item row="1" column="0" rowspan="4">
-        <widget class="QTableWidget" name="tableWidget">
+        <widget class="QTableWidget" name="tableWidget_mat">
          <column>
           <property name="text">
            <string>name</string>
