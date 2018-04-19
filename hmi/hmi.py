@@ -2,6 +2,8 @@ import sys
 import serial
 from decodeASAformat import *
 from listport import serial_ports
+from ui_hmi_save_diolog import Ui_HmiSaveDiolog
+from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 
 # ---- class Serial Thread Start -----------------------------------------------
@@ -152,6 +154,15 @@ class SerialThread(QThread):
                     pass
 # ---- class Serial Thread End -------------------------------------------------
 
+# ---- class BitsSelector Start ------------------------------------------------
+class HmiSaveDiolog(QDialog, Ui_HmiSaveDiolog):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.setupUi(self)
+        self.pushButton_matClose.clicked.connect(self.accept)
+    def show(self):
+        super(QDialog, self).show()
+
 
 class HMI(object):
     # ---- __init__ start ------------------------------------------------------
@@ -159,6 +170,7 @@ class HMI(object):
         # super(MainWindow, self).__init__(parent)
         self.widget = widget
         self.mainWindow = mainWindow
+        self.hmiSaveDiolog = HmiSaveDiolog()
 
         # ---- Serial object Init Start ----------------------------------------
         self.ser = serial.Serial()
@@ -187,19 +199,25 @@ class HMI(object):
         self.widget.text_btnSaveTerminal.clicked.connect(self.text_terminalSave)
         # 接收區
         self.widget.rec_btnClear.clicked.connect(self.rec_textEditClear)
-        self.widget.rec_btnSave.clicked.connect(self.rec_textEditSave)
+        # self.widget.rec_btnSave.clicked.connect(self.rec_textEditSave)
+        self.widget.rec_btnSave.clicked.connect(self.hmiSaveDiolog.show)
         self.widget.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
         self.widget.rec_btnUi8ToString.clicked.connect(self.rec_textEditUi8ToString)
         self.widget.rec_btnStringToUi8.clicked.connect(self.rec_textEditStringToUi8)
         # 發送區
         self.widget.send_btnClear.clicked.connect(self.send_textEditClear)
-        self.widget.send_btnSave.clicked.connect(self.send_textEditSave)
+        # self.widget.send_btnSave.clicked.connect(self.send_textEditSave)
+        self.widget.send_btnSave.clicked.connect(self.hmiSaveDiolog.show)
         self.widget.send_btnReadFile.clicked.connect(self.send_textEditReadFile)
         self.widget.send_btnUi8ToString.clicked.connect(self.send_textEditUi8ToString)
         self.widget.send_btnStringToUi8.clicked.connect(self.send_textEditStringToUi8)
         self.widget.send_btnSendArray.clicked.connect(self.send_btnSendArray)
         self.widget.send_btnSendStruct.clicked.connect(self.send_btnSendStruct)
         # ---- Function Linking end --------------------------------------------
+
+        # ---- HmiSaveDiolog section start -------------------------------------
+        self.hmiSaveDiolog.accepted.connect(lambda : print('HmiSaveDiolog close'))
+        # ---- HmiSaveDiolog section end ---------------------------------------
 
     # ---- 串列埠設定區功能實現 start --------------------------------------------
     # Update port list in s_portComboBox

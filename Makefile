@@ -12,3 +12,4 @@ gui:
 	@pyuic5 ui/avrdude.ui -o ui_avrdude.py
 	@pyuic5 ui/asa_prog.ui -o ui_asa_prog.py
 	@pyuic5 ui/bit_selector.ui -o ui_bit_selector.py
+	@pyuic5 ui/hmi_save_diolog.ui -o ui_hmi_save_diolog.py

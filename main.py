@@ -7,7 +7,7 @@ from ui_mainwindow import Ui_MainWindow
 from ui_hmi import Ui_MainWidgetHMI
 from ui_avrdude import Ui_MainWidgetAvrdude
 from ui_asa_prog import Ui_MainWidgetAsaProg
-from hmi import HMI
+from hmi.hmi import HMI
 from avrdude import Avrdude
 from asaprog import Asaprog
 
