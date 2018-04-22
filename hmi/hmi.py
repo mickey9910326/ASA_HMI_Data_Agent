@@ -4,6 +4,7 @@ from decodeASAformat import *
 from listport import serial_ports
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from hmi.hmi_save_diolog import HmiSaveDiolog
+from hmi.hmi_load_dialog import HmiLoadDialog
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):
@@ -160,6 +161,7 @@ class HMI(object):
         self.widget = widget
         self.mainWindow = mainWindow
         self.hmiSaveDiolog = HmiSaveDiolog()
+        self.hmiLoadDialog = HmiLoadDialog()
 
         # ---- Serial object Init Start ----------------------------------------
         self.ser = serial.Serial()
