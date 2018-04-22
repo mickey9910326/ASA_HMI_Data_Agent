@@ -34,8 +34,9 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
     def loadFile(self):
         # TODO load file
         filename, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'Mat Files (*.mat);;csv Files (*.csv)' ,initialFilter='Mat Files (*.mat)')
-        name, extension = os.path.splitext(filename)
-        self.loadMatFile(filename)
+        if filename != '':
+            name, extension = os.path.splitext(filename)
+            self.loadMatFile(filename)
 
     def loadMatFile(self, filename):
         matDict = scipy.io.loadmat(filename)
@@ -52,13 +53,19 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
                     # TODO ERROR msg
                     pass
                 else:
-                    dataString = str()
-                    for i, data in enumerate(val[0,:]):
-                        dataString += str(val[0,i])
-                        if i is not nums-1:
-                            dataString += ', '
-                    self.appendRow(str(val.dtype), str(nums), str(val.nbytes), dataString)
                     self.arrayList.append(val[0,:])
+                    self.updateTableFromArrayList()
+
+    def updateTableFromArrayList(self):
+        self.tableWidget_mat.clearContents()
+        self.tableWidget_mat.setRowCount(0)
+        for array in self.arrayList:
+            dataString = str()
+            for i, data in enumerate(array):
+                dataString += str(array[i])
+                if i is not array.size-1:
+                    dataString += ', '
+            self.appendRow(str(array.dtype), str(array.size), str(array.nbytes), dataString)
 
     def appendRow(self, typeStr, numStr, byteStr, dataStr):
         row = self.tableWidget_mat.rowCount() + 1
@@ -81,23 +88,23 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
 
     def colMoveUp(self):
         row = self.tableWidget_mat.currentRow()
-        column = self.tableWidget_mat.currentColumn();
+        column = self.tableWidget_mat.currentColumn()
         if row > 0:
-            self.tableWidget_mat.insertRow(row-1)
-            for i in range(self.tableWidget_mat.columnCount()):
-               self.tableWidget_mat.setItem(row-1,i,self.tableWidget_mat.takeItem(row+1,i))
-               self.tableWidget_mat.setCurrentCell(row-1,column)
-            self.tableWidget_mat.removeRow(row+1)
+            tmp = self.arrayList[row]
+            self.arrayList[row]   = self.arrayList[row-1]
+            self.arrayList[row-1] = tmp
+            self.updateTableFromArrayList()
+            self.tableWidget_mat.setCurrentCell(row-1,column)
 
     def colMoveDown(self):
         row = self.tableWidget_mat.currentRow()
-        column = self.tableWidget_mat.currentColumn();
+        column = self.tableWidget_mat.currentColumn()
         if row < self.tableWidget_mat.rowCount()-1:
-            self.tableWidget_mat.insertRow(row+2)
-            for i in range(self.tableWidget_mat.columnCount()):
-               self.tableWidget_mat.setItem(row+2,i,self.tableWidget_mat.takeItem(row,i))
-               self.tableWidget_mat.setCurrentCell(row+2,column)
-            self.tableWidget_mat.removeRow(row)
+            tmp = self.arrayList[row]
+            self.arrayList[row]   = self.arrayList[row+1]
+            self.arrayList[row+1] = tmp
+            self.updateTableFromArrayList()
+            self.tableWidget_mat.setCurrentCell(row+1,column)
 
     def colDelete(self):
         row = self.tableWidget_mat.currentRow()
