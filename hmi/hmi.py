@@ -199,7 +199,7 @@ class HMI(object):
         self.widget.send_btnClear.clicked.connect(self.send_textEditClear)
         # self.widget.send_btnSave.clicked.connect(self.send_textEditSave)
         self.widget.send_btnSave.clicked.connect(self.hmiSaveDiolog.show)
-        self.widget.send_btnReadFile.clicked.connect(self.send_textEditReadFile)
+        self.widget.send_btnReadFile.clicked.connect(self.hmiLoadDialog.show)
         self.widget.send_btnUi8ToString.clicked.connect(self.send_textEditUi8ToString)
         self.widget.send_btnStringToUi8.clicked.connect(self.send_textEditStringToUi8)
         self.widget.send_btnSendArray.clicked.connect(self.send_btnSendArray)
@@ -209,6 +209,10 @@ class HMI(object):
         # ---- HmiSaveDiolog section start -------------------------------------
         self.hmiSaveDiolog.accepted.connect(lambda : print('HmiSaveDiolog close'))
         # ---- HmiSaveDiolog section end ---------------------------------------
+
+        # ---- HmiLoadDialog section start -------------------------------------
+        self.hmiLoadDialog.accepted.connect(self.updateTextFromLoadDialog)
+        # ---- HmiLoadDialog section end ---------------------------------------
 
     # ---- 串列埠設定區功能實現 start --------------------------------------------
     # Update port list in s_portComboBox
@@ -441,3 +445,7 @@ class HMI(object):
             self.widget.send_textEdit.clear()
             self.widget.text_terminal.append('( log: send struct of ' + structTypeString +'. )')
     # ---- 發送區功能實現 end ---------------------------------------------------
+
+    def updateTextFromLoadDialog(self):
+        str = self.hmiLoadDialog.getArrayListStr()
+        self.widget.send_textEdit.setText(str)
