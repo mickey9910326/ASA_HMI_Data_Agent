@@ -3,7 +3,11 @@ from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
 from PyQt5.QtWidgets import QFileDialog, QDialog
 from ui_hmi_save_diolog import Ui_HmiSaveDiolog
 
+import numpy as np
+from numpy import array
+
 # Reference : https://docs.scipy.org/doc/scipy/reference/tutorial/io.html
+# Reference : https://docs.scipy.org/doc/numpy-1.13.0/user/basics.types.html
 
 class Const:
     COL_NAME = 0
@@ -26,7 +30,8 @@ class HmiSaveDiolog(QDialog, Ui_HmiSaveDiolog):
         self.appendArray()
         self.appendArray()
 
-    def loadData(self, str):
+    def loadDataFromText(self, str):
+        # TODO
         pass
 
     def appendArray(self):
@@ -58,11 +63,9 @@ class HmiSaveDiolog(QDialog, Ui_HmiSaveDiolog):
                 data = list(map(int, dataStrList))
                 name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Mat Files (*.mat)' ,initialFilter='Mat Files (*.mat)')
                 if name is not '':
-                    scipy.io.savemat(name,{self.tableWidget_mat.item(1, Const.COL_NAME).text():data})
+                    scipy.io.savemat(name,{self.tableWidget_mat.item(1, Const.COL_NAME).text() : array(data, dtype=type)})
         elif (
-                type == 'float'
-                or type == 'double'
-                or type == 'float32'
+                type == 'float32'
                 or type == 'float64'
             ):
                 print('float')
@@ -70,28 +73,7 @@ class HmiSaveDiolog(QDialog, Ui_HmiSaveDiolog):
                 print(data)
                 name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Mat Files (*.mat)' ,initialFilter='Mat Files (*.mat)')
                 if name is not '':
-                    scipy.io.savemat(name,{self.tableWidget_mat.item(1, Const.COL_NAME).text():data})
-        # print('sys : decode Data Line : ' + s)
-        # datas = s.split(',')
-        # resDataList = list();
-        # if typeNum>=0 and typeNum<=7:
-        #     isInt = 1
-        # elif typeNum>=8 and typeNum<=9:
-        #     isInt = 0
-        # else:
-        #     return 0,-1
-        # for data in datas:
-        #     try:
-        #         if isInt:
-        #             num = int(data)
-        #         else:
-        #             num = float(data)
-        #         resDataList.append(num)
-        #     except (ValueError,SyntaxError):
-        #         for ch in data:
-        #             if ch == '\x20': # space
-        #                 pass
-        #             else:
-        #                 return resDataList, -1
-        #         return resDataList, 1
-        # return resDataList, 0
+                    scipy.io.savemat(name,{self.tableWidget_mat.item(1, Const.COL_NAME).text() : array(data, dtype=type)})
+        else :
+            # TODO error msg
+            pass
