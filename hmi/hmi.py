@@ -190,15 +190,14 @@ class HMI(object):
         self.widget.text_btnSaveTerminal.clicked.connect(self.text_terminalSave)
         # 接收區
         self.widget.rec_btnClear.clicked.connect(self.rec_textEditClear)
-        # self.widget.rec_btnSave.clicked.connect(self.rec_textEditSave)
+        self.widget.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.rec_textEdit.toPlainText()))
         self.widget.rec_btnSave.clicked.connect(self.hmiSaveDialog.show)
         self.widget.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
         self.widget.rec_btnUi8ToString.clicked.connect(self.rec_textEditUi8ToString)
         self.widget.rec_btnStringToUi8.clicked.connect(self.rec_textEditStringToUi8)
         # 發送區
         self.widget.send_btnClear.clicked.connect(self.send_textEditClear)
-        # self.widget.send_btnSave.clicked.connect(self.send_textEditSave)
-        self.widget.send_btnSave.clicked.connect(self.hmiSaveDialog.show)
+        self.widget.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.send_textEdit.toPlainText()))
         self.widget.send_btnReadFile.clicked.connect(self.hmiLoadDialog.show)
         self.widget.send_btnUi8ToString.clicked.connect(self.send_textEditUi8ToString)
         self.widget.send_btnStringToUi8.clicked.connect(self.send_textEditStringToUi8)

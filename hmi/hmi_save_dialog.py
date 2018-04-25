@@ -1,7 +1,8 @@
 import scipy.io
 from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
-from PyQt5.QtWidgets import QFileDialog, QDialog
 from ui_hmi_save_dialog import Ui_HmiSaveDialog
+import decodeASAformat as ds
+import hmi.text_decoder as hmidecoder
 
 import numpy as np
 from numpy import array
@@ -23,17 +24,33 @@ class HmiSaveDialog(QDialog, Ui_HmiSaveDialog):
         self.setupUi(self)
         self.pushButton_matClose.clicked.connect(self.accept)
         self.pushButton_matSave.clicked.connect(self.saveAsMat)
-        self.show()
 
     def show(self):
         super(QDialog, self).show()
-        self.appendArray()
-        self.appendArray()
-        self.appendArray()
 
-    def loadDataFromText(self, str):
-        # TODO
-        pass
+    def showAndLoadText(self, text):
+        self.show()
+        self.loadDataFromText(text)
+
+    def loadDataFromText(self, text):
+        resArrayNums, resTypeNumList, resDataListList, res = ds.decodeTextToStruct(text)
+        print('-----------------------------------------')
+        print(res)
+        if(res is -1):
+            pass
+        else:
+            self.tableWidget_mat.setRowCount(resArrayNums)
+            for i in range(resArrayNums):
+                typeNum = resTypeNumList[i]
+                dataList = resDataListList[i]
+                nums = len(dataList)
+                bytes = nums * ds.getTypeSize(typeNum)
+                dataListStr = ', '.join(str(x) for x in dataList)
+                self.tableWidget_mat.setItem(i, Const.COL_NAME, QTableWidgetItem(''))
+                self.tableWidget_mat.setItem(i, Const.COL_TYPE, QTableWidgetItem(hmidecoder.stdTypeStr(typeNum)))
+                self.tableWidget_mat.setItem(i, Const.COL_NUMS, QTableWidgetItem(str(nums)))
+                self.tableWidget_mat.setItem(i, Const.COL_BYTE, QTableWidgetItem(str(bytes)))
+                self.tableWidget_mat.setItem(i, Const.COL_DATA, QTableWidgetItem(dataListStr))
 
     def appendArray(self):
         row = self.tableWidget_mat.rowCount() + 1

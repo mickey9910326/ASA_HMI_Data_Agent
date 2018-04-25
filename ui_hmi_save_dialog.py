@@ -72,7 +72,7 @@ class Ui_HmiSaveDialog(object):
 
     def retranslateUi(self, HmiSaveDialog):
         _translate = QtCore.QCoreApplication.translate
-        HmiSaveDialog.setWindowTitle(_translate("HmiSaveDialog", "Dialog"))
+        HmiSaveDialog.setWindowTitle(_translate("HmiSaveDialog", "HmiSaveDialog"))
         self.pushButton_matSave.setText(_translate("HmiSaveDialog", "以陣列儲存"))
         item = self.tableWidget_mat.horizontalHeaderItem(0)
         item.setText(_translate("HmiSaveDialog", "name"))

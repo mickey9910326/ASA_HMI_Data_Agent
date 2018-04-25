@@ -64,24 +64,31 @@ def _decodeHmiText(text):
                 pass
             else:
                 typeNum = _decodeTypeLine(line)
-                status = 2;
-                isContinued = 1;
+                status = 2
+                isContinued = 1
+                dataArray = None
         elif status is 2: # get Data
-            if decodeIsSpaceLine(s):
-                pass
-            elif isContinued is 1:
-                newList, isContinued = decodeDataLine(s,typeNum)
-                dataList += newList
-                status = 2;
-            if isContinued is 0:
-                status = 3;
-            if isContinued is 1:
-                res = -1
-                return lineIdx, typeNum, dataList, res, resText
-        elif status == 3:
-            resText += s
-            resText += '\n'
-    return typeNum, dataList, res, resText
+            dataStrs = line.split(',')
+            if _isSpaceStr(dataStrs[-1]) or _isCommentStr(dataStrs[-1]):
+                isContinued = 1
+                status = 3
+            else:
+                isContinued = 0
+                status = 3
+            for dataStr in dataStrs[0:len(dataStrs)-isContinued]:
+                if dataStr is '':
+                    return -1
+                try:
+                    data =  np.fromstring(dataStr, dtype=_stdTypeStr(typeNum))
+                except (ValueError, TypeError) as e:
+                    return -1
+                    # raise
+                else:
+                    if dataArray is None:
+                        dataArray = data
+                    else:
+                        np.append(dataArray, data)
+    return dataArray
 
 def _textToLineList(text):
     lineList = list()
@@ -144,7 +151,7 @@ def _typeNum(s):
     else:
         return -1
 
-def _stdTypeStr(typeNum):
+def stdTypeStr(typeNum):
     if typeNum is 0:
         return 'int8'
     elif typeNum is 1:
@@ -170,7 +177,7 @@ def _stdTypeStr(typeNum):
     else:
         return False
 
-def _hmiTypeStr(typeNum):
+def hmiTypeStr(typeNum):
     if typeNum is 0:
         return 'i8'
     elif typeNum is 1:
@@ -196,7 +203,7 @@ def _hmiTypeStr(typeNum):
     else:
         return False
 
-def _packStr(typeNum):
+def packStr(typeNum):
     if typeNum == 0: # int8_t
         return 'b'
     elif typeNum == 1: # int16_t
@@ -242,10 +249,10 @@ def _isNullStr(s):
         return False
 
 def _isCommentStr(s):
-    idx = s.find('\\')
+    idx = s.find('//')
     if idx is -1:
         return False
-    elif _isSpaceLine(s[1:idx]):
+    elif _isSpaceStr(s[1:idx]):
         return True
     else:
         return False
