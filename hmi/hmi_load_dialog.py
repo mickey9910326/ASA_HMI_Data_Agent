@@ -12,14 +12,17 @@ from numpy import array
 # Reference : https://docs.scipy.org/doc/numpy-1.13.0/user/basics.types.html
 
 class Const:
-    COL_TYPE = 0
-    COL_NUMS = 1
-    COL_BYTE = 2
-    COL_DATA = 3
+    COL_NEWSQE = 0
+    COL_NAME = 1
+    COL_TYPE = 2
+    COL_NUMS = 3
+    COL_BYTE = 4
+    COL_DATA = 5
 
 # ---- class BitsSelector Start ------------------------------------------------
 class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
     arrayList = list()
+    nameList = list()
 
     def __init__(self):
         QDialog.__init__(self)
@@ -29,11 +32,11 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
         self.pushButton_down.clicked.connect(self.colMoveDown)
         self.pushButton_delete.clicked.connect(self.colDelete)
         self.pushButton_confirm.clicked.connect(self.confirm)
-        self.show()
+        self.pushButton_newSeq.clicked.connect(self.applyNewSeq)
 
     def loadFile(self):
         # TODO load file
-        filename, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'Mat Files (*.mat);;csv Files (*.csv)' ,initialFilter='Mat Files (*.mat)')
+        filename, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'Mat Files (*.mat);;' ,initialFilter='Mat Files (*.mat)')
         if filename != '':
             name, extension = os.path.splitext(filename)
             self.loadMatFile(filename)
@@ -54,22 +57,25 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
                     pass
                 else:
                     self.arrayList.append(val[0,:])
+                    self.nameList.append(key)
                     self.updateTableFromArrayList()
 
     def updateTableFromArrayList(self):
         self.tableWidget_mat.clearContents()
         self.tableWidget_mat.setRowCount(0)
-        for array in self.arrayList:
+        for row, array in enumerate(self.arrayList):
             dataString = str()
             for i, data in enumerate(array):
                 dataString += str(array[i])
                 if i is not array.size-1:
                     dataString += ', '
-            self.appendRow(str(array.dtype), str(array.size), str(array.nbytes), dataString)
+            self.appendRow(self.nameList[row], str(array.dtype), str(array.size), str(array.nbytes), dataString)
 
-    def appendRow(self, typeStr, numStr, byteStr, dataStr):
+    def appendRow(self, name, typeStr, numStr, byteStr, dataStr):
         row = self.tableWidget_mat.rowCount() + 1
         self.tableWidget_mat.setRowCount(row)
+        self.tableWidget_mat.setItem(row-1, Const.COL_NEWSQE, QTableWidgetItem(''))
+        self.tableWidget_mat.setItem(row-1, Const.COL_NAME, QTableWidgetItem(name))
         self.tableWidget_mat.setItem(row-1, Const.COL_TYPE, QTableWidgetItem(typeStr))
         self.tableWidget_mat.setItem(row-1, Const.COL_NUMS, QTableWidgetItem(numStr))
         self.tableWidget_mat.setItem(row-1, Const.COL_BYTE, QTableWidgetItem(byteStr))
@@ -80,6 +86,8 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
         pass
 
     def show(self):
+        self.tableWidget_mat.setRowCount(0)
+        self.arrayList = list()
         super(QDialog, self).show()
 
     def confirm(self):
@@ -111,7 +119,27 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
         self.tableWidget_mat.removeRow(row)
 
     def getArrayListStr(self):
+        self.tableToArrayList()
         return arrayListToStr(self.arrayList)
+
+    def tableToArrayList(self):
+        self.arrayList = list()
+        for row in range(self.tableWidget_mat.rowCount()):
+            type = self.tableWidget_mat.item(row, Const.COL_TYPE).text()
+            dataStr = self.tableWidget_mat.item(row, Const.COL_DATA).text()
+            self.arrayList.append(np.fromstring(dataStr, dtype=type, sep=','))
+
+    def applyNewSeq(self):
+        self.tableToArrayList()
+        newArrayList = list(self.arrayList)
+        newNameList = list(self.nameList)
+        for row in range(self.tableWidget_mat.rowCount()):
+            newIdx = int(self.tableWidget_mat.item(row, Const.COL_NEWSQE).text())-1
+            newArrayList[newIdx] = self.arrayList[row]
+            newNameList[newIdx] = self.nameList[row]
+        self.arrayList = newArrayList
+        self.nameList = newNameList
+        self.updateTableFromArrayList()
 
 def arrayListToStr(arrayList):
     typeNums = len(arrayList)
