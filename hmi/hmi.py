@@ -3,7 +3,7 @@ import serial
 from decodeASAformat import *
 from listport import serial_ports
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
-from hmi.hmi_save_diolog import HmiSaveDiolog
+from hmi.hmi_save_dialog import HmiSaveDialog
 from hmi.hmi_load_dialog import HmiLoadDialog
 
 # ---- class Serial Thread Start -----------------------------------------------
@@ -160,7 +160,7 @@ class HMI(object):
         # super(MainWindow, self).__init__(parent)
         self.widget = widget
         self.mainWindow = mainWindow
-        self.hmiSaveDiolog = HmiSaveDiolog()
+        self.hmiSaveDialog = HmiSaveDialog()
         self.hmiLoadDialog = HmiLoadDialog()
 
         # ---- Serial object Init Start ----------------------------------------
@@ -191,14 +191,14 @@ class HMI(object):
         # 接收區
         self.widget.rec_btnClear.clicked.connect(self.rec_textEditClear)
         # self.widget.rec_btnSave.clicked.connect(self.rec_textEditSave)
-        self.widget.rec_btnSave.clicked.connect(self.hmiSaveDiolog.show)
+        self.widget.rec_btnSave.clicked.connect(self.hmiSaveDialog.show)
         self.widget.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
         self.widget.rec_btnUi8ToString.clicked.connect(self.rec_textEditUi8ToString)
         self.widget.rec_btnStringToUi8.clicked.connect(self.rec_textEditStringToUi8)
         # 發送區
         self.widget.send_btnClear.clicked.connect(self.send_textEditClear)
         # self.widget.send_btnSave.clicked.connect(self.send_textEditSave)
-        self.widget.send_btnSave.clicked.connect(self.hmiSaveDiolog.show)
+        self.widget.send_btnSave.clicked.connect(self.hmiSaveDialog.show)
         self.widget.send_btnReadFile.clicked.connect(self.hmiLoadDialog.show)
         self.widget.send_btnUi8ToString.clicked.connect(self.send_textEditUi8ToString)
         self.widget.send_btnStringToUi8.clicked.connect(self.send_textEditStringToUi8)
@@ -206,9 +206,9 @@ class HMI(object):
         self.widget.send_btnSendStruct.clicked.connect(self.send_btnSendStruct)
         # ---- Function Linking end --------------------------------------------
 
-        # ---- HmiSaveDiolog section start -------------------------------------
-        self.hmiSaveDiolog.accepted.connect(lambda : print('HmiSaveDiolog close'))
-        # ---- HmiSaveDiolog section end ---------------------------------------
+        # ---- HmiSaveDialog section start -------------------------------------
+        self.hmiSaveDialog.accepted.connect(lambda : print('HmiSaveDialog close'))
+        # ---- HmiSaveDialog section end ---------------------------------------
 
         # ---- HmiLoadDialog section start -------------------------------------
         self.hmiLoadDialog.accepted.connect(self.updateTextFromLoadDialog)

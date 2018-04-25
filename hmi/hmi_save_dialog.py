@@ -1,7 +1,7 @@
 import scipy.io
 from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
 from PyQt5.QtWidgets import QFileDialog, QDialog
-from ui_hmi_save_diolog import Ui_HmiSaveDiolog
+from ui_hmi_save_dialog import Ui_HmiSaveDialog
 
 import numpy as np
 from numpy import array
@@ -17,7 +17,7 @@ class Const:
     COL_DATA = 4
 
 # ---- class BitsSelector Start ------------------------------------------------
-class HmiSaveDiolog(QDialog, Ui_HmiSaveDiolog):
+class HmiSaveDialog(QDialog, Ui_HmiSaveDialog):
     def __init__(self):
         QDialog.__init__(self)
         self.setupUi(self)
@@ -27,6 +27,7 @@ class HmiSaveDiolog(QDialog, Ui_HmiSaveDiolog):
 
     def show(self):
         super(QDialog, self).show()
+        self.appendArray()
         self.appendArray()
         self.appendArray()
 

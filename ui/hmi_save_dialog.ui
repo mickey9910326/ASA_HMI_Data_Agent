@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HmiSaveDiolog</class>
- <widget class="QDialog" name="HmiSaveDiolog">
+ <class>HmiSaveDialog</class>
+ <widget class="QDialog" name="HmiSaveDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,8 +10,13 @@
     <height>349</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>微軟正黑體</family>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>HmiSaveDialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
@@ -27,11 +32,11 @@
        <item row="1" column="1">
         <widget class="QPushButton" name="pushButton_matSave">
          <property name="text">
-          <string>Save</string>
+          <string>以陣列儲存</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" rowspan="4">
+       <item row="1" column="0" rowspan="5">
         <widget class="QTableWidget" name="tableWidget_mat">
          <column>
           <property name="text">
@@ -60,7 +65,7 @@
          </column>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -73,10 +78,17 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="1">
+       <item row="3" column="1">
         <widget class="QPushButton" name="pushButton_matClose">
          <property name="text">
-          <string>Close</string>
+          <string>關閉</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>以結構儲存</string>
          </property>
         </widget>
        </item>
@@ -86,11 +98,39 @@
       <attribute name="title">
        <string>csv file</string>
       </attribute>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>9</y>
+         <width>591</width>
+         <height>301</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>48</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>WIP</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>tableWidget_mat</tabstop>
+  <tabstop>pushButton_matSave</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pushButton_matClose</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

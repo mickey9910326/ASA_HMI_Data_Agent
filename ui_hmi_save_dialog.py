@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/hmi_save_diolog.ui'
+# Form implementation generated from reading ui file 'ui/hmi_save_dialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.9
 #
@@ -63,8 +63,12 @@ class Ui_HmiSaveDialog(object):
         self.gridLayout_2.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         self.retranslateUi(HmiSaveDialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(HmiSaveDialog)
+        HmiSaveDialog.setTabOrder(self.tabWidget, self.tableWidget_mat)
+        HmiSaveDialog.setTabOrder(self.tableWidget_mat, self.pushButton_matSave)
+        HmiSaveDialog.setTabOrder(self.pushButton_matSave, self.pushButton)
+        HmiSaveDialog.setTabOrder(self.pushButton, self.pushButton_matClose)
 
     def retranslateUi(self, HmiSaveDialog):
         _translate = QtCore.QCoreApplication.translate
