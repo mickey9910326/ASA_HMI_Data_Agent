@@ -34,8 +34,6 @@ class HmiSaveDialog(QDialog, Ui_HmiSaveDialog):
 
     def loadDataFromText(self, text):
         resArrayNums, resTypeNumList, resDataListList, res = ds.decodeTextToStruct(text)
-        print('-----------------------------------------')
-        print(res)
         if(res is -1):
             pass
         else:
@@ -52,46 +50,14 @@ class HmiSaveDialog(QDialog, Ui_HmiSaveDialog):
                 self.tableWidget_mat.setItem(i, Const.COL_BYTE, QTableWidgetItem(str(bytes)))
                 self.tableWidget_mat.setItem(i, Const.COL_DATA, QTableWidgetItem(dataListStr))
 
-    def appendArray(self):
-        row = self.tableWidget_mat.rowCount() + 1
-        self.tableWidget_mat.setRowCount(row)
-        self.tableWidget_mat.setItem(row-1, Const.COL_NAME, QTableWidgetItem("ui8"))
-        self.tableWidget_mat.setItem(row-1, Const.COL_TYPE, QTableWidgetItem("uint8"))
-        self.tableWidget_mat.setItem(row-1, Const.COL_NUMS, QTableWidgetItem("5"))
-        self.tableWidget_mat.setItem(row-1, Const.COL_BYTE, QTableWidgetItem("5"))
-        self.tableWidget_mat.setItem(row-1, Const.COL_DATA, QTableWidgetItem("1,2,3,4,5"))
-        # type = self.tableWidget_mat.itemAt(1, Const.COL_TYPE).text()
-        # print('type' + type)
-
     def saveAsMat(self):
-        type = self.tableWidget_mat.item(0, Const.COL_TYPE).text()
-        dataStrList = self.tableWidget_mat.item(0, Const.COL_DATA).text().split(',')
-        print('type' + type)
-        if (
-                type == 'int8'
-                or type == 'int16'
-                or type == 'int32'
-                or type == 'int64'
-                or type == 'uint8'
-                or type == 'uint16'
-                or type == 'uint32'
-                or type == 'uint64'
-            ):
-                print('int')
-                data = list(map(int, dataStrList))
-                name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Mat Files (*.mat)' ,initialFilter='Mat Files (*.mat)')
-                if name is not '':
-                    scipy.io.savemat(name,{self.tableWidget_mat.item(1, Const.COL_NAME).text() : array(data, dtype=type)})
-        elif (
-                type == 'float32'
-                or type == 'float64'
-            ):
-                print('float')
-                data = list(map(float, dataStrList))
-                print(data)
-                name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Mat Files (*.mat)' ,initialFilter='Mat Files (*.mat)')
-                if name is not '':
-                    scipy.io.savemat(name,{self.tableWidget_mat.item(1, Const.COL_NAME).text() : array(data, dtype=type)})
-        else :
-            # TODO error msg
-            pass
+        data = dict()
+        for row in range(self.tableWidget_mat.rowCount()):
+            type = self.tableWidget_mat.item(row, Const.COL_TYPE).text()
+            dataStr = self.tableWidget_mat.item(row, Const.COL_DATA).text()
+            name = self.tableWidget_mat.item(row, Const.COL_NAME).text()
+            data[name] = np.fromstring(dataStr, dtype=type, sep=',')
+
+        name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Mat Files (*.mat)' ,initialFilter='Mat Files (*.mat)')
+        if name is not '':
+            scipy.io.savemat(name, data)
