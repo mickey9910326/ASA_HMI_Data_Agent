@@ -296,14 +296,14 @@
             <item>
              <widget class="QPushButton" name="send_btnSave">
               <property name="text">
-               <string>儲存文字檔</string>
+               <string>儲存檔案</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="send_btnReadFile">
               <property name="text">
-               <string>讀取文字檔</string>
+               <string>讀取檔案</string>
               </property>
              </widget>
             </item>
@@ -444,7 +444,7 @@
             <item>
              <widget class="QPushButton" name="rec_btnSave">
               <property name="text">
-               <string>儲存文字檔</string>
+               <string>儲存檔案</string>
               </property>
              </widget>
             </item>

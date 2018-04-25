@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HmiLoadDialog</class>
+ <widget class="QDialog" name="HmiLoadDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>644</width>
+    <height>330</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>微軟正黑體</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>HmiLoadDialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_mat">
+      <attribute name="title">
+       <string>mat file</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="8" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="1">
+        <widget class="QPushButton" name="pushButton_up">
+         <property name="text">
+          <string>上移</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QPushButton" name="pushButton_confirm">
+         <property name="text">
+          <string>確認</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" rowspan="9">
+        <widget class="QTableWidget" name="tableWidget_mat">
+         <column>
+          <property name="text">
+           <string>新順序</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>變數名稱</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>型態</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>個數</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>總byte</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>資料</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QPushButton" name="pushButton_down">
+         <property name="text">
+          <string>下移</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QPushButton" name="pushButton_delete">
+         <property name="text">
+          <string>刪除</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButton_load">
+         <property name="text">
+          <string>選擇檔案</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="pushButton_newSeq">
+         <property name="text">
+          <string>應用新順序</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_csv">
+      <attribute name="title">
+       <string>csv file</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>tableWidget_mat</tabstop>
+  <tabstop>pushButton_load</tabstop>
+  <tabstop>pushButton_newSeq</tabstop>
+  <tabstop>pushButton_up</tabstop>
+  <tabstop>pushButton_down</tabstop>
+  <tabstop>pushButton_delete</tabstop>
+  <tabstop>pushButton_confirm</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
