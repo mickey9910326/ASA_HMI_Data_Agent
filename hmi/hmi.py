@@ -1,6 +1,6 @@
 import sys
 import serial
-from decodeASAformat import *
+from hmi.decodeASAformat import *
 from listport import serial_ports
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from hmi.hmi_save_dialog import HmiSaveDialog
