@@ -9,6 +9,5 @@ if __name__ == '__main__':
     print(s2)
     print(s3)
 
-
     descList = parser.listAllPartDesc()
     print(descList)
