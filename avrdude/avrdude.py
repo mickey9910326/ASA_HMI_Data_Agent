@@ -5,9 +5,9 @@ import serial
 from listport import serial_ports
 import subprocess
 import time
-from ui_bit_selector import Ui_BitSelector
+from ui.ui_bit_selector import Ui_BitSelector
 
-from avrdudeConfParser import AvrdudeConfParser
+from avrdude.avrdudeConfParser import AvrdudeConfParser
 from configparser import ConfigParser
 
 # ---- class ShellThread Start -------------------------------------------------
