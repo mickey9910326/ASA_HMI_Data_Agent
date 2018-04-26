@@ -1,4 +1,4 @@
-from decodeASAformat import *
+from hmi.decodeASAformat import *
 
 if __name__ == "__main__":
     typeNumList , typeDataNumList = decodeFormatString('ui8x4,f32x5')

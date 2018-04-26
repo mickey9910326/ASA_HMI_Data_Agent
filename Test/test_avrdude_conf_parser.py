@@ -1,4 +1,4 @@
-from avrdudeConfParser import AvrdudeConfParser
+from avrdude.avrdudeConfParser import AvrdudeConfParser
 
 if __name__ == '__main__':
     parser = AvrdudeConfParser()
