@@ -190,7 +190,7 @@ class HMI(object):
         self.widget.text_btnSaveTerminal.clicked.connect(self.text_terminalSave)
         # 接收區
         self.widget.rec_btnClear.clicked.connect(self.rec_textEditClear)
-        self.widget.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.rec_textEdit.toPlainText()))
+        self.widget.rec_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.rec_textEdit.toPlainText()))
         self.widget.rec_btnSave.clicked.connect(self.hmiSaveDialog.show)
         self.widget.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
         self.widget.rec_btnUi8ToString.clicked.connect(self.rec_textEditUi8ToString)
