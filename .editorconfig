@@ -18,3 +18,6 @@ indent_size = 1
 
 [requirements.txt]
 charset = utf-16 LE
+
+[avrdude_settings.ini]
+charset = big5

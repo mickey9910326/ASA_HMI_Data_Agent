@@ -1,4 +1,4 @@
-from avrdudeConfParser import AvrdudeConfParser
+from avrdude.avrdudeConfParser import AvrdudeConfParser
 
 if __name__ == '__main__':
     parser = AvrdudeConfParser()
@@ -8,7 +8,6 @@ if __name__ == '__main__':
     print(s1)
     print(s2)
     print(s3)
-
 
     descList = parser.listAllPartDesc()
     print(descList)

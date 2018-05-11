@@ -7,11 +7,11 @@ if __name__ == '__main__':
     patch = 'v0.2.6'
 
     os.system('rm -r ./dist/ASA_HMI_Data_Agent')
-    os.system('pyuic5 ui/mainwindow.ui -o ui_mainwindow.py')
-    os.system('pyuic5 ui/hmi.ui -o ui_hmi.py')
-    os.system('pyuic5 ui/avrdude.ui -o ui_avrdude.py')
-    os.system('pyuic5 ui/asa_prog.ui -o ui_asa_prog.py')
-    os.system('pyuic5 ui/bit_selector.ui -o ui_bit_selector.py')
+    os.system('pyuic5 ui/mainwindow.ui -o ui/ui_mainwindow.py')
+    os.system('pyuic5 ui/hmi.ui -o ui/ui_hmi.py')
+    os.system('pyuic5 ui/avrdude.ui -o ui/ui_avrdude.py')
+    os.system('pyuic5 ui/asa_prog.ui -o ui/ui_asa_prog.py')
+    os.system('pyuic5 ui/bit_selector.ui -o ui/ui_bit_selector.py')
 
     opts = [
             # NOTE '-F' maybe not stable in some environment, need more test.
@@ -27,17 +27,16 @@ if __name__ == '__main__':
             # NOTE you need to change the libs path.
             # If it has been include in yout system PATH, you don't have to add it.
             # Need Windows Kits 10 to support win10.
-            '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
-            '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\plugins',
-            '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit',
+            '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\bin',
+            '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\plugins',
+            '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit',
             '--paths=C:\\Users\\Lite\\AppData\\Roaming\\pyinstaller\\bincache00_py36_32bit',
             '--paths=C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x86',
             '--paths=C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64',
 
             # NOTE Need DLLs in package numpy and scipy.
-            '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\scipy\\extra-dll',
-            '--paths=D:\\Compiler\\Python36-32\\Lib\\site-packages\\numpy\\.libs',
-
+            '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\scipy\\extra-dll',
+            '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\numpy\\.libs',
             # NOTE Need extra moudle in package scipy.
             '--hidden-import=scipy._lib.messagestream',
 

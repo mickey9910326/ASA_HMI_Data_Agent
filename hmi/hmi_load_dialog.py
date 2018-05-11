@@ -2,8 +2,8 @@ from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
 from PyQt5.QtWidgets import QFileDialog, QDialog
 import scipy.io
 import os.path
-from ui_hmi_load_dialog import Ui_HmiLoadDialog
-from decodeASAformat import *
+from ui.ui_hmi_load_dialog import Ui_HmiLoadDialog
+from hmi.decodeASAformat import *
 
 import numpy as np
 from numpy import array

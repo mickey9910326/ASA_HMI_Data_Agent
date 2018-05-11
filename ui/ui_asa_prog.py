@@ -105,4 +105,3 @@ class Ui_MainWidgetAsaProg(object):
         self.pushButton_startProg.setText(_translate("MainWidgetAsaProg", "開始燒錄"))
         self.pushButton_stopProg.setText(_translate("MainWidgetAsaProg", "強制終止"))
         self.pushButton_settings.setText(_translate("MainWidgetAsaProg", "設定"))
-
