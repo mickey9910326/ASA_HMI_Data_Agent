@@ -44,10 +44,12 @@ class SerialThread(QThread):
                 self.header[2] = int.from_bytes(ch, byteorder='big')
                 if self.header == b'\xaa\xaa\xaa':
                     arrTypeNum = int.from_bytes(self.ser.read(1), byteorder='big')
-                    arrBytes = int.from_bytes(self.ser.read(2), byteorder='big')
+                    arrBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
+                    arrBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
+                    arrBytes = arrBytesH<<8 | arrBytesL
 
                     if self.resumingMode is False:
-                        chkSum = arrBytes
+                        chkSum = arrBytesH + arrBytesL
                         data = bytearray()
                         for index in range(0,arrBytes):
                             data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
@@ -60,76 +62,19 @@ class SerialThread(QThread):
                             print('sys : Get ArrayData from devive: ' + str(arr))
                             self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
                             self.header = bytearray(b'\00\00\00')
-                    # elif (arrBytes > 32) and (self.resumingMode is False): # 續傳起頭
-                    #     self.resumingMode = True
-                    #     self.resumingByte = arrBytes
-                    #     self.resumingData = bytearray()
-                    #     chkSum = arrBytes;
-                    #     for index in range(0,32):
-                    #         self.resumingData.append(int.from_bytes(self.ser.read(1), byteorder='little'))
-                    #         chkSum += self.resumingData[index];
-                    #     getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
-                    #     if (getChkSum != chkSum%256):
-                    #         print('get array chksum Error1')
-                    #         print('get first of resuming array')
-                    #         self.header = bytearray(b'\00\00\00')
-                    #     else:
-                    #         print('get first of resuming array')
-                    #         self.header = bytearray(b'\00\00\00')
-                    #         # arr = decode_array(arrTypeNum,data)
-                    #         # print('sys : Get ArrayData from devive: ' + str(arr))
-                    #         # self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
-                    #         # self.header = bytearray(b'\00\00\00')
-                    #
-                    # elif (arrBytes == 0) and (self.resumingMode is True):
-                    #     self.resumingMode = True
-                    #     chkSum = arrBytes;
-                    #     self.resumingData = bytearray()
-                    #     for index in range(0,32):
-                    #         self.resumingData.append(int.from_bytes(self.ser.read(1), byteorder='little'))
-                    #         chkSum += self.resumingData[index];
-                    #     getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
-                    #     if (getChkSum != chkSum%256):
-                    #         print('get array chksum Error')
-                    #     else:
-                    #         print('get middle of resuming array')
-                    #         self.header = bytearray(b'\00\00\00')
-                    #
-                    # elif (arrBytes <= 32) and (self.resumingMode is True):
-                    #     self.resumingMode = False
-                    #     chkSum = arrBytes;
-                    #     self.resumingData = bytearray()
-                    #     for index in range(0,arrBytes):
-                    #         self.resumingData.append(int.from_bytes(self.ser.read(1), byteorder='little'))
-                    #         chkSum += self.resumingData[index];
-                    #     getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
-                    #     if (getChkSum != chkSum%256):
-                    #         print('get array chksum Error')
-                    #     else:
-                    #         print('get last of resuming array')
-                    #         arr = decode_array(arrTypeNum,data)
-                    #         print('sys : Get ArrayData from devive: ' + str(arr))
-                    #         self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
-                    #         self.header = bytearray(b'\00\00\00')
-
                     else:
                         print('th1 error porint 1')
-                            # if (getChkSum != chkSum%256):
-                            #     print('get array chksum Error')
-                            # else:
-                            #     arr = decode_array(arrTypeNum,data)
-                            #     print('sys : Get ArrayData from devive: ' + str(arr))
-                            #     self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
-                            #     self.header = bytearray(b'\00\00\00')
-
-
-
 
                 if self.header == b'\xbb\xbb\xbb':
-                    getBytes = int.from_bytes(self.ser.read(2), byteorder='big')
+                    getBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
+                    getBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
+                    getBytes = getBytesH<<8 | getBytesL
+                    chkSum = getBytesH + getBytesL
+
                     getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
                     dataBytes = getBytes-getFormatBytes-1
-                    chkSum = getBytes + getFormatBytes
+                    chkSum += getFormatBytes
+
                     formatString = bytearray()
                     data = bytearray()
                     for index in range(0,getFormatBytes):
@@ -426,12 +371,17 @@ class HMI(object):
             #     return False
 
             self.ser.write(b'\xab\xab\xab')
-            self.ser.write(pack('>B',structBytes&0xFF))
-            self.ser.write(pack('>B',structBytes>>8))
+            structBytesH = structBytes>>8
+            structBytesL = structBytes&0xFF
+            self.ser.write(pack('>B',structBytesH))
+            self.ser.write(pack('>B',structBytesL))
+            chkSum += structBytesH + structBytesL
+
             self.ser.write(pack('>B',structTypeStringByte))
             self.ser.write(bytes(structTypeString, encoding = "ascii"))
-            testData = bytearray();
             chkSum += sum(bytes(structTypeString, encoding = "ascii"));
+
+            testData = bytearray();
             print(bytes(structTypeString, encoding = "ascii"))
             for idx, dataList in enumerate(dataListList):
                 for data in dataList:
