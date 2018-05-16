@@ -3,8 +3,9 @@ import os
 from PyInstaller.__main__ import run
 import pathlib
 
+__VERSION__ = 'v0.3.1'
+
 if __name__ == '__main__':
-    patch = 'v0.3.0'
 
     os.system('rm -r ./dist/ASA_HMI_Data_Agent')
     os.system('pyuic5 ui/mainwindow.ui -o ui/ui_mainwindow.py')
@@ -55,6 +56,6 @@ if __name__ == '__main__':
     os.system('cp -r ./tools ./dist/ASA_HMI_Data_Agent/tools')
     os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent/avrdude_settings.ini')
     os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent/bits_info.ini')
+    tarpath = './dist/' + 'ASA_HMI_Data_Agent'+ '_' + __VERSION__ + '.tar.gz'
 
-    tarpath = './dist/' + 'ASA_HMI_Data_Agent'+ '_' + patch + '.tar.gz'
     os.system('tar -zc -C ./dist -f ' + tarpath + ' ./ASA_HMI_Data_Agent')
