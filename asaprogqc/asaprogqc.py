@@ -4,6 +4,17 @@ from listport import serial_ports
 from time import sleep
 import py_asa_loader
 import math
+import serial
+
+stepText = """
+1. PC -> QC_M128 : 'S'
+2. QC_M128 -> PC : 'O'
+3. PC -> QC_M128 : '1'
+4. QC_M128 切通道
+5. QC_M128 -> PC : '1'
+6. PC開始燒錄，並完成
+7. 回到步驟 3. 數字增加
+"""
 
 # ---- class ShellThread Start -------------------------------------------------
 class ShellThread(QThread):
@@ -92,6 +103,14 @@ class AsaprogQc(object):
         self.widget.pushButton_stopProg.clicked.connect(self.stopProg)
         # ---- Basic Functions Group end ---------------------------------------
 
+        # ---- Serial object Init Start ----------------------------------------
+        self.serialQcM128 = serial.Serial()
+        self.serialQcM128.isOpen = False
+        self.serialQcM128.baudrate = 38400
+        self.serialQcM128.timeout = 10
+        # ---- Serial object Init End ------------------------------------------
+
+        self.widget.label_steps.setText(stepText)
 
     # ---- Serial Group start --------------------------------------------------
     # Update port list in s_portComboBox
@@ -131,11 +150,13 @@ class AsaprogQc(object):
             return True
 
     def startProg(self):
+
         if self.shellThread.isRunning():
             return
+        self.widget.label_statusContent.setText(u"偵測裝置中...")
         port = serial_ports()[0]
         if port == '':
-            self.widget.label_statusContent.setText(u"未選擇串列埠")
+            self.widget.label_statusContent.setText(u"未偵測到可用串列埠")
             return
         hexfile = self.widget.lineEdit_selectFile.text()
         if hexfile == '':
@@ -178,3 +199,16 @@ class AsaprogQc(object):
         self.widget.label_statusContent.setText(u"與串列埠失去連線，請檢察USB線是否有連接好")
 
     # ---- th Group end --------------------------------------------------------
+
+    def openQcPort(self):
+        self.ser.port = self.widget.s_portComboBox.currentText()
+        self.ser.open()
+
+    def closeQcPort(self):
+        self.ser.close()
+
+    def frezzedBtns(self):
+        pass
+
+    def Btns(self):
+        pass
