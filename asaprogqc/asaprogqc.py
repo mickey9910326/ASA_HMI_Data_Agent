@@ -23,52 +23,98 @@ class ShellThread(QThread):
     signalInitProgressbar = pyqtSignal(int,int)
     signalSetProgressbar = pyqtSignal(int)
     signalGetSerialException = pyqtSignal()
+    signalUpdateStatus = pyqtSignal(str)
+    signalComplete = pyqtSignal(int)
 
     def __init__(self):
         QThread.__init__(self)
         self.cmd = str()
 
-    def setParameter(self, port, hexfile):
-        self.port = port
+    def setParameter(self, ser, hexfile, num):
+        self.serialQcM128 = ser
         self.hexfile = hexfile
+        self.num = num
+
+    def checkSerIsQcM128(self):
+        self.serialQcM128.write(b'S')
+        ch = self.serialQcM128.read(1)
+        if ch == b's':
+            self.signalUpdateStatus.emit('success')
+        else:
+            self.signalUpdateStatus.emit('連接之裝置非QC程序控制治具')
+            return False
+        return True
 
     def run(self):
+        if self.checkSerIsQcM128() is False:
+            return
+
         try:
-            loader = py_asa_loader.Loader(self.port, self.hexfile)
+            for channel in range(self.num):
+                # send channel cmd
+                self.serialQcM128.write(bytes([channel]))
+                ch = self.serialQcM128.read(1)
+                if ch == b'a':
+                    self.signalUpdateStatus.emit('切換通道'+str(channel)+'成功，開始燒錄')
+                else:
+                    self.signalUpdateStatus.emit('切換通道失敗，請確認周邊硬體裝置')
+                    return
 
-            isAsaDevice = loader.checkIsAsaDevice()
-            self.signalCheckIsAsaDevice.emit(isAsaDevice)
+                # search asa device
+                availablePorts = serial_ports()
+                loader = None
+                for port in availablePorts:
+                    loader = py_asa_loader.Loader(port, self.hexfile)
+                    if loader.checkIsAsaDevice() is False:
+                        loader = None
+                    else:
+                        break
+                if loader is None:
+                    self.signalUpdateStatus.emit('找不到待燒錄裝置')
+                    return
 
-            if isAsaDevice is False:
-                return
+                # start prog
+                times = math.floor(len(loader.bin)/256)
+                remain = len(loader.bin)%256
 
-            times = math.floor(len(loader.bin)/256)
-            remain = len(loader.bin)%256
+                if remain is not 0:
+                    self.signalInitProgressbar.emit(0,times+1)
+                else:
+                    self.signalInitProgressbar.emit(0,times)
 
-            if remain is not 0:
-                self.signalInitProgressbar.emit(0,times+1)
-            else:
-                self.signalInitProgressbar.emit(0,times)
+                delay = 0.03
+                for i in range(times):
+                    loader.loadData(loader.bin[i*256:(i+1)*256])
+                    self.signalSetProgressbar.emit(i)
+                    sleep(delay)
 
-            delay = 0.03
-            for i in range(times):
-                loader.loadData(loader.bin[i*256:(i+1)*256])
-                self.signalSetProgressbar.emit(i)
-                sleep(delay)
+                if remain is not 0:
+                    i = i+1
+                    loader.loadData(loader.bin[i*256:-1])
+                    self.signalSetProgressbar.emit(i)
+                    sleep(delay)
 
-            if remain is not 0:
-                i = i+1
-                loader.loadData(loader.bin[i*256:-1])
-                self.signalSetProgressbar.emit(i)
-                sleep(delay)
-
-            isOK = loader.lastData()
-            if isOK:
-                i = i+1
-                self.signalSetProgressbar.emit(i)
-            self.signalLastData.emit(isOK)
+                isOK = loader.lastData()
+                if isOK:
+                    i = i+1
+                    self.signalSetProgressbar.emit(i)
+                    self.signalComplete.emit(channel+1)
+                    self.signalUpdateStatus.emit('連接裝置'+str(channel)+'成功')
+                else:
+                    self.signalUpdateStatus.emit('燒錄裝置'+str(channel)+'失敗')
+                    return
+            # end for
         except serial.serialutil.SerialException as e:
             self.signalGetSerialException.emit()
+
+        # send stop cmd
+        self.serialQcM128.write(b'T')
+        ch = self.serialQcM128.read(1)
+        if ch == b'a':
+            self.signalUpdateStatus.emit('完成所有燒錄，且QC_M128結束燒錄程式成功')
+        else:
+            self.signalUpdateStatus.emit('完成所有燒錄，但QC_M128結束燒錄程式失敗')
+            return
 
     def stop(self):
         self.terminate()
@@ -89,6 +135,9 @@ class AsaprogQc(object):
         self.shellThread.signalCheckIsAsaDevice[bool].connect(self.updateStatusIsAsaDevice)
         self.shellThread.signalLastData[bool].connect(self.updateStatusLastData)
         self.shellThread.signalGetSerialException.connect(self.getSerialException)
+        self.shellThread.signalUpdateStatus[str].connect(self.updateStatusText)
+        self.shellThread.signalComplete[int].connect(self.setCompleteNum)
+        self.shellThread.finished.connect(self.closeQcPort)
         # ---- Thread Init end -------------------------------------------------
 
         # ---- Serial Group start ----------------------------------------------
@@ -107,7 +156,7 @@ class AsaprogQc(object):
         self.serialQcM128 = serial.Serial()
         self.serialQcM128.isOpen = False
         self.serialQcM128.baudrate = 38400
-        self.serialQcM128.timeout = 10
+        self.serialQcM128.timeout = 1
         # ---- Serial object Init End ------------------------------------------
 
         self.widget.label_steps.setText(stepText)
@@ -150,30 +199,47 @@ class AsaprogQc(object):
             return True
 
     def startProg(self):
-
+        # check thread is running
         if self.shellThread.isRunning():
             return
-        self.widget.label_statusContent.setText(u"偵測裝置中...")
-        port = serial_ports()[0]
+        # check port
+        port = self.widget.comboBox_selectPort.currentText()
         if port == '':
-            self.widget.label_statusContent.setText(u"未偵測到可用串列埠")
+            self.updateStatusText(u'未選擇串列埠')
             return
+        # check hex file
         hexfile = self.widget.lineEdit_selectFile.text()
         if hexfile == '':
-            self.widget.label_statusContent.setText(u"未選擇燒錄檔案")
+            self.widget.label_statusContent.setText(u'未選擇燒錄檔案')
             return
         elif self.checkIsHexFile() is False:
-            self.widget.label_statusContent.setText(u"請重新選擇燒錄檔案")
+            self.widget.label_statusContent.setText(u'請重新選擇燒錄檔案')
+            return
+        # check num of DUT.
+        try:
+            num = int(self.widget.lineEdit_num.text())
+        except ValueError as e:
+            self.updateStatusText(u'輸入數量錯誤，範圍為1~12')
+            return
+        if num < 1 or num > 12:
+            self.updateStatusText(u'輸入數量錯誤，範圍為1~12')
             return
 
-        self.widget.label_statusContent.setText(u"確認裝置中...")
-        self.shellThread.setParameter(port, hexfile)
+        self.openQcPort()
+        self.shellThread.setParameter(self.serialQcM128, hexfile, num)
         self.shellThread.start()
 
     def stopProg(self):
         if self.shellThread.isRunning():
+            self.closeQcPort()
             self.shellThread.stop()
-            self.widget.label_statusContent.setText(u"已強制終止")
+            self.widget.label_statusContent.setText(u'已強制終止')
+
+    def updateStatusText(self, s):
+        self.widget.label_statusContent.setText(s)
+
+    def setCompleteNum(self, num):
+        self.widget.label_progedNum.setText(str(num))
     # ---- Basic Functions Group end -------------------------------------------
 
     # ---- th Group start ------------------------------------------------------
@@ -201,11 +267,11 @@ class AsaprogQc(object):
     # ---- th Group end --------------------------------------------------------
 
     def openQcPort(self):
-        self.ser.port = self.widget.s_portComboBox.currentText()
-        self.ser.open()
+        self.serialQcM128.port = self.widget.comboBox_selectPort.currentText()
+        self.serialQcM128.open()
 
     def closeQcPort(self):
-        self.ser.close()
+        self.serialQcM128.close()
 
     def frezzedBtns(self):
         pass
