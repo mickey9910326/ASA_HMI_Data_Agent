@@ -3,7 +3,7 @@ import os
 from PyInstaller.__main__ import run
 import pathlib
 
-__VERSION__ = 'v0.3.1'
+__VERSION__ = 'v0.3.1_for_qc'
 
 if __name__ == '__main__':
 
