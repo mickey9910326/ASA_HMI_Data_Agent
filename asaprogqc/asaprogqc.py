@@ -239,7 +239,7 @@ class AsaprogQc(object):
         self.widget.label_statusContent.setText(s)
 
     def setCompleteNum(self, num):
-        self.widget.label_progedNum.setText(str(num))
+        self.widget.label_progedNumContent.setText(str(num))
     # ---- Basic Functions Group end -------------------------------------------
 
     # ---- th Group start ------------------------------------------------------
