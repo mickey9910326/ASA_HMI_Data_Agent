@@ -7,13 +7,7 @@ import math
 import serial
 
 stepText = """
-1. PC -> QC_M128 : 'S'
-2. QC_M128 -> PC : 'O'
-3. PC -> QC_M128 : '1'
-4. QC_M128 切通道
-5. QC_M128 -> PC : '1'
-6. PC開始燒錄，並完成
-7. 回到步驟 3. 數字增加
+
 """
 
 # ---- class ShellThread Start -------------------------------------------------
@@ -25,6 +19,7 @@ class ShellThread(QThread):
     signalGetSerialException = pyqtSignal()
     signalUpdateStatus = pyqtSignal(str)
     signalComplete = pyqtSignal(int)
+    signalUpdateDutStatus = pyqtSignal(int,str)
 
     def __init__(self):
         QThread.__init__(self)
@@ -36,7 +31,10 @@ class ShellThread(QThread):
         self.num = num
 
     def checkSerIsQcM128(self):
-        self.serialQcM128.write(b'S')
+        self.serialQcM128.write(b'0')
+        self.serialQcM128.write(b'\x10')
+        self.serialQcM128.read(1) # get m128 ret trash
+        self.serialQcM128.read(1) # get m128 ret trash
         ch = self.serialQcM128.read(1)
         if ch == b's':
             self.signalUpdateStatus.emit('success')
@@ -56,6 +54,7 @@ class ShellThread(QThread):
                 ch = self.serialQcM128.read(1)
                 if ch == b'a':
                     self.signalUpdateStatus.emit('切換通道'+str(channel)+'成功，開始燒錄')
+                    self.signalUpdateDutStatus.emit(channel, u'燒錄中')
                 else:
                     self.signalUpdateStatus.emit('切換通道失敗，請確認周邊硬體裝置')
                     return
@@ -70,8 +69,8 @@ class ShellThread(QThread):
                     else:
                         break
                 if loader is None:
-                    self.signalUpdateStatus.emit('找不到待燒錄裝置')
-                    return
+                    self.signalUpdateDutStatus.emit(channel, u'找不到裝置')
+                    continue
 
                 # start prog
                 times = math.floor(len(loader.bin)/256)
@@ -95,14 +94,16 @@ class ShellThread(QThread):
                     sleep(delay)
 
                 isOK = loader.lastData()
+                loader.ser.close()
                 if isOK:
                     i = i+1
                     self.signalSetProgressbar.emit(i)
                     self.signalComplete.emit(channel+1)
                     self.signalUpdateStatus.emit('連接裝置'+str(channel)+'成功')
+                    self.signalUpdateDutStatus.emit(channel, u'燒錄成功')
                 else:
                     self.signalUpdateStatus.emit('燒錄裝置'+str(channel)+'失敗')
-                    return
+                    self.signalUpdateDutStatus.emit(channel, u'燒錄失敗')
             # end for
         except serial.serialutil.SerialException as e:
             self.signalGetSerialException.emit()
@@ -126,7 +127,7 @@ class AsaprogQc(object):
     def __init__(self, widget, mainWindow):
         self.widget = widget
         self.mainWindow = mainWindow
-        self.widget.progressBar.setValue(0);
+        self.widget.progressBar.setValue(0)
 
         # ---- Thread Init start -----------------------------------------------
         self.shellThread = ShellThread()
@@ -138,16 +139,12 @@ class AsaprogQc(object):
         self.shellThread.signalUpdateStatus[str].connect(self.updateStatusText)
         self.shellThread.signalComplete[int].connect(self.setCompleteNum)
         self.shellThread.finished.connect(self.closeQcPort)
+        self.shellThread.signalUpdateDutStatus[int,str].connect(self.setDutText)
         # ---- Thread Init end -------------------------------------------------
-
-        # ---- Serial Group start ----------------------------------------------
-        self.serial_updatePortlist()
-        self.widget.pushButton_updatePortList.clicked.connect(self.serial_updatePortlist)
-        # ---- Serial Group end ------------------------------------------------
 
         # ---- Basic Functions Group start -------------------------------------
         self.widget.pushButton_selectFile.clicked.connect(self.chooseProgFile)
-        self.widget.lineEdit_selectFile.textChanged.connect(self.checkIsHexFile)
+        # self.widget.lineEdit_selectFile.textChanged.connect(self.checkIsHexFile)
         self.widget.pushButton_startProg.clicked.connect(self.startProg)
         self.widget.pushButton_stopProg.clicked.connect(self.stopProg)
         # ---- Basic Functions Group end ---------------------------------------
@@ -159,18 +156,39 @@ class AsaprogQc(object):
         self.serialQcM128.timeout = 1
         # ---- Serial object Init End ------------------------------------------
 
-        self.widget.label_steps.setText(stepText)
+        # ---- dut label assign start ------------------------------------------
+        self.widget_dut_label_content = list()
+        self.widget_dut_label_content.append(self.widget.label_dut0Content)
+        self.widget_dut_label_content.append(self.widget.label_dut1Content)
+        self.widget_dut_label_content.append(self.widget.label_dut2Content)
+        self.widget_dut_label_content.append(self.widget.label_dut3Content)
+        self.widget_dut_label_content.append(self.widget.label_dut4Content)
+        self.widget_dut_label_content.append(self.widget.label_dut5Content)
+        self.widget_dut_label_content.append(self.widget.label_dut6Content)
+        self.widget_dut_label_content.append(self.widget.label_dut7Content)
+        self.widget_dut_label_content.append(self.widget.label_dut8Content)
+        self.widget_dut_label_content.append(self.widget.label_dut9Content)
+        self.widget_dut_label_content.append(self.widget.label_dut10Content)
+        self.widget_dut_label_content.append(self.widget.label_dut11Content)
 
-    # ---- Serial Group start --------------------------------------------------
-    # Update port list in s_portComboBox
-    def serial_updatePortlist(self):
-        availablePorts = serial_ports()
-        print('sys : Update port list in portComboBox, available port : ', end='')
-        print(availablePorts)
-        self.widget.comboBox_selectPort.clear()
-        for port in availablePorts:
-            self.widget.comboBox_selectPort.addItem(port)
-    # ---- Serial Group end ----------------------------------------------------
+        self.widget_dut_label_title = list()
+        self.widget_dut_label_title.append(self.widget.label_dut0Title)
+        self.widget_dut_label_title.append(self.widget.label_dut1Title)
+        self.widget_dut_label_title.append(self.widget.label_dut2Title)
+        self.widget_dut_label_title.append(self.widget.label_dut3Title)
+        self.widget_dut_label_title.append(self.widget.label_dut4Title)
+        self.widget_dut_label_title.append(self.widget.label_dut5Title)
+        self.widget_dut_label_title.append(self.widget.label_dut6Title)
+        self.widget_dut_label_title.append(self.widget.label_dut7Title)
+        self.widget_dut_label_title.append(self.widget.label_dut8Title)
+        self.widget_dut_label_title.append(self.widget.label_dut9Title)
+        self.widget_dut_label_title.append(self.widget.label_dut10Title)
+        self.widget_dut_label_title.append(self.widget.label_dut11Title)
+
+        self.resetAllDutText()
+        # ---- dut label assign end --------------------------------------------
+
+        self.widget.label_steps.setText(stepText)
 
     # ---- Basic Functions Group start -----------------------------------------
     def chooseProgFile(self):
@@ -202,11 +220,6 @@ class AsaprogQc(object):
         # check thread is running
         if self.shellThread.isRunning():
             return
-        # check port
-        port = self.widget.comboBox_selectPort.currentText()
-        if port == '':
-            self.updateStatusText(u'未選擇串列埠')
-            return
         # check hex file
         hexfile = self.widget.lineEdit_selectFile.text()
         if hexfile == '':
@@ -224,6 +237,16 @@ class AsaprogQc(object):
         if num < 1 or num > 12:
             self.updateStatusText(u'輸入數量錯誤，範圍為1~12')
             return
+        # check serial port of HMI is open
+        if self.mainWindow.HMI.ser.isOpen is False:
+            self.updateStatusText(u'請先在HMI分頁開啟串列埠')
+            return
+
+        self.mainWindow.HMI.s_portToggle()
+        self.serialQcM128 = self.mainWindow.HMI.ser
+
+        for i in range(num):
+            self.setDutText(i, u'待燒錄')
 
         self.openQcPort()
         self.shellThread.setParameter(self.serialQcM128, hexfile, num)
@@ -231,8 +254,8 @@ class AsaprogQc(object):
 
     def stopProg(self):
         if self.shellThread.isRunning():
-            self.closeQcPort()
             self.shellThread.stop()
+            self.closeQcPort()
             self.widget.label_statusContent.setText(u'已強制終止')
 
     def updateStatusText(self, s):
@@ -240,6 +263,20 @@ class AsaprogQc(object):
 
     def setCompleteNum(self, num):
         self.widget.label_progedNumContent.setText(str(num))
+
+    def setDutText(self, num, s):
+        self.widget_dut_label_content[num].setText(s)
+        self.widget_dut_label_content[num].setStyleSheet("color: black;")
+        self.widget_dut_label_title[num].setStyleSheet("color: black;")
+
+    def resetDutText(self, num):
+        self.widget_dut_label_content[num].setText('-')
+        self.widget_dut_label_content[num].setStyleSheet("color: gray;")
+        self.widget_dut_label_title[num].setStyleSheet("color: gray;")
+
+    def resetAllDutText(self):
+        for i in range(12):
+            self.resetDutText(i)
     # ---- Basic Functions Group end -------------------------------------------
 
     # ---- th Group start ------------------------------------------------------
@@ -267,11 +304,12 @@ class AsaprogQc(object):
     # ---- th Group end --------------------------------------------------------
 
     def openQcPort(self):
-        self.serialQcM128.port = self.widget.comboBox_selectPort.currentText()
         self.serialQcM128.open()
+        self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   " + "連續燒錄進行中...")
 
     def closeQcPort(self):
         self.serialQcM128.close()
+        self.mainWindow.HMI.s_portToggle()
 
     def frezzedBtns(self):
         pass
