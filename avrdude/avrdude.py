@@ -361,11 +361,11 @@ class Avrdude(object):
 
         tmp = self.flash_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U flash:' + tmp + ':"' + self.widget.lineEdit_flash.text() + '":i'
+            cmd += ' -U flash:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
 
         tmp = self.eeprom_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + '":i'
+            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
 
         if self.widget.checkBox_fuseSet.isChecked():
             cmd += ' -U hfuse:w:' + self.widget.lineEdit_fuseHigh.text()  + ':m'
@@ -504,7 +504,7 @@ class Avrdude(object):
         cmd = self.getBasicParameter()
         tmp = self.flash_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U flash:' + tmp + ':"' + self.widget.lineEdit_flash.text() + '":i'
+            cmd += ' -U flash:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
         times = time.strftime("%H:%M:%S", time.gmtime())
         self.terminalAppendLine('[' + times + '] ' + 'Flash Go!' + '\n')
         self.shellThread.setCmd(cmd)
@@ -558,7 +558,7 @@ class Avrdude(object):
         cmd = self.getBasicParameter()
         tmp = self.eeprom_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + '":i'
+            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
         times = time.strftime("%H:%M:%S", time.gmtime())
         self.terminalAppendLine('[' + times + '] ' + 'EEPROM Go!' + '\n')
         self.shellThread.setCmd(cmd)
