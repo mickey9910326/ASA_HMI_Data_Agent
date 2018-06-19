@@ -15,7 +15,7 @@ class SerialThread(QThread):
     def __init__(self, ser):
         QThread.__init__(self)
         self.ser = ser
-        self.line = str()
+        self.line = bytes()
         self.header = bytearray(b'\00\00\00')
         self.resumingMode = False
         self.resumingType = None
@@ -25,78 +25,84 @@ class SerialThread(QThread):
     def run(self):
         while (self.ser.isOpen is True):
             ch = self.ser.read(1)
-            if ch == b'\n':
-                self.signalGetLine.emit(self.line)
-                self.line = str()
-            # 可顯示字元
-            elif ch >= b'\x20' and ch <= b'\x7E':
-                self.line += ch.decode("ascii");
-            elif ch == b'\x00':
+            if ch == b'\n' or ch == b'\r':
                 if len(self.line) > 0:
-                    self.signalGetLine.emit(self.line)
-                    self.line = str()
-            elif ch > b'\x7E':
+                    try:
+                        self.signalGetLine.emit(self.line.decode('utf8'))
+                    except UnicodeDecodeError as e:
+                        try:
+                            self.signalGetLine.emit(self.line.decode('big5'))
+                        except UnicodeDecodeError as e:
+                            pass
+                    self.line = bytes()
+                # print(self.line)
+                # print(self.line.decode('big5'))
+            else:
+                self.line += ch
+
+            self.header[0] = self.header[1]
+            self.header[1] = self.header[2]
+            self.header[2] = int.from_bytes(ch, byteorder='big')
+
+            if self.header == b'\xaa\xaa\xaa':
+                self.line = self.line[0:-3] # remove header
                 if len(self.line) > 0:
-                    self.signalGetLine.emit(self.line)
-                    self.line = str()
-                self.header[0] = self.header[1]
-                self.header[1] = self.header[2]
-                self.header[2] = int.from_bytes(ch, byteorder='big')
-                if self.header == b'\xaa\xaa\xaa':
-                    arrTypeNum = int.from_bytes(self.ser.read(1), byteorder='big')
-                    arrBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
-                    arrBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
-                    arrBytes = arrBytesH<<8 | arrBytesL
+                    self.signalGetLine.emit(self.line.decode('big5'))
 
-                    if self.resumingMode is False:
-                        chkSum = arrBytesH + arrBytesL
-                        data = bytearray()
-                        for index in range(0,arrBytes):
-                            data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
-                            chkSum += data[index];
-                        getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
-                        if (getChkSum != chkSum%256):
-                            print('get array chksum Error')
-                        else:
-                            arr = decode_array(arrTypeNum,data)
-                            print('sys : Get ArrayData from devive: ' + str(arr))
-                            self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
-                            self.header = bytearray(b'\00\00\00')
-                    else:
-                        print('th1 error porint 1')
+                arrTypeNum = int.from_bytes(self.ser.read(1), byteorder='big')
+                arrBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
+                arrBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
+                arrBytes = arrBytesH<<8 | arrBytesL
 
-                if self.header == b'\xbb\xbb\xbb':
-                    getBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
-                    getBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
-                    getBytes = getBytesH<<8 | getBytesL
-                    chkSum = getBytesH + getBytesL
-
-                    getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
-                    dataBytes = getBytes-getFormatBytes-1
-                    chkSum += getFormatBytes
-
-                    formatString = bytearray()
+                if self.resumingMode is False:
+                    chkSum = arrBytesH + arrBytesL
                     data = bytearray()
-                    for index in range(0,getFormatBytes):
-                        formatString += self.ser.read(1)
-                        chkSum += int(formatString[index])
-                    formatString = formatString.decode("ascii")
-                    print(formatString)
-                    for index in range(0,dataBytes):
+                    for index in range(0,arrBytes):
                         data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
                         chkSum += data[index];
                     getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
                     if (getChkSum != chkSum%256):
-                        print('get struct chksum Error')
+                        print('get array chksum Error')
                     else:
-                        # arr = decode_array(arrTypeNum,data)
-                        # print('sys : Get ArrayData from devive: ' + str(arr))
+                        arr = decode_array(arrTypeNum,data)
+                        print('sys : Get ArrayData from devive: ' + str(arr))
+                        self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
                         self.header = bytearray(b'\00\00\00')
-                        typeNumList, dataListList = decode_struct(getBytes,formatString,data)
-                        self.signalGetStructData.emit(typeNumList, dataListList,formatString)
+                else:
+                    print('th1 error point 1')
+            elif self.header == b'\xbb\xbb\xbb':
+                self.line = self.line[0:-3] # remove header
+                if len(self.line) > 0:
+                    self.signalGetLine.emit(self.line.decode('big5'))
 
-                else :
-                    pass
+                getBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
+                getBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
+                getBytes = getBytesH<<8 | getBytesL
+                chkSum = getBytesH + getBytesL
+
+                getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                dataBytes = getBytes-getFormatBytes-1
+                chkSum += getFormatBytes
+
+                formatString = bytearray()
+                data = bytearray()
+                for index in range(0,getFormatBytes):
+                    formatString += self.ser.read(1)
+                    chkSum += int(formatString[index])
+                formatString = formatString.decode("ascii")
+                print(formatString)
+                for index in range(0,dataBytes):
+                    data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                    chkSum += data[index];
+                getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                if (getChkSum != chkSum%256):
+                    print('get struct chksum Error')
+                else:
+                    # arr = decode_array(arrTypeNum,data)
+                    # print('sys : Get ArrayData from devive: ' + str(arr))
+                    self.header = bytearray(b'\00\00\00')
+                    typeNumList, dataListList = decode_struct(getBytes,formatString,data)
+                    self.signalGetStructData.emit(typeNumList, dataListList,formatString)
 # ---- class Serial Thread End -------------------------------------------------
 
 class HMI(object):
