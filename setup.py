@@ -54,8 +54,7 @@ if __name__ == '__main__':
     # Related files
     os.system('cp -r ./tmp ./dist/ASA_HMI_Data_Agent/tmp')
     os.system('cp -r ./tools ./dist/ASA_HMI_Data_Agent/tools')
-    os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent/avrdude_settings.ini')
-    os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent/bits_info.ini')
+    os.system('cp -r ./settings ./dist/ASA_HMI_Data_Agent/settings')
     tarpath = './dist/' + 'ASA_HMI_Data_Agent'+ '_' + __VERSION__ + '.tar.gz'
 
     os.system('tar -zc -C ./dist -f ' + tarpath + ' ./ASA_HMI_Data_Agent')
