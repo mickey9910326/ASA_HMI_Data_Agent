@@ -1,10 +1,10 @@
 import sys
 import serial
-from hmi.decodeASAformat import *
-from listport import serial_ports
+from asa_hmi_data_agent.listport import serial_ports
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
-from hmi.hmi_save_dialog import HmiSaveDialog
-from hmi.hmi_load_dialog import HmiLoadDialog
+from asa_hmi_data_agent.hmi.decodeASAformat import *
+from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
+from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):
