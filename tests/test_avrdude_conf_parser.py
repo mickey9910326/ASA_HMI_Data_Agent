@@ -1,4 +1,5 @@
-from avrdude.avrdudeConfParser import AvrdudeConfParser
+import conftest
+from asa_hmi_data_agent.avrdude.avrdudeConfParser import AvrdudeConfParser
 
 if __name__ == '__main__':
     parser = AvrdudeConfParser()
