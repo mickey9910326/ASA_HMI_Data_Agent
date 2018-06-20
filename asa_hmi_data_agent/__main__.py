@@ -3,14 +3,14 @@ import serial
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 
-from ui.ui_mainwindow import Ui_MainWindow
-from ui.ui_hmi import Ui_MainWidgetHMI
-from ui.ui_avrdude import Ui_MainWidgetAvrdude
-from ui.ui_asa_prog import Ui_MainWidgetAsaProg
+from asa_hmi_data_agent.ui.ui_mainwindow import Ui_MainWindow
+from asa_hmi_data_agent.ui.ui_hmi import Ui_MainWidgetHMI
+from asa_hmi_data_agent.ui.ui_avrdude import Ui_MainWidgetAvrdude
+from asa_hmi_data_agent.ui.ui_asa_prog import Ui_MainWidgetAsaProg
 
-from hmi.hmi import HMI
-from avrdude.avrdude import Avrdude
-from asaprog.asaprog import Asaprog
+from asa_hmi_data_agent.hmi.hmi import HMI
+from asa_hmi_data_agent.avrdude.avrdude import Avrdude
+from asa_hmi_data_agent.asaprog.asaprog import Asaprog
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     # ---- __init__ start ------------------------------------------------------

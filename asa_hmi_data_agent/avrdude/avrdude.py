@@ -1,14 +1,15 @@
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtGui import QTextCursor
+from asa_hmi_data_agent.listport import serial_ports
+from configparser import ConfigParser
 import serial
-from listport import serial_ports
 import subprocess
 import time
-from ui.ui_bit_selector import Ui_BitSelector
 
-from avrdude.avrdudeConfParser import AvrdudeConfParser
-from configparser import ConfigParser
+from asa_hmi_data_agent.ui.ui_bit_selector import Ui_BitSelector
+from asa_hmi_data_agent.avrdude.avrdudeConfParser import AvrdudeConfParser
+
 
 # ---- class ShellThread Start -------------------------------------------------
 class ShellThread(QThread):
@@ -125,7 +126,7 @@ class BitsSelector(QDialog, Ui_BitSelector):
     def show(self, partDesc):
         super(QDialog, self).show()
         config = ConfigParser()
-        config.read('bits_info.ini')
+        config.read('settings\\bits_info.ini')
         try:
             bitInfoList = config[partDesc]['fuse_l'].replace(' ', '').split(',')
             for bit in range(0,8):
@@ -211,7 +212,7 @@ class Avrdude(object):
         self.mainWindow = mainWindow
 
         # ---- Settings Group start --------------------------------------------
-        self.settingsFile = 'avrdude_settings.ini'
+        self.settingsFile = 'settings/avrdude_settings.ini'
         self.conf = ConfigParser()
         self.settingsListUpdate()
         self.settingsLoad()

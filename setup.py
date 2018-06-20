@@ -45,17 +45,16 @@ if __name__ == '__main__':
             # '--icon', 'rxx.ico',
             '--noupx',
             '--clean',
-            'main.py']
+            'asa_hmi_data_agent/__main__.py']
 
     run(opts)
 
     pathlib.Path("./dist/ASA_HMI_Data_Agent").mkdir(parents=True, exist_ok=True)
-    os.system('mv ./dist/main.exe ./dist/ASA_HMI_Data_Agent/ASA_HMI_Data_Agent.exe')
+    os.system('mv ./dist/__main__.exe ./dist/ASA_HMI_Data_Agent/ASA_HMI_Data_Agent.exe')
     # Related files
     os.system('cp -r ./tmp ./dist/ASA_HMI_Data_Agent/tmp')
     os.system('cp -r ./tools ./dist/ASA_HMI_Data_Agent/tools')
-    os.system('cp ./avrdude_settings.ini ./dist/ASA_HMI_Data_Agent/avrdude_settings.ini')
-    os.system('cp ./bits_info.ini ./dist/ASA_HMI_Data_Agent/bits_info.ini')
+    os.system('cp -r ./settings ./dist/ASA_HMI_Data_Agent/settings')
     tarpath = './dist/' + 'ASA_HMI_Data_Agent'+ '_' + __VERSION__ + '.tar.gz'
 
     os.system('tar -zc -C ./dist -f ' + tarpath + ' ./ASA_HMI_Data_Agent')

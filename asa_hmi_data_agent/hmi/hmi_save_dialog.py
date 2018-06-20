@@ -1,8 +1,8 @@
 import scipy.io
 from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
-from ui.ui_hmi_save_dialog import Ui_HmiSaveDialog
-import hmi.decodeASAformat as ds
-import hmi.text_decoder as hmidecoder
+from asa_hmi_data_agent.ui.ui_hmi_save_dialog import Ui_HmiSaveDialog
+import asa_hmi_data_agent.hmi.decodeASAformat as ds
+import asa_hmi_data_agent.hmi.text_decoder as hmidecoder
 
 import numpy as np
 from numpy import array

@@ -1,11 +1,14 @@
-import decodeASAformat as ds
+import conftest
+import asa_hmi_data_agent.hmi.decodeASAformat as ds
 
-text = str()
-text += 'ui8: \n'
-text += '  1,2,3,4,5,6 \n'
-text += 'ui16: \n'
-text += '  5,6,7,8 \n'
-text = ''
+text = """
+ui8:
+  1,2,3,4,5,6
+
+ui16:
+  5,6,7,8
+ 
+"""
 
 print('TestText is :')
 print(text)

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog
-from listport import serial_ports
+from asa_hmi_data_agent.listport import serial_ports
 from time import sleep
 import py_asa_loader
 import math
