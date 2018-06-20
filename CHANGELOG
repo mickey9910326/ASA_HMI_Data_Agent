@@ -1,0 +1,15 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+## [0.3.2] - 2018-06-20
+### Added
+- Start using "changelog"
+- Start using "RELEASENOTE"
+
+### Changed
+- add *.spec to gitignore
+- move main files into package folder asa_hmi_data_agent
+- update tests files to meets up the above changes
+- move setting files into folder settings
+- update avrdude.py to meets up the above changes
+- update setup.py to meets up the above changes

@@ -1,0 +1,17 @@
+# Release Note
+每個版本新增、修改、修正之功能將會在記錄此。
+Changes in each version will be documented in this file.
+
+release page: https://github.com/mickey9910326/ASA_HMI_Data_Agent/releases
+最新版本可以在上方網址中找到。
+You can find  the lastest patch in the above url.
+
+# 中文
+## [0.3.2] - 2018-06-20
+- 開始使用 "RELEASENOTE"
+- 將設定檔案移至資料夾settings中
+
+# English
+## [0.3.2] - 2018-06-20
+- Start using "RELEASENOTE"
+- move setting files into folder settings
