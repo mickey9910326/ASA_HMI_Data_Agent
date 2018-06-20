@@ -126,7 +126,7 @@ class BitsSelector(QDialog, Ui_BitSelector):
     def show(self, partDesc):
         super(QDialog, self).show()
         config = ConfigParser()
-        config.read('bits_info.ini')
+        config.read('settings\\bits_info.ini')
         try:
             bitInfoList = config[partDesc]['fuse_l'].replace(' ', '').split(',')
             for bit in range(0,8):
@@ -212,7 +212,7 @@ class Avrdude(object):
         self.mainWindow = mainWindow
 
         # ---- Settings Group start --------------------------------------------
-        self.settingsFile = 'avrdude_settings.ini'
+        self.settingsFile = 'settings/avrdude_settings.ini'
         self.conf = ConfigParser()
         self.settingsListUpdate()
         self.settingsLoad()
