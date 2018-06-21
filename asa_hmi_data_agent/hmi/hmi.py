@@ -11,6 +11,7 @@ class SerialThread(QThread):
     signalGetLine = pyqtSignal(str)
     signalGetArrayData = pyqtSignal(int,int,tuple)
     signalGetStructData = pyqtSignal(list,list,str)
+    signalLoseConnect   = pyqtSignal()
 
     def __init__(self, ser):
         QThread.__init__(self)
@@ -24,85 +25,90 @@ class SerialThread(QThread):
 
     def run(self):
         while (self.ser.isOpen()):
-            ch = self.ser.read(1)
-            if ch == b'\n' or ch == b'\r':
-                if len(self.line) > 0:
-                    try:
-                        self.signalGetLine.emit(self.line.decode('utf8'))
-                    except UnicodeDecodeError as e:
+            try:
+                ch = self.ser.read(1)
+                if ch == b'\n' or ch == b'\r':
+                    if len(self.line) > 0:
                         try:
-                            self.signalGetLine.emit(self.line.decode('big5'))
+                            self.signalGetLine.emit(self.line.decode('utf8'))
                         except UnicodeDecodeError as e:
-                            pass
-                    self.line = bytes()
-                # print(self.line)
-                # print(self.line.decode('big5'))
-            else:
-                self.line += ch
+                            try:
+                                self.signalGetLine.emit(self.line.decode('big5'))
+                            except UnicodeDecodeError as e:
+                                pass
+                        self.line = bytes()
+                    # print(self.line)
+                    # print(self.line.decode('big5'))
+                else:
+                    self.line += ch
 
-            self.header[0] = self.header[1]
-            self.header[1] = self.header[2]
-            self.header[2] = int.from_bytes(ch, byteorder='big')
+                self.header[0] = self.header[1]
+                self.header[1] = self.header[2]
+                self.header[2] = int.from_bytes(ch, byteorder='big')
 
-            if self.header == b'\xaa\xaa\xaa':
-                self.line = self.line[0:-3] # remove header
-                if len(self.line) > 0:
-                    self.signalGetLine.emit(self.line.decode('big5'))
+                if self.header == b'\xaa\xaa\xaa':
+                    self.line = self.line[0:-3] # remove header
+                    if len(self.line) > 0:
+                        self.signalGetLine.emit(self.line.decode('big5'))
 
-                arrTypeNum = int.from_bytes(self.ser.read(1), byteorder='big')
-                arrBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
-                arrBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
-                arrBytes = arrBytesH<<8 | arrBytesL
+                    arrTypeNum = int.from_bytes(self.ser.read(1), byteorder='big')
+                    arrBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
+                    arrBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
+                    arrBytes = arrBytesH<<8 | arrBytesL
 
-                if self.resumingMode is False:
-                    chkSum = arrBytesH + arrBytesL
+                    if self.resumingMode is False:
+                        chkSum = arrBytesH + arrBytesL
+                        data = bytearray()
+                        for index in range(0,arrBytes):
+                            data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
+                            chkSum += data[index];
+                        getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
+                        if (getChkSum != chkSum%256):
+                            print('get array chksum Error')
+                        else:
+                            arr = decode_array(arrTypeNum,data)
+                            print('sys : Get ArrayData from devive: ' + str(arr))
+                            self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                            self.header = bytearray(b'\00\00\00')
+                    else:
+                        print('th1 error point 1')
+                elif self.header == b'\xbb\xbb\xbb':
+                    self.line = self.line[0:-3] # remove header
+                    if len(self.line) > 0:
+                        self.signalGetLine.emit(self.line.decode('big5'))
+
+                    getBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
+                    getBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
+                    getBytes = getBytesH<<8 | getBytesL
+                    chkSum = getBytesH + getBytesL
+
+                    getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
+                    dataBytes = getBytes-getFormatBytes-1
+                    chkSum += getFormatBytes
+
+                    formatString = bytearray()
                     data = bytearray()
-                    for index in range(0,arrBytes):
+                    for index in range(0,getFormatBytes):
+                        formatString += self.ser.read(1)
+                        chkSum += int(formatString[index])
+                    formatString = formatString.decode("ascii")
+                    print(formatString)
+                    for index in range(0,dataBytes):
                         data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
                         chkSum += data[index];
                     getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
                     if (getChkSum != chkSum%256):
-                        print('get array chksum Error')
+                        print('get struct chksum Error')
                     else:
-                        arr = decode_array(arrTypeNum,data)
-                        print('sys : Get ArrayData from devive: ' + str(arr))
-                        self.signalGetArrayData.emit(arrTypeNum,arrBytes,arr)
+                        # arr = decode_array(arrTypeNum,data)
+                        # print('sys : Get ArrayData from devive: ' + str(arr))
                         self.header = bytearray(b'\00\00\00')
-                else:
-                    print('th1 error point 1')
-            elif self.header == b'\xbb\xbb\xbb':
-                self.line = self.line[0:-3] # remove header
-                if len(self.line) > 0:
-                    self.signalGetLine.emit(self.line.decode('big5'))
+                        typeNumList, dataListList = decode_struct(getBytes,formatString,data)
+                        self.signalGetStructData.emit(typeNumList, dataListList,formatString)
+            except serial.serialutil.SerialException as e:
+                self.signalLoseConnect.emit()
+                break
 
-                getBytesH = int.from_bytes(self.ser.read(1), byteorder='big')
-                getBytesL = int.from_bytes(self.ser.read(1), byteorder='big')
-                getBytes = getBytesH<<8 | getBytesL
-                chkSum = getBytesH + getBytesL
-
-                getFormatBytes = int.from_bytes(self.ser.read(1), byteorder='big')
-                dataBytes = getBytes-getFormatBytes-1
-                chkSum += getFormatBytes
-
-                formatString = bytearray()
-                data = bytearray()
-                for index in range(0,getFormatBytes):
-                    formatString += self.ser.read(1)
-                    chkSum += int(formatString[index])
-                formatString = formatString.decode("ascii")
-                print(formatString)
-                for index in range(0,dataBytes):
-                    data.append(int.from_bytes(self.ser.read(1), byteorder='little'))
-                    chkSum += data[index];
-                getChkSum = int.from_bytes(self.ser.read(1), byteorder='big')
-                if (getChkSum != chkSum%256):
-                    print('get struct chksum Error')
-                else:
-                    # arr = decode_array(arrTypeNum,data)
-                    # print('sys : Get ArrayData from devive: ' + str(arr))
-                    self.header = bytearray(b'\00\00\00')
-                    typeNumList, dataListList = decode_struct(getBytes,formatString,data)
-                    self.signalGetStructData.emit(typeNumList, dataListList,formatString)
 # ---- class Serial Thread End -------------------------------------------------
 
 class HMI(object):
@@ -125,6 +131,7 @@ class HMI(object):
         self.SerialThread.signalGetLine[str].connect(self.text_terminalAppendLineFromDevice)
         self.SerialThread.signalGetArrayData[int,int,tuple].connect(self.rec_AppendArray)
         self.SerialThread.signalGetStructData.connect(self.rec_AppendStruct)
+        self.SerialThread.signalLoseConnect.connect(self.loseConnectHandler)
         # ---- Serial Thread Init End ------------------------------------------
 
         # ---- Function Linking start ------------------------------------------
@@ -229,6 +236,9 @@ class HMI(object):
     # Clear the text in text terminal
     def text_terminalClear(self):
         text = self.widget.text_terminal.clear()
+
+    def text_appendLog(self, s):
+        self.widget.text_terminal.append('( ' + s + ' )')
     # ---- 文字對話區功能實現 end ------------------------------------------------
 
     # ---- 接收區功能實現 start -------------------------------------------------
@@ -401,3 +411,10 @@ class HMI(object):
     def updateTextFromLoadDialog(self):
         str = self.hmiLoadDialog.getArrayListStr()
         self.widget.send_textEdit.setText(str)
+
+    def loseConnectHandler(self):
+        self.text_appendLog('log: Lost connect with '+self.ser.port+'!')
+        self.ser.close()
+        self.widget.s_btnPortToggle.setText("開啟串列埠")
+        self.mainWindow.setWindowTitle('ASA_HMI_Data_Agent   '+ 'Lost connect with '+self.ser.port+'!')
+        self.s_updatePortlist()
