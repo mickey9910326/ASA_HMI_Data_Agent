@@ -8,11 +8,11 @@ __VERSION__ = 'v0.3.2_dev'
 if __name__ == '__main__':
 
     os.system('rm -r ./dist/ASA_HMI_Data_Agent')
-    os.system('pyuic5 ui/mainwindow.ui -o ui/ui_mainwindow.py')
-    os.system('pyuic5 ui/hmi.ui -o ui/ui_hmi.py')
-    os.system('pyuic5 ui/avrdude.ui -o ui/ui_avrdude.py')
-    os.system('pyuic5 ui/asa_prog.ui -o ui/ui_asa_prog.py')
-    os.system('pyuic5 ui/bit_selector.ui -o ui/ui_bit_selector.py')
+    os.system('pyuic5 ui/mainwindow.ui -o asa_hmi_data_agent/ui/ui_mainwindow.py')
+    os.system('pyuic5 ui/hmi.ui -o asa_hmi_data_agent/ui/ui_hmi.py')
+    os.system('pyuic5 ui/avrdude.ui -o asa_hmi_data_agent/ui/ui_avrdude.py')
+    os.system('pyuic5 ui/asa_prog.ui -o asa_hmi_data_agent/ui/ui_asa_prog.py')
+    os.system('pyuic5 ui/bit_selector.ui -o asa_hmi_data_agent/ui/ui_bit_selector.py')
 
     opts = [
             # NOTE '-F' maybe not stable in some environment, need more test.
