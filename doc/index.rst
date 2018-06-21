@@ -8,8 +8,7 @@ Welcome to asa_hmi_data_agent's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-
+   
    usage
 
 
