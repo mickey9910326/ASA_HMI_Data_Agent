@@ -28,19 +28,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.HMI = HMI(widgetHmi,self)
         self.Avrdude = Avrdude(widgetAvrdude,self)
         self.Asaprog = Asaprog(WidgetAsaProg,self)
-
-    def file_open(self):
-        name, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'All Files (*);;Text Files (*.txt)' ,initialFilter='Text Files (*.txt)')
-        if name!='':
-            file = open(name,'r')
-            return file;
-        else:
-            return None
-    def file_save(self,text):
-        name, _ = QFileDialog.getSaveFileName(self, 'Save File','', 'All Files (*);;Text Files (*.txt)' ,initialFilter='Text Files (*.txt)')
-        if name == '':
-            pass
-        else:
-            file = open(''.join(name),'w')
-            file.write(text)
-            file.close()
