@@ -1,7 +1,5 @@
-HMI
----
-
-.. image:: _static/image/mainwindow_hmi.png
+HMI功能使用範例
+--------------
 
 與ASA_M128進行文字溝通
 =====================
@@ -120,3 +118,39 @@ SETP 1. 開啟串列埠、並執行程式
 
 SETP 2. 通知ASA_M128準備接收資料
 ```````````````````````````````
+ASA_M128詢問文字人機是否準備好接收資料，在對話輸入框中輸入任意文字並發送，通知
+ASA_M128可以發送資料給文字人機。
+
+SETP 3. 接收矩陣資料
+```````````````````
+回應後，ASA_M128將開始傳送矩陣資料，當ASA_M128執行
+:code:`M128_HMI_put(bytes, HMI_TYPE_F32, data);` 後，
+文字人機會在文字對話區接收頁面顯示紀錄，註明以接收到矩陣資料，如下圖
+
+.. image:: _static\image\hmi\test_array_receive_log.png
+
+並可在資料送收區的接收頁面中看到成功接收的矩陣資料。
+
+.. image:: _static\image\hmi\array_receive.png
+
+SETP 4. 儲存檔案
+```````````````
+文字人機可以將接燒到的資料轉存成MATLAB可以存取的格式。
+
+在文字對話區接收頁面點擊儲存檔案按鈕，會顯示一個新的視窗，並顯示剛才在暫存區中資料。
+
+.. image:: _static\image\hmi\save_array_0.png
+
+雙擊"name"的欄位，並輸入想要取名的變數名稱，如下圖。
+並點選以陣列儲存按鈕。
+
+.. image:: _static\image\hmi\save_array_1.png
+
+在儲存檔案視窗中選擇資料夾及輸入存檔名後點選存檔按鈕。
+
+.. image:: _static\image\hmi\save_array_2.png
+
+
+SETP 4. 以MATLAB開啟，並觀看
+```````````````````````````
+.. image:: _static\image\hmi\save_array_3.png
