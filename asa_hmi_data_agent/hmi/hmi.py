@@ -23,7 +23,7 @@ class SerialThread(QThread):
         self.resumingData = None
 
     def run(self):
-        while (self.ser.isOpen is True):
+        while (self.ser.isOpen()):
             ch = self.ser.read(1)
             if ch == b'\n' or ch == b'\r':
                 if len(self.line) > 0:
@@ -116,10 +116,8 @@ class HMI(object):
 
         # ---- Serial object Init Start ----------------------------------------
         self.ser = serial.Serial()
-        self.ser.isOpen = False
         self.ser.baudrate = 38400
         self.ser.timeout = 10
-        self.ser.isOpen = False
         # ---- Serial object Init End ------------------------------------------
 
         # ---- Serial Thread Init Start ----------------------------------------
@@ -167,7 +165,7 @@ class HMI(object):
     # ---- 串列埠設定區功能實現 start --------------------------------------------
     # Update port list in s_portComboBox
     def s_updatePortlist(self):
-        if self.ser.isOpen is True :
+        if self.ser.isOpen():
             pass
         else :
             availablePorts = serial_ports()
@@ -179,9 +177,9 @@ class HMI(object):
 
     # Open/Close serial port
     def s_portToggle(self):
-        if (self.widget.s_portComboBox.currentText() is '') and (self.ser.isOpen is False) :
+        if (self.widget.s_portComboBox.currentText() is '') and (self.ser.isOpen() is False) :
             pass
-        elif (self.ser.isOpen is False):
+        elif (self.ser.isOpen() is False):
             self.ser.port = self.widget.s_portComboBox.currentText()
             print('sys : Try to open port : ' + self.ser.port )
             try:
@@ -194,19 +192,16 @@ class HMI(object):
                 print(e)
                 self.widget.text_terminal.append('( log : Open port ' + self.ser.port + ' failed! )')
             else :
-                self.ser.isOpen = True
                 self.widget.s_btnPortToggle.setText("關閉串列埠")
                 self.widget.text_terminal.append('( log: Open ' + self.ser.port +' success! )')
                 self.SerialThread.start()
-        elif (self.ser.isOpen is True):
+        elif (self.ser.isOpen()):
             print('sys : Try to close port : ' + self.ser.port )
-            self.ser.isOpen = False
+            self.SerialThread.terminate()
             self.ser.close()
             self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   "+ self.ser.port +' is closed.')
             self.widget.s_btnPortToggle.setText("開啟串列埠")
             self.widget.text_terminal.append('( log: Close ' + self.ser.port +' success! )')
-            # SerialThread
-            # self.SerialThread.terminate()
     # ---- 串列埠設定區功能實現 end ----------------------------------------------
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
@@ -217,7 +212,7 @@ class HMI(object):
 
     # Send line to serial
     def text_sendLineToDevice(self):
-        if self.ser.isOpen is False:
+        if self.ser.isOpen() is False:
             return False
         else:
             line = self.widget.text_lineEditToBeSend.text()
@@ -331,7 +326,7 @@ class HMI(object):
             self.widget.send_textEdit.clear();
             self.widget.send_textEdit.append(resText)
             self.send_verifyShowOK()
-            if self.ser.isOpen is False:
+            if self.ser.isOpen() is False:
                 return False
             self.ser.write(b'\xab\xab\xab')
             self.ser.write(pack('>B',typeNum))
@@ -360,7 +355,7 @@ class HMI(object):
             print('sys : error')
         else:
             self.send_verifyShowOK()
-            if self.ser.isOpen is False:
+            if self.ser.isOpen() is False:
                 return False
             structTypeString = str();
             structTypeStringByte = 0;

@@ -225,12 +225,18 @@ class Avrdude(object):
         self.ser = serial.Serial()
         self.ser.baudrate = 38400
         self.ser.timeout = 10
-        self.ser.isOpen = False
         # ---- Serial object Init End ------------------------------------------
 
         # ---- Shell Thread Init Start -----------------------------------------
         self.shellThread = ShellThread()
         self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
+        self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
+        self.shellThread.started.connect(
+            lambda : self.mainWindow.serToggle.emit(True, self.widget.comboBox_serialSetPort.currentText())
+        )
+        self.shellThread.finished.connect(
+            lambda : self.mainWindow.serToggle.emit(False, self.widget.comboBox_serialSetPort.currentText())
+        )
         # ---- Shell Thread Init End -------------------------------------------
 
         # ---- Serial Group start ----------------------------------------------

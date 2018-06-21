@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QFileDialog
 from asa_hmi_data_agent.listport import serial_ports
 from time import sleep
 import py_asa_loader
+import serial
 import math
 
 # ---- class ShellThread Start -------------------------------------------------
@@ -78,6 +79,9 @@ class Asaprog(object):
         self.shellThread.signalCheckIsAsaDevice[bool].connect(self.updateStatusIsAsaDevice)
         self.shellThread.signalLastData[bool].connect(self.updateStatusLastData)
         self.shellThread.signalGetSerialException.connect(self.getSerialException)
+        self.shellThread.finished.connect(
+            lambda : self.mainWindow.serToggle.emit(False, self.widget.comboBox_selectPort.currentText())
+        )
         # ---- Thread Init end -------------------------------------------------
 
         # ---- Serial Group start ----------------------------------------------
@@ -149,6 +153,7 @@ class Asaprog(object):
             self.widget.label_statusContent.setText(u"請重新選擇燒錄檔案")
             return
 
+        self.mainWindow.serToggle.emit(True, port)
         self.widget.label_statusContent.setText(u"確認裝置中...")
         self.shellThread.setParameter(port, hexfile)
         self.shellThread.start()
@@ -156,6 +161,7 @@ class Asaprog(object):
     def stopProg(self):
         if self.shellThread.isRunning():
             self.shellThread.stop()
+            self.mainWindow.serToggle.emit(False, self.widget.comboBox_selectPort.currentText())
             self.widget.label_statusContent.setText(u"已強制終止")
     # ---- Basic Functions Group end -------------------------------------------
 

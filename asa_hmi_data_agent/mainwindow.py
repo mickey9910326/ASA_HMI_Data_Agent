@@ -13,6 +13,9 @@ from asa_hmi_data_agent.avrdude.avrdude import Avrdude
 from asa_hmi_data_agent.asaprog.asaprog import Asaprog
 
 class MainWindow(QMainWindow, Ui_MainWindow):
+    serToggle = pyqtSignal(bool, str)
+    hmiSertIsTerminated = bool(False)
+
     # ---- __init__ start ------------------------------------------------------
     def __init__(self, parent=None):
         # ---- init ui start ---------------------------------------------------
@@ -28,3 +31,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.HMI = HMI(widgetHmi,self)
         self.Avrdude = Avrdude(widgetAvrdude,self)
         self.Asaprog = Asaprog(WidgetAsaProg,self)
+
+        self.serToggle[bool, str].connect(self.serToggleHandler)
+
+    # --------------------------------------------------------------------------
+    def serToggleHandler(self, b, port):
+        if(
+            b
+            and self.HMI.ser.isOpen()
+            and self.HMI.ser.port == port
+        ):
+            self.HMI.s_portToggle()
+            self.hmiSertIsTerminated = True
+        elif(
+            b is False
+            and self.hmiSertIsTerminated
+            and not self.HMI.ser.isOpen()
+            and self.HMI.ser.port == port
+        ):
+            self.HMI.s_portToggle()
+            self.hmiSertIsTerminated = False
