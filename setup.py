@@ -3,7 +3,7 @@ import os
 from PyInstaller.__main__ import run
 import pathlib
 
-__VERSION__ = 'v0.3.2'
+__VERSION__ = 'v0.3.2_dev'
 
 if __name__ == '__main__':
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     os.system('cp -r ./tmp ./dist/ASA_HMI_Data_Agent/tmp')
     os.system('cp -r ./tools ./dist/ASA_HMI_Data_Agent/tools')
     os.system('cp -r ./settings ./dist/ASA_HMI_Data_Agent/settings')
-    os.system('cp ./RELEASENOTE ./dist/ASA_HMI_Data_Agent/RELEASENOTE')
+    os.system('cp ./RELEASENOTE.txt ./dist/ASA_HMI_Data_Agent/RELEASENOTE.txt')
     tarpath = './dist/' + 'ASA_HMI_Data_Agent'+ '_' + __VERSION__ + '.tar.gz'
 
     os.system('tar -zc -C ./dist -f ' + tarpath + ' ./ASA_HMI_Data_Agent')
