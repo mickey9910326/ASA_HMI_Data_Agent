@@ -1,5 +1,6 @@
-# ASA_HMI_Data_Agent ![doc status](https://readthedocs.org/projects/pyserial/badge/?version=latest)
+# ASA_HMI_Data_Agent ![doc status](https://asa-hmi-data-agent.readthedocs.io/en/latest/?badge=latest)
 
+文件：https://asa-hmi-data-agent.readthedocs.io/en/latest/?badge=latestt
 
 ### 功能
 1. 終端與資料傳輸  
