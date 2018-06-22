@@ -33,7 +33,7 @@ SETP 1. 開啟串列埠
 
 若下拉選單中無選項，請點選更新串列埠按鈕，以更新選單中串列埠。
 
-.. image:: _static/image/hmi/serial_group.png
+.. image:: image/hmi/serial_group.png
 
 SETP 2. 接收ASA_M128傳送之文字
 `````````````````````````````
@@ -44,20 +44,20 @@ SETP 2. 接收ASA_M128傳送之文字
 當ASA_M128執行 :code:`printf("hello ASA_HMI_Data_Agent, i am asa_m128.\n");` 後，
 文字人機會在文字對話區顯示以">>"加之文字，表示從ASA_M128接收之文字訊息。
 
-.. image:: _static/image/hmi/text_receive.png
+.. image:: image/hmi/text_receive.png
 
 SETP 3. 傳送文字給ASA_M128
 ``````````````````````````
 在文字對話區最下方橫條中，輸入欲發送之文字，並點選"Send"之按鈕，將會把文字傳送給
 ASA_M128。
 
-.. image:: _static/image/hmi/text_send.png
+.. image:: image/hmi/text_send.png
 
 在此範例中，會接收到ASA_M128的回覆訊息，如下：
 
 文字人機會在文字對話區顯示以"<<"加上文字，表示已發送給ASA_M28之文字訊息。
 
-.. image:: _static/image/hmi/text_receive2.png
+.. image:: image/hmi/text_receive2.png
 
 接收矩陣資料
 ===========
@@ -109,7 +109,7 @@ SETP 1. 開啟串列埠、並執行程式
 
 若下拉選單中無選項，請點選更新串列埠按鈕，以更新選單中串列埠。
 
-.. image:: _static\image\hmi\serial_group.png
+.. image:: image\hmi\serial_group.png
 
 將ASA_M128指撥開關撥到RUN模式。
 
@@ -127,11 +127,11 @@ SETP 3. 接收矩陣資料
 :code:`M128_HMI_put(bytes, HMI_TYPE_F32, data);` 後，
 文字人機會在文字對話區接收頁面顯示紀錄，註明以接收到矩陣資料，如下圖
 
-.. image:: _static\image\hmi\test_array_receive_log.png
+.. image:: image\hmi\test_array_receive_log.png
 
 並可在資料送收區的接收頁面中看到成功接收的矩陣資料。
 
-.. image:: _static\image\hmi\array_receive.png
+.. image:: image\hmi\array_receive.png
 
 SETP 4. 儲存檔案
 ```````````````
@@ -139,21 +139,21 @@ SETP 4. 儲存檔案
 
 在文字對話區接收頁面點擊儲存檔案按鈕，會顯示一個新的視窗，並顯示剛才在暫存區中資料。
 
-.. image:: _static\image\hmi\save_array_0.png
+.. image:: image\hmi\save_array_0.png
 
 雙擊"name"的欄位，並輸入想要取名的變數名稱，如下圖。
 並點選以陣列儲存按鈕。
 
-.. image:: _static\image\hmi\save_array_1.png
+.. image:: image\hmi\save_array_1.png
 
 在儲存檔案視窗中選擇資料夾及輸入存檔名後點選存檔按鈕。
 
-.. image:: _static\image\hmi\save_array_2.png
+.. image:: image\hmi\save_array_2.png
 
 
 SETP 5. 以MATLAB開啟，並觀看
 ```````````````````````````
-.. image:: _static\image\hmi\save_array_3.png
+.. image:: image\hmi\save_array_3.png
 
 
 接收、修改、發送矩陣資料
@@ -228,41 +228,41 @@ SETP 4. 準備發送資料
 
 接收完資料後在接收頁面，點選"移動到發送區"按鈕。
 
-.. image:: _static\image\hmi\array_send_0.png
+.. image:: image\hmi\array_send_0.png
 
 切換到發送頁面，修改愈發送之數值。
 在文字對話區傳送文字通知ASA_M128資料已準備好。
 後點選"以矩陣形式傳送"按鈕，傳送矩陣資料給ASA_M28。
 
-.. image:: _static\image\hmi\array_send_1.png
+.. image:: image\hmi\array_send_1.png
 
 成功傳送後文字對話區會有log顯示已傳送資料。
 
-.. image:: _static\image\hmi\array_send_2.png
+.. image:: image\hmi\array_send_2.png
 
 方法二、MATLAB修改、讀取
 
 先在MATLAB開啟剛才儲存之資料，並修改其中數值再儲存。
 
-.. image:: _static\image\hmi\array_send_3.png
+.. image:: image\hmi\array_send_3.png
 
 切換到發送頁面，點選"讀取檔案"之按鈕。
 
-.. image:: _static\image\hmi\array_send_4.png
+.. image:: image\hmi\array_send_4.png
 
 再讀取視窗中，點選"選擇檔案"按鈕。
 
-.. image:: _static\image\hmi\array_send_5.png
+.. image:: image\hmi\array_send_5.png
 
 點選"確認"按鈕，已載入資料。
 
-.. image:: _static\image\hmi\array_send_6.png
+.. image:: image\hmi\array_send_6.png
 
 在文字對話區傳送文字通知ASA_M128資料已準備好。
 後點選"以矩陣形式傳送"按鈕，傳送矩陣資料給ASA_M28。
 
-.. image:: _static\image\hmi\array_send_7.png
+.. image:: image\hmi\array_send_7.png
 
 成功傳送後文字對話區會有log顯示已傳送資料。
 
-.. image:: _static\image\hmi\array_send_8.png
+.. image:: image\hmi\array_send_8.png
