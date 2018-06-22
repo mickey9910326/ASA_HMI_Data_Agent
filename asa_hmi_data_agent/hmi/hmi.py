@@ -344,7 +344,7 @@ class HMI(object):
             dataBytes =len(dataList)*getTypeSize(typeNum)
             self.ser.write(pack('>H',dataBytes))
             print(pack('>B',len(dataList)))
-            chkSum = 0
+            chkSum = sum(pack('>H',dataBytes))
             for data in dataList:
                 self.ser.write(pack('<'+decodePackStr(typeNum),data))
                 chkSum += sum(pack('<'+decodePackStr(typeNum),data));
