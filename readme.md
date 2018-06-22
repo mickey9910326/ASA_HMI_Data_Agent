@@ -1,14 +1,13 @@
-# ASA_HMI_Data_Agent
+# ASA_HMI_Data_Agent ![doc status](https://readthedocs.org/projects/pyserial/badge/?version=latest)
 
----
 
 ### 功能
-1. 終端機與資料傳輸  
+1. 終端與資料傳輸  
     - 作為終端與ASA_M128對話  
     - 透過HMI封包格式，與ASA_M128傳輸大量資料  
 
 2. 燒錄ASA_M128  
-    - 利用 [cmd_ASA_loader](https://github.com/mickey9910326/cmd_ASA_loader) 進行燒錄 ASA_M128  
+    - 利用 [py_asa_loader](https://github.com/mickey9910326/py_asa_loader) 進行燒錄 ASA_M128  
     - 提供GUI方便使用者使用
 
 3. 透過ASA_M128燒錄AVR系列晶片  
