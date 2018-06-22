@@ -193,6 +193,7 @@ def decodeTextToStruct(text):
     resTypeNumList = list()
     resDataListList = list()
     resArrayNums = 0
+    isContinued = 0
 
     status = 1
     for s in lines:
@@ -201,44 +202,36 @@ def decodeTextToStruct(text):
                 pass
             else:
                 typeNum = decodeTypeLine(s)
-                status = 2;
-                isContinued = 1;
-                dataList = list();
+                if typeNum is -1:
+                    res = -1
+                    return 0, [], [], res
+                else:
+                    status = 2
+                    isContinued = 1
+                    dataList = list()
         elif status == 2:
             if decodeIsSpaceLine(s):
                 pass
-            elif (isContinued==1):
-                newList, isContinued = decodeDataLine(s,typeNum)
+            elif isContinued is 1:
+                newList, isContinued = decodeDataLine(s, typeNum)
                 dataList += newList
-                status = 2;
-            if (isContinued==0):
-                status = 3;
-            if (isContinued==-1):
-                res = -1
-                return lineIdx, typeNum, dataList, res
-        if status == 3:
-            # res data
-            resTypeNumList.append(typeNum)
-            resDataListList.append(dataList)
-            resArrayNums +=1
-            status = 1;
-    # while res!=-1 and lineIdx != len(lines):
-    #     # decode Type
-    #     typeLine = lines[lineIdx]
-    #     typeNum = decodeTypeLine(typeLine)
-    #     if typeNum == -1:
-    #         res = -1
-    #         return lineIdx, typeNum, dataList, res
-    #     # decode Data
-    #     lineIdx += 1
-    #     isContinued = 1
-    #     while isContinued == 1:
-    #         newList, isContinued = decodeDataLine(lines[lineIdx],typeNum)
-    #         dataList += newList
-    #         lineIdx += 1
-    #     if isContinued == -1:
-    #         res = -1;\
+                status = 2
 
+            if   isContinued is 1:
+                print('isContinued ' + s)
+                pass
+            elif isContinued is 0:
+                resTypeNumList.append(typeNum)
+                resDataListList.append(dataList)
+                resArrayNums +=1
+                status = 1
+            elif isContinued is -1:
+                print('-1 ' + s)
+                res = -1
+                return 0, [], [], res
+    if isContinued is 1:
+        res = -1
+        return 0, [], [], res
     return resArrayNums, resTypeNumList, resDataListList, res
 
 def isNum(ch):
@@ -267,12 +260,12 @@ def decodeTypeLine(s):
         if status == 0: # remove space
             if ch == '\x20': # space
                 pass
-            elif isNum(ch) or isLowerAlphabet(ch):
+            elif ch.isdigit() or ch.islower():
                 status = 1
             else:
                 status = 99
         if status == 1:
-            if isNum(ch) or isLowerAlphabet(ch):
+            if ch.isdigit() or ch.islower():
                 resTypeString += str(ch);
             else:
                 status = 2
@@ -292,16 +285,27 @@ def decodeTypeLine(s):
     return -1
 
 def decodeDataLine(s,typeNum):
-    # typeLineArr = list(lines.pop(0)).reverse();
+    def isLastDot(s):
+        for ch in s[::-1]:
+            if ch == '\x20': # space
+                pass
+            elif ch == ',':
+                return 1
+            else:
+                return 0
     print('sys : decode Data Line : ' + s)
-    datas = s.split(',')
-    resDataList = list();
     if typeNum>=0 and typeNum<=7:
         isInt = 1
     elif typeNum>=8 and typeNum<=9:
         isInt = 0
     else:
-        return 0,-1
+        raise Exception('typeNum error')
+
+    isContinued = isLastDot(s)
+    datas = s.split(',')
+    resDataList = list()
+    if isContinued:
+        del datas[-1]
     for data in datas:
         try:
             if isInt:
@@ -310,13 +314,8 @@ def decodeDataLine(s,typeNum):
                 num = float(data)
             resDataList.append(num)
         except (ValueError,SyntaxError):
-            for ch in data:
-                if ch == '\x20': # space
-                    pass
-                else:
-                    return resDataList, -1
-            return resDataList, 1
-    return resDataList, 0
+            return [], -1
+    return resDataList, isContinued
 
 def decodeFormatString(s):
     typeStrs = s.split(',')
