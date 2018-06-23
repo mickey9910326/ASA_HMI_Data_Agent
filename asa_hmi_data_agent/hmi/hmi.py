@@ -17,12 +17,6 @@ class SerialThread(QThread):
     def __init__(self, ser):
         QThread.__init__(self)
         self.ser = ser
-        self.line = bytes()
-        self.header = bytearray(b'\00\00\00')
-        self.resumingMode = False
-        self.resumingType = None
-        self.resumingByte = 0
-        self.resumingData = None
 
     def run(self):
         de = hd.DecoderHandler()
@@ -34,6 +28,7 @@ class SerialThread(QThread):
                 break
             de.add_text(ch)
             type, res = de.get()
+            # print(de.get_text())
             if type is 0:
                 pass
             elif type is 1:
