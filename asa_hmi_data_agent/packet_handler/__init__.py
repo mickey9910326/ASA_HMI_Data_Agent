@@ -11,11 +11,12 @@ class DecoderHandler(object):
     class State(object):
         status = int(0)
         header = bytes(3)
+        databuf = bytes()
 
     _text = bytes()
     _idx  = int(0)
     _state = State()
-    _en_utf8 = bool(False)
+    _en_utf8 = bool(True)
     _en_big5 = bool(True)
 
     """docstring for Decoder."""
@@ -39,20 +40,30 @@ class DecoderHandler(object):
             self._idx += 1
             if self._state.status is 0:
                 # print('state is ' + str(self._state.status))
-                if ch == b'\n' or ch == '\r':
-                    pass
-                    # TODO decode line
+                if bytes([ch]) == b'\n' or bytes([ch]) == '\r':
+                    res = self._decodeDatabufToStr()
+                    return res
                 else:
-                    print(self._state.header[1:3])
+                    self._state.databuf += bytes([ch])
                     self._state.header = self._state.header[1:3] + bytes([ch])
+                #
                 if   self._state.header == _CONST_HEADER_GET_AR:
                     self._state.status = 10
+                    # remove 3 bytes header from databuf
+                    self._state.databuf = self._state.databuf[0:-3]
+                    res = self._decodeDatabufToStr()
+                    return res
                 elif self._state.header == _CONST_HEADER_GET_ST:
                     self._state.status = 20
+                    # remove 3 bytes header from databuf
+                    self._state.databuf = self._state.databuf[0:-3]
+                    res = self._decodeDatabufToStr()
+                    return res
             elif self._state.status is 10:
                 # print('state is ' + str(self._state.status))
                 # arrTypeNum
                 if ch > 9:
+                    print('arrTypeNum error')
                     raise
                 self._state.arrTypeNum = ch
                 self._state.header   = bytes(3)
@@ -80,6 +91,7 @@ class DecoderHandler(object):
             elif self._state.status is 13:
                 # print('state is ' + str(self._state.status))
                 if self._state.chksum&0xFF is ch:
+                    self._state.databuf = bytes()
                     self._state.status = 0
                     return 1, self.databuf
                 else:
@@ -89,6 +101,25 @@ class DecoderHandler(object):
                 pass
         return 0, None
 
+    def _decodeDatabufToStr(self):
+        if len(self._state.databuf) is 0:
+            return 0, None
+        string = None
+        if string is None and self._en_utf8:
+            string = _trans_line_to_utf8(self._state.databuf)
+        if string is None and self._en_big5:
+            string = _trans_line_to_big5(self._state.databuf)
+        if string is None:
+            string = _trans_line_to_ascii(self._state.databuf)
+        self._state.databuf = bytes()
+        if string is None:
+            return 0, None
+        else:
+            return 3, string
+
+    def _resetState(self):
+        self._state.__init__()
+
     def get(self):
         type, data = self._step()
         if type is -1:
@@ -97,7 +128,7 @@ class DecoderHandler(object):
         elif type is 0 :
             return None
         else:
-            self.set_text(self._text[self._idx+1::])
+            self.set_text(self._text[self._idx::])
             self._idx = 0
             return type, data
 
