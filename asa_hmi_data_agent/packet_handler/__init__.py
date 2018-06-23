@@ -45,9 +45,10 @@ class DecoderHandler(object):
             self._idx += 1
             if self._state.status is 0:
                 # print('state is ' + str(self._state.status))
-                if bytes([ch]) == b'\n' or bytes([ch]) == '\r':
-                    res = self._decodeDatabufToStr()
-                    return res
+                if bytes([ch]) == b'\r' or bytes([ch]) == b'\n':
+                    if len(self._state.databuf) > 0:
+                        res = self._decodeDatabufToStr()
+                        return res
                 else:
                     self._state.databuf += bytes([ch])
                     self._state.header = self._state.header[1:3] + bytes([ch])
@@ -106,7 +107,11 @@ class DecoderHandler(object):
                 if self._state.chksum&0xFF is ch:
                     self._state.databuf = bytes()
                     self._state.status = 0
-                    return 1, self.databuf
+                    return 1, (
+                        self._state.arrTypeNum,
+                        self._state.dataBytes,
+                        self.databuf
+                    )
                 else:
                     print('arrChkSum error')
                     raise
@@ -157,10 +162,15 @@ class DecoderHandler(object):
                 # chksum
                 if self._state.chksum&0xFF is ch:
                     self._state.status = 0
-                    return 2, decode_struct(
+                    typeNumList, dataListList = decode_struct(
                         self._state.dataBytes,
                         self._state.formatString,
                         self._state.databuf
+                    )
+                    return 2, (
+                        typeNumList,
+                        dataListList,
+                        self._state.formatString
                     )
                 else:
                     print('arrChkSum error')
@@ -190,7 +200,7 @@ class DecoderHandler(object):
             # TODO handle ERROR here
             pass
         elif type is 0 :
-            return None
+            return 0, None
         else:
             self.set_text(self._text[self._idx::])
             self._idx = 0
