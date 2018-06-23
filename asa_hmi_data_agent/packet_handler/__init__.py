@@ -9,9 +9,14 @@ _CONST_HEADER_GET_ST = b'\xbb\xbb\xbb'
 
 class DecoderHandler(object):
     class State(object):
-        status = int(0)
-        header = bytes(3)
-        databuf = bytes()
+        status    = int(0)
+        dataBytes = int(0)
+        sBytes    = int(0)
+        chksum    = int(0)
+        count     = int(0)
+        header    = bytes(3)
+        databuf   = bytes()
+        databuf2  = bytes()
 
     _text = bytes()
     _idx  = int(0)
@@ -48,17 +53,25 @@ class DecoderHandler(object):
                     self._state.header = self._state.header[1:3] + bytes([ch])
                 #
                 if   self._state.header == _CONST_HEADER_GET_AR:
+                    # remove 3 bytes header from databuf
+                    self._state.databuf = self._state.databuf[0:-3]
+                    if len(self._state.databuf) > 0:
+                        res = self._decodeDatabufToStr()
+                        self._resetState()
+                        self._state.status = 10
+                        return res
+                    self._resetState()
                     self._state.status = 10
-                    # remove 3 bytes header from databuf
-                    self._state.databuf = self._state.databuf[0:-3]
-                    res = self._decodeDatabufToStr()
-                    return res
                 elif self._state.header == _CONST_HEADER_GET_ST:
-                    self._state.status = 20
                     # remove 3 bytes header from databuf
                     self._state.databuf = self._state.databuf[0:-3]
-                    res = self._decodeDatabufToStr()
-                    return res
+                    if len(self._state.databuf) > 0:
+                        res = self._decodeDatabufToStr()
+                        self._resetState()
+                        self._state.status = 10
+                        return res
+                    self._resetState()
+                    self._state.status = 20
             elif self._state.status is 10:
                 # print('state is ' + str(self._state.status))
                 # arrTypeNum
@@ -68,12 +81,12 @@ class DecoderHandler(object):
                 self._state.arrTypeNum = ch
                 self._state.header   = bytes(3)
                 self._state.status   = 11
-                self._state.arrBytes = 0
+                self._state.dataBytes = 0
                 self._state.count    = 0
                 self._state.chksum   = 0
             elif self._state.status is 11:
                 # print('state is ' + str(self._state.status))
-                self._state.arrBytes = (self._state.arrBytes<<8) + ch
+                self._state.dataBytes = (self._state.dataBytes<<8) + ch
                 self._state.chksum  += ch
                 self._state.count += 1
                 if self._state.count is 2:
@@ -85,7 +98,7 @@ class DecoderHandler(object):
                 self._state.chksum  += ch
                 self._state.databuf += bytes([ch])
                 self._state.count   += 1
-                if self._state.count is self._state.arrBytes:
+                if self._state.count is self._state.dataBytes:
                     self._state.status  = 13
                     self.databuf = decode_array(self._state.arrTypeNum,self._state.databuf)
             elif self._state.status is 13:
@@ -97,13 +110,64 @@ class DecoderHandler(object):
                 else:
                     print('arrChkSum error')
                     raise
+
             elif self._state.status is 20:
-                pass
+                # print('state is ' + str(self._state.status))
+                # total bytes
+                self._state.dataBytes = (self._state.dataBytes<<8) + ch
+                self._state.chksum  += ch
+                self._state.count   += 1
+                if self._state.count is 2:
+                    self._state.status  = 21
+                    self._state.databuf = bytes()
+
+            elif self._state.status is 21:
+                # print('state is ' + str(self._state.status))
+                # bytes of format string
+                self._state.chksum  += ch
+                self._state.sBytes   = ch
+                self._state.status   = 22
+                self._state.count    = 0
+                self._state.dataBytes -= ch+1
+
+            elif self._state.status is 22:
+                # print('state is ' + str(self._state.status))
+                # formatString
+                self._state.chksum   += ch
+                self._state.databuf2 += bytes([ch])
+                self._state.count    += 1
+                if self._state.count is self._state.sBytes:
+                    self._state.status = 23
+                    self._state.count  = 0
+                    self._state.formatString = self._state.databuf2.decode("ascii")
+                    self._state.databuf = bytes()
+
+            elif self._state.status is 23:
+                # print('state is ' + str(self._state.status))
+                # data
+                self._state.chksum  += ch
+                self._state.databuf += bytes([ch])
+                self._state.count   += 1
+                if self._state.count is self._state.dataBytes:
+                    self._state.status  = 24
+                    print(self._state.databuf)
+
+            elif self._state.status is 24:
+                # print('state is ' + str(self._state.status))
+                # chksum
+                if self._state.chksum&0xFF is ch:
+                    self._state.status = 0
+                    return 2, decode_struct(
+                        self._state.dataBytes,
+                        self._state.formatString,
+                        self._state.databuf
+                    )
+                else:
+                    print('arrChkSum error')
+                    raise
         return 0, None
 
     def _decodeDatabufToStr(self):
-        if len(self._state.databuf) is 0:
-            return 0, None
         string = None
         if string is None and self._en_utf8:
             string = _trans_line_to_utf8(self._state.databuf)
@@ -118,7 +182,7 @@ class DecoderHandler(object):
             return 3, string
 
     def _resetState(self):
-        self._state.__init__()
+        self._state = self.State()
 
     def get(self):
         type, data = self._step()
