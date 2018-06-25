@@ -9,7 +9,8 @@ Welcome to asa_hmi_data_agent's documentation!
 .. toctree::
    :maxdepth: 2
 
-   usage
+   hmi
+
 
 Indices and tables
 ==================
