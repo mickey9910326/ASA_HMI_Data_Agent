@@ -1,4 +1,4 @@
-from asa_hmi_data_agent.hmi.decodeASAformat import *
+from asa_hmi_data_agent.packet_handler.type import *
 
 #  header of hmi get array
 _CONST_HEADER_GET_AR = b'\xaa\xaa\xaa'

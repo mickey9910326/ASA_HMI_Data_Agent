@@ -1,4 +1,5 @@
 import conftest
+import numpy as np
 import asa_hmi_data_agent.packet_handler as hd
 
 h      = hd._CONST_HEADER_GET_ST
@@ -23,3 +24,9 @@ print('-----------------------------------------------------------------------')
 res = de.get()
 print(res)
 print(de.get_text())
+
+dt = np.int8
+# dt = dt.newbyteorder('>')
+res = np.frombuffer(data, dtype=dt)
+print(res)
+print(type(res))
