@@ -25,30 +25,6 @@ def getNpType(typeNum):
     else:
         return False
 
-def gatPackStr(typeNum):
-    if typeNum == 0: # int8_t
-        return 'b'
-    elif typeNum == 1: # int16_t
-        return 'h'
-    elif typeNum == 2: # int32_t
-        return 'i'
-    elif typeNum == 3: # int64_t
-        return 'q'
-    elif typeNum == 4: # uint8_t
-        return 'B'
-    elif typeNum == 5: # uint16_t
-        return 'H'
-    elif typeNum == 6: # uint32_t
-        return 'I'
-    elif typeNum == 7: # uint64_t
-        return 'Q'
-    elif typeNum == 8: # f32
-        return 'f'
-    elif typeNum == 9: # f64
-        return 'd'
-    else:
-        return False
-
 def getTypeStr(typeNum):
     if typeNum == 0:
         return 'i8'
@@ -70,8 +46,6 @@ def getTypeStr(typeNum):
         return 'f32'
     elif typeNum == 9:
         return 'f64'
-    elif typeNum == 15:
-        return 's'
     else:
         return False
 
@@ -95,8 +69,6 @@ def getTypeSize(typeNum):
     elif typeNum == 8: # f32
         return 4
     elif typeNum == 9: # f64
-        return 8
-    elif typeNum == 15: # String
         return 8
     else:
         return False
@@ -151,18 +123,45 @@ def getStTypeList(formatString):
         typeList.append({'type':type, 'num':num})
     return typeList
 
-def decode_struct(totalBytes,formatString,data):
-    dataBytes = totalBytes-len(formatString)-1;
-    typeNumList , typeDataNumList = decodeFormatString(formatString)
-    dataIdx = 0;
-    dataLastIdx = 0;
-    dataListList = list();
-    for idx in range(len(typeNumList)):
-        dataLastIdx = dataIdx + getTypeSize(typeNumList[idx])*typeDataNumList[idx]
-        dataList = unpack('<'+str(typeDataNumList[idx])+decodePackStr(typeNumList[idx]), data[dataIdx:dataLastIdx])
-        dataIdx = dataLastIdx
-        dataListList.append(dataList)
-    return typeNumList, dataListList
+def getStDtype(formatString):
+    args = list()
+    for i, typeStr in enumerate(formatString.split(',')):
+        if typeStr=='':
+            return None
+
+        s = typeStr.split('x')
+        if len(s) is not 2:
+            return None
+        elif s[0]=='' or s[1]=='':
+            return None
+
+        type = getTypeNum(s[0])
+        if type is None:
+            return None
+
+        try:
+            num = int(s[1])
+        except ValueError as e:
+            return None
+
+        args.append(('f'+str(i),getNpType(type),(num,)))
+    dt = np.dtype(args)
+    return dt
+
+
+def getStSize(typeList):
+    size = 0
+    for t in typeList:
+        size = size + getTypeSize(t['type']) * t['num']
+    return size
+
+def decode_struct(formatString, data):
+    dt = getStDtype(formatString)
+    if dt is None:
+        return None
+    elif dt.itemsize != len(data):
+        return None
+    return np.frombuffer(data, dtype=dt)
 
 def decode_array(typeNum, data):
     return np.frombuffer(data, dtype=getNpType(typeNum))
