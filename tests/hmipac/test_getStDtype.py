@@ -1,6 +1,6 @@
 import conftest
 import numpy as np
-from asa_hmi_data_agent.packet_handler.type import getStDtype
+from asa_hmi_data_agent.hmipac.type import getStDtype
 
 def test_t1():
     formatString = 'ui8x10'

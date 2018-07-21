@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 # from asa_hmi_data_agent.hmi.decodeASAformat import *
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
-import asa_hmi_data_agent.packet_handler as hd
+import asa_hmi_data_agent.hmipac as hd
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):

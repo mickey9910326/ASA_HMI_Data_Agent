@@ -1,5 +1,5 @@
 import conftest
-import asa_hmi_data_agent.packet_handler as hd
+import asa_hmi_data_agent.hmipac as hd
 
 b = b'1234567\n'
 b += b'-------'

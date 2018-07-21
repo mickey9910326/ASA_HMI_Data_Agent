@@ -1,6 +1,6 @@
 import conftest
 import numpy as np
-import asa_hmi_data_agent.packet_handler as hd
+import asa_hmi_data_agent.hmipac as hd
 
 h      = hd._CONST_HEADER_GET_ST
 fs     = b'ui8x5'
