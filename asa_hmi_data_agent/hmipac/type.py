@@ -96,6 +96,28 @@ def getTypeNum(typeString):
         return 9
     elif typeString == 's': # String
         return 15
+    elif typeString == 'int8': # int8_t
+        return 0
+    elif typeString == 'int16': # int16_t
+        return 1
+    elif typeString == 'int32': # int32_t
+        return 2
+    elif typeString == 'int64': # int64_t
+        return 3
+    elif typeString == 'uint8': # uint8_t
+        return 4
+    elif typeString == 'uint16': # uint16_t
+        return 5
+    elif typeString == 'uint32': # uint32_t
+        return 6
+    elif typeString == 'uint64': # uint64_t
+        return 7
+    elif typeString == 'float32': # f32
+        return 8
+    elif typeString == 'float64': # f64
+        return 9
+    elif typeString == 's': # String
+        return 15
     else:
         return None
 
@@ -165,3 +187,14 @@ def decode_struct(formatString, data):
 
 def decode_array(typeNum, data):
     return np.frombuffer(data, dtype=getNpType(typeNum))
+
+def npDtypeToFs(dt):
+    res  = ''
+    last = len(dt) - 1
+    for i in range(len(dt)):
+        type = getTypeStr(getTypeNum(dt[i].base.name))
+        num  = dt[i].shape[0]
+        res += type + 'x' + str(num)
+        if i != last:
+            res += ','
+    return res
