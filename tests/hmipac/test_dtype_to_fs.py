@@ -36,3 +36,20 @@ def test_t3():
 
     res = npDtypeToFs(dt)
     assert res == predict
+
+def test_t4():
+    data = np.array(
+        (
+            [1, 2, 3, 4, 5],
+            [1, 2, 3, 4, 5]
+        ),
+        dtype=[
+            ('f0', np.uint8 , (5,)),
+            ('f1', np.uint16, (5,))
+        ]
+    )
+    dt = data.dtype
+    predict = 'ui8x5,ui16x5'
+
+    res = npDtypeToFs(dt)
+    assert res == predict
