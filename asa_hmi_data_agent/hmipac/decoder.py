@@ -1,4 +1,4 @@
-__all__  = ['Unpacker']
+__all__  = ['Decoder']
 
 #  header of hmi get array
 _CONST_HEADER_GET_AR = b'\xaa\xaa\xaa'
@@ -7,7 +7,7 @@ _CONST_HEADER_GET_AR = b'\xaa\xaa\xaa'
 _CONST_HEADER_GET_ST = b'\xbb\xbb\xbb'
 
 
-class Unpacker(object):
+class Decoder(object):
     class State(object):
         status    = int(0)
         dataBytes = int(0)
