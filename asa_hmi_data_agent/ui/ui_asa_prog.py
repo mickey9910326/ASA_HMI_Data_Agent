@@ -122,4 +122,3 @@ class Ui_MainWidgetAsaProg(object):
         self.label_etcTitle.setText(_translate("MainWidgetAsaProg", "預估花費時間："))
         self.label_etcContent.setText(_translate("MainWidgetAsaProg", "-"))
         self.label_statusContent.setText(_translate("MainWidgetAsaProg", "等待燒錄"))
-

@@ -198,3 +198,6 @@ def npDtypeToFs(dt):
         if i != last:
             res += ','
     return res
+
+def getFs(dt):
+    return npDtypeToFs(dt)
