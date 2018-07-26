@@ -5,13 +5,17 @@ from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 # from asa_hmi_data_agent.hmi.decodeASAformat import *
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
-import asa_hmi_data_agent.hmipac as hd
+from asa_hmi_data_agent import hmipac
+from .text_to_data import getFirstArray, getFirstStruct
+from .data_to_text import arToStr, stToStr
+
+import numpy as np
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):
     signalGetLine = pyqtSignal(str)
-    signalGetArrayData = pyqtSignal(int,int,tuple)
-    signalGetStructData = pyqtSignal(list,list,str)
+    signalGetArrayData = pyqtSignal(np.ndarray)
+    signalGetStructData = pyqtSignal(np.ndarray)
     signalLoseConnect   = pyqtSignal()
 
     def __init__(self, ser):
@@ -19,7 +23,16 @@ class SerialThread(QThread):
         self.ser = ser
 
     def run(self):
-        de = hd.DecoderHandler()
+        de = hmipac.Decoder()
+        b = b'1234567\n'
+        b += b'-------'
+        b += b'\xaa\xaa\xaa'
+        b += b'\x00'
+        b += b'\x00\x04'
+        b += b'\x01\x02\x03\x04'
+        b += bytes([sum(b'\x00\x04') + sum(b'\x01\x02\x03\x04')])
+        de.add_text(b)
+
         while (self.ser.isOpen()):
             try:
                 ch = self.ser.read(1)
@@ -27,18 +40,18 @@ class SerialThread(QThread):
                 self.signalLoseConnect.emit()
                 break
             de.add_text(ch)
-            type, res = de.get()
+            type, data = de.get()
             # print(de.get_text())
             if type is 0:
                 pass
             elif type is 1:
-                # arrTypeNum, arrBytes, arr
-                self.signalGetArrayData.emit(res[0], res[1], res[2])
+                print(data)
+                self.signalGetArrayData.emit(data)
             elif type is 2:
-                # typeNumList, dataListList, formatString
-                self.signalGetStructData.emit(res[0], res[1], res[2])
+                print(data)
+                self.signalGetStructData.emit(data)
             elif type is 3:
-                self.signalGetLine.emit(res)
+                self.signalGetLine.emit(data)
 
 # ---- class Serial Thread End -------------------------------------------------
 
@@ -60,8 +73,8 @@ class HMI(object):
         # ---- Serial Thread Init Start ----------------------------------------
         self.SerialThread = SerialThread(self.ser)
         self.SerialThread.signalGetLine[str].connect(self.text_terminalAppendLineFromDevice)
-        self.SerialThread.signalGetArrayData[int,int,tuple].connect(self.rec_AppendArray)
-        self.SerialThread.signalGetStructData.connect(self.rec_AppendStruct)
+        self.SerialThread.signalGetArrayData[np.ndarray].connect(self.rec_AppendArray)
+        self.SerialThread.signalGetStructData[np.ndarray].connect(self.rec_AppendStruct)
         self.SerialThread.signalLoseConnect.connect(self.loseConnectHandler)
         # ---- Serial Thread Init End ------------------------------------------
 
@@ -190,38 +203,15 @@ class HMI(object):
         res, resText = transStringToUi8(self.widget.rec_textEdit.toPlainText())
         self.widget.rec_textEdit.clear()
         self.widget.rec_textEdit.append(resText)
-    def rec_AppendArray(self,typeNum,bytes,array):
-        print('sys : textGet append array data:' + str(array))
-        self.widget.rec_textEdit.append(getTypeStr(typeNum)+' : ')
-        s = '  '
-        for idx, data in enumerate(array):
-            s += str(data)
-            if idx+1 != len(array):
-                s += ',  '
-            else:
-                self.widget.rec_textEdit.append(s)
-            if len(s) > 100: #換行
-                self.widget.rec_textEdit.append(s)
-                s = '  '
-        self.widget.rec_textEdit.append('')
-        self.widget.text_terminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
-    def rec_AppendStruct(self, typeNumList, dataListList, formatString):
-        for idx in range(len(typeNumList)):
-            typeNum = typeNumList[idx]
-            dataList = dataListList[idx]
-            self.widget.rec_textEdit.append(getTypeStr(typeNum)+' : ')
-            s = '  '
-            for idx2, data in enumerate(dataList):
-                s += str(data)
-                if idx2+1 != len(dataList):
-                    s += ',  '
-                else:
-                    self.widget.rec_textEdit.append(s)
-                if len(s) > 100: #換行
-                    self.widget.rec_textEdit.append(s)
-                    s = '  '
-            self.widget.rec_textEdit.append('')
-        self.widget.text_terminal.append('( log: get struct of ' + formatString +'. )')
+
+    def rec_AppendArray(self, data):
+        # print('sys : textGet append array data:' + str(array))
+        self.widget.rec_textEdit.append(arToStr(data))
+        # self.widget.text_terminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
+
+    def rec_AppendStruct(self, data):
+        self.widget.rec_textEdit.append(stToStr(data))
+        # self.widget.text_terminal.append('( log: get struct of ' + formatString +'. )')
     # ---- 接收區功能實現 end ---------------------------------------------------
 
     # ---- 發送區功能實現 start -------------------------------------------------

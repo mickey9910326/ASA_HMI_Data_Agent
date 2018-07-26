@@ -28,7 +28,7 @@ def align(prespace, list_data):
     maxL = max([len(s) for s in ls]) # max length of str(data)
     n    = len(list_data) # num of list_data
     res  = ''
-    LINEMAX = 65 # each line string max length
+    LINEMAX = 61 # each line string max length
     if maxL > LINEMAX:
         pass
     else:

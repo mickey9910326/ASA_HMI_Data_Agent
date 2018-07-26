@@ -1,3 +1,4 @@
+from .type import *
 __all__  = ['Decoder']
 
 #  header of hmi get array
@@ -26,7 +27,7 @@ class Decoder(object):
 
     """docstring for Decoder."""
     def __init__(self):
-        super(DecoderHandler, self).__init__()
+        super(Decoder, self).__init__()
         self._idx = int(0)
 
     def add_text(self, text):
@@ -107,11 +108,7 @@ class Decoder(object):
                 if self._state.chksum&0xFF == ch:
                     self._state.databuf = bytes()
                     self._state.status = 0
-                    return 1, (
-                        self._state.arrTypeNum,
-                        self._state.dataBytes,
-                        self.databuf
-                    )
+                    return 1, self.databuf
                 else:
                     print('arrChkSum error')
                     raise
@@ -160,17 +157,9 @@ class Decoder(object):
                 # chksum
                 if self._state.chksum&0xFF == ch:
                     self._state.status = 0
-                    typeNumList, dataListList = decode_struct(
-                        self._state.dataBytes,
-                        self._state.formatString,
-                        self._state.databuf
-                    )
+                    data = decode_struct( self._state.formatString, self._state.databuf )
                     self._state.databuf = bytes()
-                    return 2, (
-                        typeNumList,
-                        dataListList,
-                        self._state.formatString
-                    )
+                    return 2, data
                 else:
                     print('stChkSum error')
                     raise
