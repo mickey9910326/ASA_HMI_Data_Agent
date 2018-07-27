@@ -243,90 +243,36 @@ class HMI(object):
     def send_verifyShowFAIL(self):
         self.widget.send_textBrowserVerify.clear()
         self.widget.send_textBrowserVerify.append('FAIL')
+
     def send_btnSendArray(self):
-        res = -1;
+        text = self.widget.send_textEdit.toPlainText()
         try:
-            typeNum, dataList, res, resText = decodeTextToArrey(self.widget.send_textEdit.toPlainText())
-        except (ValueError,SyntaxError,TypeError):
-            res = -1
-            pass
-        if res != 0:
-            self.send_verifyShowFAIL()
+            usedLines, data = getFirstArray(text)
+        except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
             print('sys : error')
-        else:
-            self.widget.send_textEdit.clear();
-            self.widget.send_textEdit.append(resText)
-            self.send_verifyShowOK()
-            if self.ser.isOpen() is False:
-                return False
-            self.ser.write(b'\xab\xab\xab')
-            self.ser.write(pack('>B',typeNum))
-            print(pack('>B',typeNum))
-            dataBytes =len(dataList)*getTypeSize(typeNum)
-            self.ser.write(pack('>H',dataBytes))
-            print(pack('>B',len(dataList)))
-            chkSum = sum(pack('>H',dataBytes))
-            for data in dataList:
-                self.ser.write(pack('<'+decodePackStr(typeNum),data))
-                chkSum += sum(pack('<'+decodePackStr(typeNum),data));
-                print(pack('<'+decodePackStr(typeNum),data))
-                print(chkSum)
-            self.ser.write(pack('>B',chkSum%256))
-            self.widget.text_terminal.append('( log: send ' + str(dataBytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
-    def send_btnSendStruct(self):
-        res = -1;
-        res, resText = transStringToUi8(self.widget.send_textEdit.toPlainText())
-        try:
-            lineIdx, typeNumList, dataListList, res =decodeTextToStruct(resText)
-        except (ValueError,SyntaxError,TypeError):
-            res = -1
-            pass
-        if res != 0:
             self.send_verifyShowFAIL()
-            print('sys : error')
         else:
-            self.send_verifyShowOK()
-            if self.ser.isOpen() is False:
-                return False
-            structTypeString = str();
-            structTypeStringByte = 0;
-            structBytes = 0
-            chkSum = 0
-            for idx in range(len(typeNumList)):
-                structTypeString += getTypeStr(typeNumList[idx]) + 'x' + str(len(dataListList[idx]))
-                structBytes      += getTypeSize(typeNumList[idx]) * len(dataListList[idx])
-                if idx != len(typeNumList)-1:
-                    structTypeString += ','
-            structTypeStringByte = len(structTypeString)
-            # if structBytes >= 255:
-            #     print ('sys : error bytes >= 255')
-            #     return False
-
-            self.ser.write(b'\xab\xab\xab')
-            structBytesH = structBytes>>8
-            structBytesL = structBytes&0xFF
-            self.ser.write(pack('>B',structBytesH))
-            self.ser.write(pack('>B',structBytesL))
-            chkSum += structBytesH + structBytesL
-
-            self.ser.write(pack('>B',structTypeStringByte))
-            self.ser.write(bytes(structTypeString, encoding = "ascii"))
-            chkSum += sum(bytes(structTypeString, encoding = "ascii"));
-
-            testData = bytearray();
-            print(bytes(structTypeString, encoding = "ascii"))
-            for idx, dataList in enumerate(dataListList):
-                for data in dataList:
-                    self.ser.write(pack('<'+decodePackStr(typeNumList[idx]),data))
-                    chkSum += sum(pack('<'+decodePackStr(typeNumList[idx]),data));
-                    testData+=(pack('<'+decodePackStr(typeNumList[idx]),data))
-                    print(pack('<'+decodePackStr(typeNumList[idx]),data))
-            self.ser.write(pack('>B',chkSum%256))
-            print('chksum ' + str(chkSum%256))
-            print(testData)
-            print('formatString : ' + structTypeString)
+            lines = text.split('\n')
+            if usedLines == len(lines):
+                text = ''
+            else:
+                text = '\n'.join(l for l in lines[usedLines::])
             self.widget.send_textEdit.clear()
-            self.widget.text_terminal.append('( log: send struct of ' + structTypeString +'. )')
+            self.widget.send_textEdit.append(text)
+
+    def send_btnSendStruct(self):
+        text = self.widget.send_textEdit.toPlainText()
+        try:
+            usedLines, data = getFirstStruct(text)
+        except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
+            print('sys : error')
+            self.send_verifyShowFAIL()
+        else:
+            lines = text.split('\n')
+            text = '\n'.join(l for l in lines[usedLines::])
+            self.widget.send_textEdit.clear()
+            self.widget.send_textEdit.append(text)
+
     # ---- 發送區功能實現 end ---------------------------------------------------
 
     def updateTextFromLoadDialog(self):

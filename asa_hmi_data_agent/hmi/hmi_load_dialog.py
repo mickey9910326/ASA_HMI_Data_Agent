@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QFileDialog, QDialog
 import scipy.io
 import os.path
 from asa_hmi_data_agent.ui.ui_hmi_load_dialog import Ui_HmiLoadDialog
-from asa_hmi_data_agent.hmi.decodeASAformat import *
+# from asa_hmi_data_agent.hmi.decodeASAformat import *
 
 import numpy as np
 from numpy import array

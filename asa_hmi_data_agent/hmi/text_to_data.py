@@ -6,10 +6,12 @@ def getFirstArray(text):
     # TODO: Exception handle?
     lines = text.split('\n')
     status = int(0)
+    usedLines = 0
     for i in range(len(lines)):
         s = lines[i]
         # status 0 get type
         if status == 0:
+            usedLines += 1
             if isCommentLine(s) or isSpaceLine(s) or isNullLine(s):
                 pass
             else:
@@ -18,6 +20,7 @@ def getFirstArray(text):
                 resdata = np.array([], getNpType(typeNum))
         # status 1 get data
         elif status == 1:
+            usedLines += 1
             if isCommentLine(s) or isSpaceLine(s) or isNullLine(s):
                 pass
             else:
@@ -28,10 +31,10 @@ def getFirstArray(text):
         # status 2 remove space lines and null line
         elif status == 2:
             if isSpaceLine(s) or isNullLine(s):
+                usedLines += 1
                 pass
             else:
                 break
-    usedLines = i
     return usedLines, resdata
 
 def getFirstStruct(text):
@@ -40,6 +43,7 @@ def getFirstStruct(text):
     usedLines = 0
     status = int(0)
     for i in range(len(lines)):
+        usedLines += 1
         # get formatString
         s = lines[i]
         if isCommentLine(s) or isSpaceLine(s) or isNullLine(s):
@@ -48,22 +52,20 @@ def getFirstStruct(text):
             dt = decodeFsLine(s)
             status  = 1
             break
-    usedLines += i
 
     # get each type data
     dataList = list()
     for idx in range(len(dt)):
-        l, data = getFirstArray('\n'.join(lines[usedLines+1::]))
+        l, data = getFirstArray('\n'.join(lines[usedLines::]))
         dataList.append(data)
         usedLines += l
     resdata = np.array(tuple(dataList), dtype=dt)
 
     for i in range(len(lines[usedLines+1::])):
         if isSpaceLine(s) or isNullLine(s):
-            pass
+            usedLines += 1
         else:
             break
-    usedLines += i
     return usedLines, resdata
 
 # line decode ------------------------------------------------------------------
