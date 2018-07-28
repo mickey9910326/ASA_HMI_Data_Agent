@@ -2,14 +2,17 @@ import sys
 import serial
 from asa_hmi_data_agent.listport import serial_ports
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
+from PyQt5.QtWidgets import QFileDialog
 # from asa_hmi_data_agent.hmi.decodeASAformat import *
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
 from asa_hmi_data_agent import hmipac
-from .text_to_data import getFirstArray, getFirstStruct
+from .text_to_data import getFirstArray, getFirstStruct, textToData
 from .data_to_text import arToStr, stToStr
 
 import numpy as np
+import scipy.io
+import os
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):
@@ -86,12 +89,14 @@ class HMI(object):
         self.widget.rec_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.rec_textEdit.toPlainText()))
         self.widget.rec_btnSave.clicked.connect(self.hmiSaveDialog.show)
         self.widget.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
+        self.widget.rec_btnQuickSave.clicked.connect(lambda : self.quickSave(self.widget.rec_textEdit.toPlainText()))
         # 發送區
         self.widget.send_btnClear.clicked.connect(self.send_textEditClear)
         self.widget.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.send_textEdit.toPlainText()))
         self.widget.send_btnReadFile.clicked.connect(self.hmiLoadDialog.show)
         self.widget.send_btnSendArray.clicked.connect(self.send_btnSendArray)
         self.widget.send_btnSendStruct.clicked.connect(self.send_btnSendStruct)
+        self.widget.send_btnQuickSave.clicked.connect(lambda : self.quickSave(self.widget.send_textEdit.toPlainText()))
         # ---- Function Linking end --------------------------------------------
 
         # ---- HmiSaveDialog section start -------------------------------------
@@ -276,3 +281,32 @@ class HMI(object):
         self.widget.s_btnPortToggle.setText("開啟串列埠")
         self.mainWindow.setWindowTitle('ASA_HMI_Data_Agent   '+ 'Lost connect with '+self.ser.port+'!')
         self.s_updatePortlist()
+
+    def quickSave(self, text):
+        print(text)
+        name, _ = QFileDialog.getSaveFileName(self.mainWindow, 'Save File','', 'Mat Files (*.mat);;txt Files (*.txt)' ,initialFilter='Mat Files (*.mat)')
+        if name is '':
+            return
+
+        file_extension = os.path.splitext(name)[-1]
+        if file_extension == '.txt':
+            with open(name, 'w') as f:
+                f.write(text)
+        elif file_extension == '.mat':
+            try:
+                datalist = textToData(text)
+            except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
+                # TODO ERROR Dialog
+                print(type(e))
+                pass
+            else:
+                print('------------')
+                d = dict()
+                for i in range(len(datalist)):
+                    d['data'+str(i)] = datalist[i]
+                scipy.io.savemat(name, d)
+        elif file_extension == '.csv':
+            pass
+        else:
+            with open(name, 'w') as f:
+                f.write(text)

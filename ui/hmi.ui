@@ -281,9 +281,16 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="send_btnSave">
+             <widget class="QPushButton" name="send_btnQuickSave">
               <property name="text">
                <string>儲存檔案</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="send_btnSave">
+              <property name="text">
+               <string>編輯並儲存</string>
               </property>
              </widget>
             </item>
@@ -398,9 +405,29 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="rec_btnSave">
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="rec_btnQuickSave">
               <property name="text">
                <string>儲存檔案</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="rec_btnSave">
+              <property name="text">
+               <string>修改並儲存</string>
               </property>
              </widget>
             </item>
@@ -422,6 +449,30 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>s_portComboBox</tabstop>
+  <tabstop>s_btnUpdatePortList</tabstop>
+  <tabstop>s_btnPortToggle</tabstop>
+  <tabstop>text_terminal</tabstop>
+  <tabstop>text_lineEditToBeSend</tabstop>
+  <tabstop>text_btnSend</tabstop>
+  <tabstop>text_btnClearTerminal</tabstop>
+  <tabstop>text_btnSaveTerminal</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>send_textEdit</tabstop>
+  <tabstop>send_btnClear</tabstop>
+  <tabstop>send_btnSendStruct</tabstop>
+  <tabstop>send_btnSendArray</tabstop>
+  <tabstop>send_btnQuickSave</tabstop>
+  <tabstop>send_btnSave</tabstop>
+  <tabstop>send_btnReadFile</tabstop>
+  <tabstop>send_textBrowserVerify</tabstop>
+  <tabstop>rec_textEdit</tabstop>
+  <tabstop>rec_btnClear</tabstop>
+  <tabstop>rec_btnQuickSave</tabstop>
+  <tabstop>rec_btnSave</tabstop>
+  <tabstop>rec_btnMoveToSend</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
