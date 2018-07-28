@@ -1,12 +1,11 @@
-from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
-from PyQt5.QtWidgets import QFileDialog, QDialog
+import numpy as np
 import scipy.io
 import os.path
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
 from asa_hmi_data_agent.ui.ui_hmi_load_dialog import Ui_HmiLoadDialog
-from asa_hmi_data_agent.hmi.decodeASAformat import *
-
-import numpy as np
-from numpy import array
+from .data_to_text import arToStr, stToStr
+from ..hmipac.type import *
 
 # Reference : https://docs.scipy.org/doc/scipy/reference/tutorial/io.html
 # Reference : https://docs.scipy.org/doc/numpy-1.13.0/user/basics.types.html
@@ -16,33 +15,57 @@ class Const:
     COL_NAME = 1
     COL_TYPE = 2
     COL_NUMS = 3
-    COL_BYTE = 4
-    COL_DATA = 5
+    COL_SIZE = 4
 
 # ---- class BitsSelector Start ------------------------------------------------
 class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
-    arrayList = list()
+    dataList = list()
     nameList = list()
+    resText  = str()
+    filename = str()
 
     def __init__(self):
         QDialog.__init__(self)
         self.setupUi(self)
-        self.pushButton_load.clicked.connect(self.loadFile)
+
+        self.pushButton_txtLoad.clicked.connect(self.loadTxtFile)
+        self.pushButton_matLoad.clicked.connect(self.loadMatFile)
+        self.pushButton_confirm.clicked.connect(self.matConfirm)
+
         self.pushButton_up.clicked.connect(self.colMoveUp)
         self.pushButton_down.clicked.connect(self.colMoveDown)
         self.pushButton_delete.clicked.connect(self.colDelete)
-        self.pushButton_confirm.clicked.connect(self.confirm)
         self.pushButton_newSeq.clicked.connect(self.applyNewSeq)
 
-    def loadFile(self):
-        # TODO load file
-        filename, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'Mat Files (*.mat);;' ,initialFilter='Mat Files (*.mat)')
-        if filename != '':
-            name, extension = os.path.splitext(filename)
-            self.loadMatFile(filename)
+    def show(self):
+        self.tableWidget_mat.setRowCount(0)
+        self.dataList = list()
+        self.resText  = ''
+        super(QDialog, self).show()
 
-    def loadMatFile(self, filename):
-        matDict = scipy.io.loadmat(filename)
+    def matConfirm(self):
+        self.updateTextFromDataList()
+        self.accept()
+
+    def loadTxtFile(self):
+        # TODO load file
+        filename, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'All Files (*);;txt Files (*.txt);;' ,initialFilter='txt Files (*.txt)')
+        if filename != '':
+            with open(filename, 'r') as f:
+                self.filename = filename
+                self.resText = '// load from txt file: ' + filename + '\n\n'
+                self.resText += f.read()
+            self.accept()
+
+    def loadMatFile(self):
+        filename, _ = QFileDialog.getOpenFileName(self, 'Open File','', 'All Files (*);;Mat Files (*.mat);;' ,initialFilter='Mat Files (*.mat)')
+        if filename == '':
+            return
+        else:
+            matDict = scipy.io.loadmat(filename)
+            self.filename = filename
+            self.dataList = list()
+
         for key, val in matDict.items():
             if (
                     key == '__header__' or
@@ -51,133 +74,124 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
                 ):
                     pass
             else:
-                y, nums = val.shape
-                if(y is not 1):
-                    # TODO ERROR msg
-                    pass
-                else:
-                    self.arrayList.append(val[0,:])
-                    self.nameList.append(key)
-                    self.updateTableFromArrayList()
+                self.dataList.append(val)
+                self.nameList.append(key)
+        for i in range(len(self.dataList)):
+            if self.dataList[i].dtype.names is None:
+                # array
+                self.dataList[i] = self.dataList[i][0]
+            else:
+                # struct
+                self.dataList[i] = reStructureData(self.dataList[i])
+        self.updateTableFromDataList()
 
-    def updateTableFromArrayList(self):
+    def updateTableFromDataList(self):
         self.tableWidget_mat.clearContents()
-        self.tableWidget_mat.setRowCount(0)
-        for row, array in enumerate(self.arrayList):
-            dataString = str()
-            for i, data in enumerate(array):
-                dataString += str(array[i])
-                if i is not array.size-1:
-                    dataString += ', '
-            self.appendRow(self.nameList[row], str(array.dtype), str(array.size), str(array.nbytes), dataString)
+        self.tableWidget_mat.setRowCount(len(self.dataList))
+        for row in range(len(self.dataList)):
+            data = self.dataList[row]
+            nameStr = self.nameList[row]
+            # NOTE the structured data of loadmat's return is strange.
+            if data.shape is ():
+                # Struct
+                typeStr = getFs(data.dtype)
+                numsStr = '1'
+                sizeStr = str(data.dtype.itemsize)
+            else:
+                # Array
+                typeStr = getTypeStr(getTypeNum(data.dtype.name))
+                numsStr = str(data.size)
+                sizeStr = str(data.size * data.dtype.itemsize)
 
-    def appendRow(self, name, typeStr, numStr, byteStr, dataStr):
-        row = self.tableWidget_mat.rowCount() + 1
-        self.tableWidget_mat.setRowCount(row)
-        self.tableWidget_mat.setItem(row-1, Const.COL_NEWSQE, QTableWidgetItem(''))
-        self.tableWidget_mat.setItem(row-1, Const.COL_NAME, QTableWidgetItem(name))
-        self.tableWidget_mat.setItem(row-1, Const.COL_TYPE, QTableWidgetItem(typeStr))
-        self.tableWidget_mat.setItem(row-1, Const.COL_NUMS, QTableWidgetItem(numStr))
-        self.tableWidget_mat.setItem(row-1, Const.COL_BYTE, QTableWidgetItem(byteStr))
-        self.tableWidget_mat.setItem(row-1, Const.COL_DATA, QTableWidgetItem(dataStr))
+            nameItem = QTableWidgetItem(nameStr)
+            typeItem = QTableWidgetItem(typeStr)
+            numsItem = QTableWidgetItem(numsStr)
+            sizeItem = QTableWidgetItem(sizeStr)
+            nameItem.setFlags(QtCore.Qt.ItemIsEnabled)
+            typeItem.setFlags(QtCore.Qt.ItemIsEnabled)
+            numsItem.setFlags(QtCore.Qt.ItemIsEnabled)
+            sizeItem.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.tableWidget_mat.setItem(row, Const.COL_NAME, nameItem)
+            self.tableWidget_mat.setItem(row, Const.COL_TYPE, typeItem)
+            self.tableWidget_mat.setItem(row, Const.COL_NUMS, numsItem)
+            self.tableWidget_mat.setItem(row, Const.COL_SIZE, sizeItem)
 
-    def loadDataFromText(self, str):
-        # TODO
-        pass
-
-    def show(self):
-        self.tableWidget_mat.setRowCount(0)
-        self.arrayList = list()
-        super(QDialog, self).show()
-
-    def confirm(self):
-        # TODO check the data is OK
-        self.accept()
+    def updateTextFromDataList(self):
+        if len(self.dataList) == 0:
+            self.resText = ''
+            return
+        self.resText = '// load from mat file: ' + self.filename + '\n\n'
+        for i, data in enumerate(self.dataList):
+            if data.shape is ():
+                self.resText += stToStr(data)
+            else:
+                self.resText += arToStr(data)
+            if i != len(self.dataList)-1:
+                self.resText += '\n'
 
     def colMoveUp(self):
         row = self.tableWidget_mat.currentRow()
         column = self.tableWidget_mat.currentColumn()
         if row > 0:
-            tmp = self.arrayList[row]
-            self.arrayList[row]   = self.arrayList[row-1]
-            self.arrayList[row-1] = tmp
-            self.updateTableFromArrayList()
+            tmp1 = self.dataList[row]
+            tmp2 = self.nameList[row]
+            self.dataList[row]   = self.dataList[row-1]
+            self.nameList[row]   = self.nameList[row-1]
+            self.dataList[row-1] = tmp1
+            self.nameList[row-1] = tmp2
+            self.updateTableFromDataList()
             self.tableWidget_mat.setCurrentCell(row-1,column)
 
     def colMoveDown(self):
         row = self.tableWidget_mat.currentRow()
         column = self.tableWidget_mat.currentColumn()
         if row < self.tableWidget_mat.rowCount()-1:
-            tmp = self.arrayList[row]
-            self.arrayList[row]   = self.arrayList[row+1]
-            self.arrayList[row+1] = tmp
-            self.updateTableFromArrayList()
+            tmp1 = self.dataList[row]
+            tmp2 = self.nameList[row]
+            self.dataList[row]   = self.dataList[row+1]
+            self.nameList[row]   = self.nameList[row+1]
+            self.dataList[row+1] = tmp1
+            self.nameList[row+1] = tmp2
+            self.updateTableFromDataList()
             self.tableWidget_mat.setCurrentCell(row+1,column)
 
     def colDelete(self):
+        if len(self.dataList) == 0:
+            return
         row = self.tableWidget_mat.currentRow()
-        self.tableWidget_mat.removeRow(row)
-
-    def getArrayListStr(self):
-        self.tableToArrayList()
-        return arrayListToStr(self.arrayList)
-
-    def tableToArrayList(self):
-        self.arrayList = list()
-        for row in range(self.tableWidget_mat.rowCount()):
-            type = self.tableWidget_mat.item(row, Const.COL_TYPE).text()
-            dataStr = self.tableWidget_mat.item(row, Const.COL_DATA).text()
-            self.arrayList.append(np.fromstring(dataStr, dtype=type, sep=','))
+        self.dataList.pop(row)
+        self.nameList.pop(row)
+        self.updateTableFromDataList()
 
     def applyNewSeq(self):
-        self.tableToArrayList()
-        newArrayList = list(self.arrayList)
+        cntRows = self.tableWidget_mat.rowCount()
+        # check seq
+        for row in range(cntRows):
+            try:
+                d = int(self.tableWidget_mat.item(row, Const.COL_NEWSQE).text())
+            except ValueError:
+                return
+            if d < 1 or d > cntRows:
+                return
+
+        newDataList = list(self.dataList)
         newNameList = list(self.nameList)
-        for row in range(self.tableWidget_mat.rowCount()):
+        for row in range(cntRows):
             newIdx = int(self.tableWidget_mat.item(row, Const.COL_NEWSQE).text())-1
-            newArrayList[newIdx] = self.arrayList[row]
+            newDataList[newIdx] = self.dataList[row]
             newNameList[newIdx] = self.nameList[row]
-        self.arrayList = newArrayList
+        self.dataList = newDataList
         self.nameList = newNameList
-        self.updateTableFromArrayList()
+        self.updateTableFromDataList()
 
-def arrayListToStr(arrayList):
-    typeNums = len(arrayList)
-    ret = str()
-    for array in arrayList:
-        ret += stdTypeToAsaType(str(array.dtype)) + ' : \n'
-        dataNums = array.size
-        dataString = str()
-        for i, data in enumerate(array):
-            dataString += str(array[i])
-            if i is not dataNums-1:
-                dataString += ', '
-            if len(dataString) >= 100:
-                ret += dataString + '\n'
-                dataString = str()
-        ret += dataString + '\n'
-    return ret
-
-def stdTypeToAsaType(typeStr):
-    if typeStr == 'int8':
-        return 'i8'
-    elif typeStr == 'int16':
-        return 'i16'
-    elif typeStr == 'int32':
-        return 'i32'
-    elif typeStr == 'int64':
-        return 'i64'
-    elif typeStr == 'uint8':
-        return 'ui8'
-    elif typeStr == 'uint16':
-        return 'ui16'
-    elif typeStr == 'uint32':
-        return 'ui32'
-    elif typeStr == 'uint64':
-        return 'ui64'
-    elif typeStr == 'float32':
-        return 'f32'
-    elif typeStr == 'float64':
-        return 'f64'
-    else:
-        return None
+def reStructureData(data):
+    f = data.dtype.names
+    args = list() # args for new dtype
+    dataList = list()
+    for i in range(len(f)):
+        d = data[f[i]][0][0][0]
+        dataList.append(d)
+        type = d.dtype.base
+        num  = d.size
+        args.append(('f'+str(i), type, (num,)))
+    return np.array(tuple(dataList), args)
