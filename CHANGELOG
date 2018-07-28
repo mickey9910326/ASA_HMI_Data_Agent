@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2018-07-29
+### Added
+- add hmi/data_to_text
+- add hmi/text_to_data
+- add hmipac to handle packet of hmi and data
+- add unit test oh hmipac and hmi (not complete)
+
+### Remove
+- hmi/decodeASAformat (replaced by hmipac.type)
+- hmi/text_decoder (replaced by hmipac.decoder)
+- remove functions of changes ui8 and strs in hmi/hmi
+
+### Changed
+- replace print in hmi/hmi with hmidbg
+- use hmilog to append log in text_terminal in hmi/hmi
+- use hmipac to simply hmi/hmi codes
+- rewrite hmi/hmi_save_dialog
+- rewrite hmi/hmi_load_dialog
+- simply ui
+
 ## [0.3.2] - 2018-06-20
 ### Added
 - Start using "changelog"

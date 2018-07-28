@@ -7,11 +7,24 @@ release page: https://github.com/mickey9910326/ASA_HMI_Data_Agent/releases
 You can find  the lastest patch in the above url.
 
 # 中文
+## [0.4.0] - 2018-07-29
+### HMI 功能:
+- 新的文字格式，現在需要再結構資料前加上formatString以辨認結構資料
+- 移除UI8m與string互相轉換功能
+- 更新文字對話區紀錄顯示方式
+- 簡化介面
+- 存檔介面更新
+- 讀檔介面更新
+- 錯誤例外處理
+
 ## [0.3.2] - 2018-06-20
 - 開始使用 "RELEASENOTE"
 - 將設定檔案移至資料夾settings中
 
 # English
+## [0.4.0] - 2018-07-29
+Look chinese plz.
+
 ## [0.3.2] - 2018-06-20
 - Start using "RELEASENOTE"
 - move setting files into folder settings
