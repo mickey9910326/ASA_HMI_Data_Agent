@@ -2,7 +2,7 @@ import conftest
 import numpy as np
 import asa_hmi_data_agent.hmipac as hd
 
-h      = hd._CONST_HEADER_GET_ST
+h      = hd.decoder._CONST_HEADER_GET_ST
 fs     = b'ui8x5'
 sbyte  = len(fs)
 data   = b'\x01\x02\x03\x04\x05'
@@ -14,7 +14,7 @@ chkSum = bytes([sum(dbyte + sbyte + fs + data)&0xFF])
 packet = h + dbyte + sbyte + fs + data + chkSum
 print(packet)
 
-de = hd.DecoderHandler()
+de = hd.Decoder()
 de.set_text(packet)
 print('-----------------------------------------------------------------------')
 res = de.get()

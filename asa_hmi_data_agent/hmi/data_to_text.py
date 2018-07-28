@@ -5,7 +5,6 @@ def arToStr(data):
     res = ''
     t   = getTypeNum(data.dtype.name)
     data_list = data.tolist()
-    print(res)
 
     res += getTypeStr(t) + ':' + '\n'
     res += align(2, data_list)
