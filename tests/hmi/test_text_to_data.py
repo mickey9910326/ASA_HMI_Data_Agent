@@ -5,7 +5,7 @@ from numpy.testing import assert_array_equal
 from asa_hmi_data_agent.hmi.text_to_data import *
 
 def test_getFirstArray_t1():
-    text = """  // line1
+    text = """// line1
     ui8:        // line2
         1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  // line3
        14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  // line4

@@ -128,7 +128,8 @@ def isSpaceLine(s):
     return s.isspace()
 
 def isCommentLine(s):
-    return removeComment(s).isspace()
+    s = removeComment(s)
+    return s.isspace() or isNullLine(s)
 
 def isLineLastDot(s):
     if s[-1] == ',':
