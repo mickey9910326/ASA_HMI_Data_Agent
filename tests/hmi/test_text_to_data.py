@@ -92,6 +92,43 @@ def test_getFirstStruct_t2():
     assert(res[0] == predict[0])
     assert_array_equal(res[1], predict[1])
 
+def test_textToData_t1():
+    text = """    // line1
+    f32x5:        // line2
+      f32:        // line3
+        1,2,3,4,5 // line4
+                  """
+    predict = [
+        np.array((
+                [1,2,3,4,5],
+            ), dtype= [
+                ('f0', np.float32, (5,)),
+            ]
+        )
+    ]
+    res = textToData(text)
+    assert(res == predict)
+
+def test_textToData_t2():
+    text = """
+    f32x5:
+      f32:
+        1,2,3,4,5
+    ui8:
+      1,2,3,4,5
+                  """
+    predict = [
+        np.array((
+                [1,2,3,4,5],
+            ), dtype= [
+                ('f0', np.float32, (5,)),
+            ]
+        ),
+        np.array([1,2,3,4,5], dtype=np.uint8)
+    ]
+    res = textToData(text)
+    assert_array_equal(res[0], predict[0])
+    assert_array_equal(res[1], predict[1])
 
 def test_removeSpace_t1():
     s   = '    ui8:   '

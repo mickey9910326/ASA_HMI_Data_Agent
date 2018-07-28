@@ -68,6 +68,32 @@ def getFirstStruct(text):
             break
     return usedLines, resdata
 
+def textToData(text):
+    # TODO: Exception handle?
+    res = list()
+    isContinued = True
+    while(isContinued):
+        isContinued = False
+        try:
+            usedLines, data = getFirstArray(text)
+        except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
+            # print(e)
+            pass
+        else:
+            res.append(data)
+            isContinued = True
+            text = '\n'.join((text.split('\n'))[usedLines::])
+        try:
+            usedLines, data = getFirstStruct(text)
+        except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
+            # print(e)
+            pass
+        else:
+            res.append(data)
+            isContinued = True
+            text = '\n'.join((text.split('\n'))[usedLines::])
+    return res
+
 # line decode ------------------------------------------------------------------
 def decodeDataLine(s, typeNum):
     s = removeComment(s)
