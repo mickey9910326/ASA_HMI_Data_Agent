@@ -24,14 +24,6 @@ class SerialThread(QThread):
 
     def run(self):
         de = hmipac.Decoder()
-        b = b'1234567\n'
-        b += b'-------'
-        b += b'\xaa\xaa\xaa'
-        b += b'\x00'
-        b += b'\x00\x04'
-        b += b'\x01\x02\x03\x04'
-        b += bytes([sum(b'\x00\x04') + sum(b'\x01\x02\x03\x04')])
-        de.add_text(b)
 
         while (self.ser.isOpen()):
             try:
@@ -39,19 +31,20 @@ class SerialThread(QThread):
             except serial.serialutil.SerialException as e:
                 self.signalLoseConnect.emit()
                 break
-            de.add_text(ch)
-            type, data = de.get()
-            # print(de.get_text())
-            if type is 0:
-                pass
-            elif type is 1:
-                print(data)
-                self.signalGetArrayData.emit(data)
-            elif type is 2:
-                print(data)
-                self.signalGetStructData.emit(data)
-            elif type is 3:
-                self.signalGetLine.emit(data)
+            else:
+                de.add_text(ch)
+                type, data = de.get()
+                # print(de.get_text())
+                if type is 0:
+                    pass
+                elif type is 1:
+                    print(data)
+                    self.signalGetArrayData.emit(data)
+                elif type is 2:
+                    print(data)
+                    self.signalGetStructData.emit(data)
+                elif type is 3:
+                    self.signalGetLine.emit(data)
 
 # ---- class Serial Thread End -------------------------------------------------
 
@@ -252,6 +245,7 @@ class HMI(object):
             print('sys : error')
             self.send_verifyShowFAIL()
         else:
+            self.ser.write(hmipac.encodeArToPac(data))
             lines = text.split('\n')
             if usedLines == len(lines):
                 text = ''
@@ -268,6 +262,7 @@ class HMI(object):
             print('sys : error')
             self.send_verifyShowFAIL()
         else:
+            self.ser.write(hmipac.encodeStToPac(data))
             lines = text.split('\n')
             text = '\n'.join(l for l in lines[usedLines::])
             self.widget.send_textEdit.clear()

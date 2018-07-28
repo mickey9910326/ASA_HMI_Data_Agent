@@ -183,7 +183,10 @@ def decode_struct(formatString, data):
         return None
     elif dt.itemsize != len(data):
         return None
-    return np.frombuffer(data, dtype=dt)
+    res = np.frombuffer(data, dtype=dt, count=1)
+    print(type(np.asarray(res[0], dtype=dt)))
+    print('------------')
+    return np.asarray(res[0], dtype=dt)
 
 def decode_array(typeNum, data):
     return np.frombuffer(data, dtype=getNpType(typeNum))

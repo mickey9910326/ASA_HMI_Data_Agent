@@ -3,12 +3,11 @@ from asa_hmi_data_agent.hmipac.type import *
 
 def arToStr(data):
     res = ''
-    type = getTypeNum(data.dtype.name)
-    data_list = list()
-    for i in range(data.size):
-        data_list.append(data[i])
+    t   = getTypeNum(data.dtype.name)
+    data_list = data.tolist()
+    print(res)
 
-    res += getTypeStr(type) + ':' + '\n'
+    res += getTypeStr(t) + ':' + '\n'
     res += align(2, data_list)
     return res
 
