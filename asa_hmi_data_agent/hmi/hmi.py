@@ -37,14 +37,11 @@ class SerialThread(QThread):
             else:
                 de.add_text(ch)
                 type, data = de.get()
-                # print(de.get_text())
                 if type is 0:
                     pass
                 elif type is 1:
-                    print(data)
                     self.signalGetArrayData.emit(data)
                 elif type is 2:
-                    print(data)
                     self.signalGetStructData.emit(data)
                 elif type is 3:
                     self.signalGetLine.emit(data)
@@ -99,7 +96,7 @@ class HMI(object):
         # ---- Function Linking end --------------------------------------------
 
         # ---- HmiSaveDialog section start -------------------------------------
-        self.hmiSaveDialog.accepted.connect(lambda : print('HmiSaveDialog close'))
+        self.hmiSaveDialog.accepted.connect(lambda : hmidbg('HmiSaveDialog close'))
         # ---- HmiSaveDialog section end ---------------------------------------
 
         # ---- HmiLoadDialog section start -------------------------------------
@@ -113,8 +110,7 @@ class HMI(object):
             pass
         else :
             availablePorts = serial_ports()
-            print('sys : Update port list in portComboBox, available port : ', end='')
-            print(availablePorts)
+            hmidbg('Update ports: ' + str(availablePorts))
             self.widget.s_portComboBox.clear()
             for port in availablePorts:
                 self.widget.s_portComboBox.addItem(port)
@@ -125,34 +121,33 @@ class HMI(object):
             pass
         elif (self.ser.isOpen() is False):
             self.ser.port = self.widget.s_portComboBox.currentText()
-            print('sys : Try to open port : ' + self.ser.port )
+            hmidbg('sys : Try to open port: ' + self.ser.port )
             try:
                 self.ser.open()
                 self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   "+ self.ser.port +' is opened.')
 
             except serial.serialutil.SerialException as e:
-                print('sys : Open port ' + self.ser.port + ' failed ')
-                print('     Exception : ', end='')
-                print(e)
-                self.widget.text_terminal.append('( log : Open port ' + self.ser.port + ' failed! )')
+                hmidbg('Open port ' + self.ser.port + ' failed!')
+                self.hmilog('Open port ' + self.ser.port + ' failed!')
             else :
                 self.widget.s_btnPortToggle.setText("關閉串列埠")
-                self.widget.text_terminal.append('( log: Open ' + self.ser.port +' success! )')
+                self.hmilog('Open ' + self.ser.port +' success!')
                 self.SerialThread.start()
         elif (self.ser.isOpen()):
-            print('sys : Try to close port : ' + self.ser.port )
+            hmidbg('Try to close port: ' + self.ser.port )
             self.SerialThread.terminate()
             self.ser.close()
             self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   "+ self.ser.port +' is closed.')
             self.widget.s_btnPortToggle.setText("開啟串列埠")
-            self.widget.text_terminal.append('( log: Close ' + self.ser.port +' success! )')
+            hmidbg('Close ' + self.ser.port +' success!')
+            self.hmilog('Close ' + self.ser.port +' success!')
     # ---- 串列埠設定區功能實現 end ----------------------------------------------
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
     # Append the line from serial in terminal
     def text_terminalAppendLineFromDevice(self, line):
         self.widget.text_terminal.append('>>  '+line)
-        print('sys : Get line from devive: ' + line)
+        hmidbg('Get line: ' + line)
 
     # Send line to serial
     def text_sendLineToDevice(self):
@@ -163,7 +158,7 @@ class HMI(object):
             self.widget.text_lineEditToBeSend.clear()
             self.ser.write(bytes(line+'\n', encoding = "utf-8") )
             self.widget.text_terminal.append('<<  '+line)
-            print('sys : Send line to devive: ' + line)
+            hmidbg('Send line: ' + line)
 
     # Svae the text in text terminal
     def text_terminalSave(self):
@@ -174,65 +169,39 @@ class HMI(object):
     def text_terminalClear(self):
         text = self.widget.text_terminal.clear()
 
-    def text_appendLog(self, s):
-        self.widget.text_terminal.append('( ' + s + ' )')
+    def hmilog(self, s):
+        self.widget.text_terminal.append('(log: ' + s + ')')
     # ---- 文字對話區功能實現 end ------------------------------------------------
 
     # ---- 接收區功能實現 start -------------------------------------------------
     def rec_textEditClear(self):
         self.widget.rec_textEdit.clear()
-    def rec_textEditSave(self):
-        text = self.widget.rec_textEdit.toPlainText()
-        self.mainWindow.file_save(text)
+
     def rec_textEditMovetoSend(self):
         text = self.widget.rec_textEdit.toPlainText()
         self.widget.rec_textEdit.clear()
         self.widget.send_textEdit.append(text)
-    def rec_textEditUi8ToString(self):
-        res, resText = transUi8ToString(self.widget.rec_textEdit.toPlainText())
-        self.widget.rec_textEdit.clear()
-        self.widget.rec_textEdit.append(resText)
-    def rec_textEditStringToUi8(self):
-        res, resText = transStringToUi8(self.widget.rec_textEdit.toPlainText())
-        self.widget.rec_textEdit.clear()
-        self.widget.rec_textEdit.append(resText)
 
     def rec_AppendArray(self, data):
-        # print('sys : textGet append array data:' + str(array))
         self.widget.rec_textEdit.append(arToStr(data))
-        # self.widget.text_terminal.append('( log: get  ' + str(bytes) + ' bytes of ' + getTypeStr(typeNum) +' data. )')
+        self.hmilog('Get ' + str(data.size) +' '+ getTypeStr(getTypeNum(data.dtype)) + ' array data.')
+        hmidbg('Get array: '+ str(data))
 
     def rec_AppendStruct(self, data):
         self.widget.rec_textEdit.append(stToStr(data))
-        # self.widget.text_terminal.append('( log: get struct of ' + formatString +'. )')
+        self.hmilog('Get ' + getFs(data.dtype) + ' struct data.')
+        hmidbg('Get struct: '+ str(data))
+
     # ---- 接收區功能實現 end ---------------------------------------------------
 
     # ---- 發送區功能實現 start -------------------------------------------------
     def send_textEditClear(self):
         self.widget.send_textEdit.clear()
-    def send_textEditSave(self):
-        text = self.widget.send_textEdit.toPlainText()
-        self.mainWindow.file_save(text)
-    def send_textEditReadFile(self):
-        file = self.mainWindow.file_open()
-        # handle cancel btn
-        try:
-            self.widget.send_textEdit.append(file.read())
-            file.close()
-        except AttributeError as e:
-            pass
-            # raise
-    def send_textEditUi8ToString(self):
-        res, resText = transUi8ToString(self.widget.send_textEdit.toPlainText())
-        self.widget.send_textEdit.clear()
-        self.widget.send_textEdit.append(resText)
-    def send_textEditStringToUi8(self):
-        res, resText = transStringToUi8(self.widget.send_textEdit.toPlainText())
-        self.widget.send_textEdit.clear()
-        self.widget.send_textEdit.append(resText)
+
     def send_verifyShowOK(self):
         self.widget.send_textBrowserVerify.clear()
         self.widget.send_textBrowserVerify.append('OK')
+
     def send_verifyShowFAIL(self):
         self.widget.send_textBrowserVerify.clear()
         self.widget.send_textBrowserVerify.append('FAIL')
@@ -242,7 +211,7 @@ class HMI(object):
         try:
             usedLines, data = getFirstArray(text)
         except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
-            print('sys : error')
+            hmidbg('getFirstArray exception:' + str(type(e)))
             self.send_verifyShowFAIL()
         else:
             self.ser.write(hmipac.encodeArToPac(data))
@@ -259,7 +228,7 @@ class HMI(object):
         try:
             usedLines, data = getFirstStruct(text)
         except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
-            print('sys : error')
+            hmidbg('getFirstStruct exception:' + str(type(e)))
             self.send_verifyShowFAIL()
         else:
             self.ser.write(hmipac.encodeStToPac(data))
@@ -282,7 +251,6 @@ class HMI(object):
         self.s_updatePortlist()
 
     def quickSave(self, text):
-        print(text)
         name, _ = QFileDialog.getSaveFileName(self.mainWindow, 'Save File','', 'Mat Files (*.mat);;txt Files (*.txt)' ,initialFilter='Mat Files (*.mat)')
         if name is '':
             return
@@ -296,10 +264,9 @@ class HMI(object):
                 datalist = textToData(text)
             except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
                 # TODO ERROR Dialog
-                print(type(e))
+                hmidbg('quickSave exception: ' + str(type(e)) )
                 pass
             else:
-                print('------------')
                 d = dict()
                 for i in range(len(datalist)):
                     d['data'+str(i)] = datalist[i]
@@ -309,3 +276,8 @@ class HMI(object):
         else:
             with open(name, 'w') as f:
                 f.write(text)
+
+# hmi debug log
+def hmidbg(s):
+    s = 'hmi log: ' + s
+    print(s)
