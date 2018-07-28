@@ -22,50 +22,58 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
+     <widget class="QWidget" name="tab_txt">
+      <attribute name="title">
+       <string>txt檔案</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0" rowspan="3">
+        <widget class="QTextEdit" name="textEdit_txt"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="pushButton_txtSave">
+         <property name="text">
+          <string>儲存檔案</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButton_txtClose">
+         <property name="text">
+          <string>關閉</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>220</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_mat">
       <attribute name="title">
-       <string>mat file</string>
+       <string>mat檔案</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="1">
         <widget class="QPushButton" name="pushButton_matSave">
          <property name="text">
-          <string>以陣列儲存</string>
+          <string>儲存檔案</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" rowspan="5">
-        <widget class="QTableWidget" name="tableWidget_mat">
-         <column>
-          <property name="text">
-           <string>name</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>type</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>nums</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>bytes</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>data</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item row="5" column="1">
+       <item row="4" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -78,47 +86,38 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="1">
+       <item row="2" column="1">
         <widget class="QPushButton" name="pushButton_matClose">
          <property name="text">
           <string>關閉</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>以結構儲存</string>
-         </property>
+       <item row="1" column="0" rowspan="4">
+        <widget class="QTableWidget" name="tableWidget_mat">
+         <column>
+          <property name="text">
+           <string>變數名稱</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>資料型態</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>數量</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>總資料大小(bytes)</string>
+          </property>
+         </column>
         </widget>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="tab_csv">
-      <attribute name="title">
-       <string>csv file</string>
-      </attribute>
-      <widget class="QLabel" name="label">
-       <property name="geometry">
-        <rect>
-         <x>9</x>
-         <y>9</y>
-         <width>591</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>48</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>WIP</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
      </widget>
     </widget>
    </item>
@@ -128,7 +127,6 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>tableWidget_mat</tabstop>
   <tabstop>pushButton_matSave</tabstop>
-  <tabstop>pushButton</tabstop>
   <tabstop>pushButton_matClose</tabstop>
  </tabstops>
  <resources/>

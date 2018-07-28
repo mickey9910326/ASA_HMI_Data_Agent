@@ -86,16 +86,15 @@ class HMI(object):
         self.widget.text_btnSaveTerminal.clicked.connect(self.text_terminalSave)
         # 接收區
         self.widget.rec_btnClear.clicked.connect(self.rec_textEditClear)
-        self.widget.rec_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.rec_textEdit.toPlainText()))
-        self.widget.rec_btnSave.clicked.connect(self.hmiSaveDialog.show)
         self.widget.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
+        self.widget.rec_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.rec_textEdit.toPlainText()))
         self.widget.rec_btnQuickSave.clicked.connect(lambda : self.quickSave(self.widget.rec_textEdit.toPlainText()))
         # 發送區
         self.widget.send_btnClear.clicked.connect(self.send_textEditClear)
-        self.widget.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.send_textEdit.toPlainText()))
         self.widget.send_btnReadFile.clicked.connect(self.hmiLoadDialog.show)
         self.widget.send_btnSendArray.clicked.connect(self.send_btnSendArray)
         self.widget.send_btnSendStruct.clicked.connect(self.send_btnSendStruct)
+        self.widget.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.widget.send_textEdit.toPlainText()))
         self.widget.send_btnQuickSave.clicked.connect(lambda : self.quickSave(self.widget.send_textEdit.toPlainText()))
         # ---- Function Linking end --------------------------------------------
 
