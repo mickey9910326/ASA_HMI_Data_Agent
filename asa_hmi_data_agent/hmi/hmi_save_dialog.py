@@ -1,4 +1,5 @@
 import scipy.io
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
 from asa_hmi_data_agent.ui.ui_hmi_save_dialog import Ui_HmiSaveDialog
 # import asa_hmi_data_agent.hmi.decodeASAformat as ds
@@ -64,10 +65,19 @@ class HmiSaveDialog(QDialog, Ui_HmiSaveDialog):
                     typeStr = getTypeStr(getTypeNum(data.dtype.name))
                     numsStr = str(data.size)
                     sizeStr = str(data.size * data.dtype.itemsize)
-                self.tableWidget_mat.setItem(i, Const.COL_NAME, QTableWidgetItem(nameStr))
-                self.tableWidget_mat.setItem(i, Const.COL_TYPE, QTableWidgetItem(typeStr))
-                self.tableWidget_mat.setItem(i, Const.COL_NUMS, QTableWidgetItem(numsStr))
-                self.tableWidget_mat.setItem(i, Const.COL_SIZE, QTableWidgetItem(sizeStr))
+
+                nameItem = QTableWidgetItem(nameStr)
+                typeItem = QTableWidgetItem(typeStr)
+                numsItem = QTableWidgetItem(numsStr)
+                sizeItem = QTableWidgetItem(sizeStr)
+                # nameItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                typeItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                numsItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                sizeItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.tableWidget_mat.setItem(i, Const.COL_NAME, nameItem)
+                self.tableWidget_mat.setItem(i, Const.COL_TYPE, typeItem)
+                self.tableWidget_mat.setItem(i, Const.COL_NUMS, numsItem)
+                self.tableWidget_mat.setItem(i, Const.COL_SIZE, sizeItem)
 
     def saveAsMat(self):
         d = dict()
