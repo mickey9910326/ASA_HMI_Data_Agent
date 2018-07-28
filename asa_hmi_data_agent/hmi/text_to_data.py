@@ -35,6 +35,8 @@ def getFirstArray(text):
                 pass
             else:
                 break
+    if status == 1:
+        raise ValueError()
     return usedLines, resdata
 
 def getFirstStruct(text):
@@ -59,6 +61,8 @@ def getFirstStruct(text):
         l, data = getFirstArray('\n'.join(lines[usedLines::]))
         dataList.append(data)
         usedLines += l
+        if data.dtype.base.name != dt[idx].base.name:
+            raise TypeError()
     resdata = np.array(tuple(dataList), dtype=dt)
 
     for i in range(len(lines[usedLines+1::])):

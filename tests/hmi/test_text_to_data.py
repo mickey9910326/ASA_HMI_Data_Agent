@@ -1,4 +1,5 @@
 import conftest
+import pytest
 import numpy as np
 from numpy.testing import assert_array_equal
 from asa_hmi_data_agent.hmi.text_to_data import *
@@ -43,6 +44,15 @@ def test_getFirstArray_t2():
     res = getFirstArray(text)
     assert(res[0]==predict[0])
     assert_array_equal(res[1], predict[1])
+
+def test_getFirstArray_f1():
+    text = """  // line1
+    i8:        // line2
+        1,2,3,4,
+        """
+    with pytest.raises(ValueError):
+        res = getFirstArray(text)
+
 
 def test_getFirstStruct_t1():
     text = """    // line1
@@ -91,6 +101,24 @@ def test_getFirstStruct_t2():
     res = getFirstStruct(text)
     assert(res[0] == predict[0])
     assert_array_equal(res[1], predict[1])
+
+def test_getFirstStruct_f1():
+    text = """    // line1
+    f32x5:        // line2
+      ui8:        // line3
+        1,2,3,4,5 // line4
+                  """
+    with pytest.raises(TypeError):
+        getFirstStruct(text)
+
+def test_getFirstStruct_f2():
+    text = """    // line1
+    f32x5:        // line2
+      f32:        // line3
+        1,2,3,4,5, // line4
+                  """
+    with pytest.raises(ValueError):
+        res = getFirstStruct(text)
 
 def test_textToData_t1():
     text = """    // line1
