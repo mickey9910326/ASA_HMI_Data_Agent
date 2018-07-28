@@ -271,8 +271,8 @@ class HMI(object):
     # ---- 發送區功能實現 end ---------------------------------------------------
 
     def updateTextFromLoadDialog(self):
-        str = self.hmiLoadDialog.getArrayListStr()
-        self.widget.send_textEdit.setText(str)
+        if self.hmiLoadDialog.resText != '':
+            self.widget.send_textEdit.append(self.hmiLoadDialog.resText)
 
     def loseConnectHandler(self):
         self.text_appendLog('log: Lost connect with '+self.ser.port+'!')
