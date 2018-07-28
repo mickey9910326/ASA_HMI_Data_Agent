@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_HmiSaveDialog(object):
     def setupUi(self, HmiSaveDialog):
         HmiSaveDialog.setObjectName("HmiSaveDialog")
-        HmiSaveDialog.resize(625, 349)
+        HmiSaveDialog.resize(630, 350)
         font = QtGui.QFont()
         font.setFamily("微軟正黑體")
         HmiSaveDialog.setFont(font)
