@@ -7,6 +7,13 @@ release page: https://github.com/mickey9910326/ASA_HMI_Data_Agent/releases
 You can find  the lastest patch in the above url.
 
 # 中文
+## [0.4.1] - 2018-07-30
+### HMI 功能:
+- 修復接收資料跳窗問題
+
+### ASA_M128 燒錄功能:
+- 新增燒錄M128_STK500，可將ASA_M128轉變為STK500裝置
+
 ## [0.4.0] - 2018-07-29
 ### HMI 功能:
 - 新的文字格式，現在需要再結構資料前加上formatString以辨認結構資料

@@ -15,6 +15,7 @@ class Ui_HmiSaveDialog(object):
         font = QtGui.QFont()
         font.setFamily("微軟正黑體")
         HmiSaveDialog.setFont(font)
+        HmiSaveDialog.setModal(True)
         self.gridLayout_2 = QtWidgets.QGridLayout(HmiSaveDialog)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.tabWidget = QtWidgets.QTabWidget(HmiSaveDialog)

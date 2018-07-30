@@ -91,7 +91,7 @@ class Asaprog(object):
 
         # ---- Basic Functions Group start -------------------------------------
         self.widget.pushButton_selectFile.clicked.connect(self.chooseProgFile)
-        self.widget.lineEdit_selectFile.textChanged.connect(self.checkIsHexFile)
+        # self.widget.lineEdit_selectFile.textChanged.connect()
         self.widget.pushButton_startProg.clicked.connect(self.startProg)
         self.widget.pushButton_stopProg.clicked.connect(self.stopProg)
         # ---- Basic Functions Group end ---------------------------------------
@@ -105,8 +105,7 @@ class Asaprog(object):
     # Update port list in s_portComboBox
     def serial_updatePortlist(self):
         availablePorts = serial_ports()
-        print('sys : Update port list in portComboBox, available port : ', end='')
-        print(availablePorts)
+        progdbg('Update ports: ' + str(availablePorts))
         self.widget.comboBox_selectPort.clear()
         for port in availablePorts:
             self.widget.comboBox_selectPort.addItem(port)
@@ -121,12 +120,11 @@ class Asaprog(object):
                                               initialFilter='Hex Files (*.hex)')
         if name is not '':
             self.widget.lineEdit_selectFile.setText(name)
-            self.checkIsHexFile()
+            self.checkIsHexFile(name)
 
-    def checkIsHexFile(self):
-        file = self.widget.lineEdit_selectFile.text()
+    def checkIsHexFile(self, filename):
         try:
-            hexbin = py_asa_loader.parseHex(file)
+            hexbin = py_asa_loader.parseHex(filename)
         except (NameError,UnicodeDecodeError):
             self.widget.label_programSizeContent.setText(u"非HEX檔案格式，請重新選擇檔案")
             self.widget.label_etcContent.setText('-')
@@ -149,7 +147,7 @@ class Asaprog(object):
         if hexfile == '':
             self.widget.label_statusContent.setText(u"未選擇燒錄檔案")
             return
-        elif self.checkIsHexFile() is False:
+        elif self.checkIsHexFile(hexfile) is False:
             self.widget.label_statusContent.setText(u"請重新選擇燒錄檔案")
             return
 
@@ -191,17 +189,22 @@ class Asaprog(object):
 
     # ---- Special Functions Group start ---------------------------------------
     def startProgStk500(self):
-        # TODO: ADD STK500 hex file
-        pass
-        # if self.shellThread.isRunning():
-        #     return
-        # port = self.widget.comboBox_selectPort.currentText()
-        # if port == '':
-        #     self.widget.label_statusContent.setText(u"未選擇串列埠")
-        #     return
-        # hexfile = ''
-        #
-        # self.widget.label_statusContent.setText(u"確認裝置中...")
-        # self.shellThread.setParameter(port, hexfile)
-        # self.shellThread.start()
+        if self.shellThread.isRunning():
+            return
+        port = self.widget.comboBox_selectPort.currentText()
+        if port == '':
+            self.widget.label_statusContent.setText(u"未選擇串列埠")
+            return
+        hexfile = 'tools\\m128_stk500.hex'
+        self.checkIsHexFile(hexfile)
+
+        self.mainWindow.serToggle.emit(True, port)
+        self.widget.label_statusContent.setText(u"確認裝置中...")
+        self.shellThread.setParameter(port, hexfile)
+        self.shellThread.start()
     # ---- Special Functions Group end -----------------------------------------
+
+# hmi debug log
+def progdbg(s):
+    s = 'prog log: ' + s
+    print(s)

@@ -35,7 +35,7 @@ class ShellThread(QThread):
         self.signalGetLine.emit('[' + times + '] ' + self.cmd + '\n')
         self.shellIsRunning = True
 
-        print(self.cmd.split(' '))
+        dudedbg(str(self.cmd.split(' ')))
         self.p = subprocess.Popen(self.cmd.split(' ') , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
         while self.p.poll() is None:
             s = self.p.stderr.readline()
@@ -195,11 +195,7 @@ class BitsSelector(QDialog, Ui_BitSelector):
 # ---- class BitsSelector End --------------------------------------------------
 
 def radioButtonClick(btn):
-    print(btn.text())
-    # print(btn.isChecked())
     if btn.isChecked() is True:
-        print(btn.text())
-        # btn.setChecked(False)
         btn.setAutoExclusive(False)
         btn.setChecked(False)
         btn.setAutoExclusive(True)
@@ -230,7 +226,7 @@ class Avrdude(object):
         # ---- Shell Thread Init Start -----------------------------------------
         self.shellThread = ShellThread()
         self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
-        self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
+        # self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
         self.shellThread.started.connect(
             lambda : self.mainWindow.serToggle.emit(True, self.widget.comboBox_serialSetPort.currentText())
         )
@@ -457,8 +453,7 @@ class Avrdude(object):
     # Update port list in s_portComboBox
     def serial_updatePortlist(self):
         availablePorts = serial_ports()
-        print('sys : Update port list in portComboBox, available port : ', end='')
-        print(availablePorts)
+        dudedbg('Update ports: ' + str(availablePorts))
         self.widget.comboBox_serialSetPort.clear()
         for port in availablePorts:
             self.widget.comboBox_serialSetPort.addItem(port)
@@ -646,3 +641,8 @@ class Avrdude(object):
     # ---- BitsSelector end ----------------------------------------------------
     # ---- Methods Section end -------------------------------------------------
 # ---- class radioButtonClick End ----------------------------------------------
+
+# avrdude debug log
+def dudedbg(s):
+    s = 'dude log: ' + s
+    print(s)
