@@ -1,32 +1,41 @@
 import conftest
 from asa_hmi_data_agent.hmi.data_to_text import *
+import numpy as np
 
 # TODO changes to unit test
 
-a = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,11111]
-print(type(a))
-res = align(2, a)
-print(res)
+def test_arToStr_t1():
+    data = np.array(([1, 2, 3, 4, 5]), np.int8)
+    predict  = 'i8:\n'
+    predict += '  1, 2, 3, 4, 5\n'
+    res = arToStr(data)
+    assert(res==predict)
 
-t = np.array(a, np.uint8)
-res = arToStr(t)
-print(res)
+def test_arToStr_t2():
+    data = np.array(([123456789, 2, 3, 4, 5,6,7,8,9,10,11,12,13,14,15]), np.int32)
+    predict  = 'i32:\n'
+    predict += '  123456789,         2,         3,         4,         5,\n'
+    predict += '          6,         7,         8,         9,        10,\n'
+    predict += '         11,        12,        13,        14,        15\n'
+    res = arToStr(data)
+    assert(res==predict)
 
-t = np.array((
-    [0.00000000001,1,23,4,5,6,7,8,2,657,1,4,324,89]
-), np.float32)
-res = arToStr(t)
-print(res)
+def test_stToStr_t1():
+    data = np.array(
+        (
+            [1, 2, 3, 4, 5],
+            [1, 2, 3, 4, 5]
+        ),
+        dtype=[
+            ('f0', np.uint8 , (5,)),
+            ('f1', np.uint16, (5,))
+        ]
+    )
 
-data = np.array(
-    (
-        [1, 2, 3, 4, 5],
-        [1, 2, 3, 4, 5]
-    ),
-    dtype=[
-        ('f0', np.uint8 , (5,)),
-        ('f1', np.uint16, (5,))
-    ]
-)
-res = stToStr(data)
-print(res)
+    predict  = 'ui8x5,ui16x5: \n'
+    predict += '  ui8:\n'
+    predict += '    1, 2, 3, 4, 5\n'
+    predict += '  ui16:\n'
+    predict += '    1, 2, 3, 4, 5\n'
+    res = stToStr(data)
+    assert(res==predict)
