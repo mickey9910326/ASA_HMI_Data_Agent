@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.1_dev] - 2018-07-30
+### Added
+- hmi send data log
+
 ## [0.4.1] - 2018-07-30
 ### Added
 - m128_stk500 prog functinos

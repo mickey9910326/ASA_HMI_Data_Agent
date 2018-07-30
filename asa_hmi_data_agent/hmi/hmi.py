@@ -148,7 +148,7 @@ class HMI(object):
     # Append the line from serial in terminal
     def text_terminalAppendLineFromDevice(self, line):
         self.widget.text_terminal.append('>>  '+line)
-        hmidbg('Get line: ' + line)
+        hmidbg('Get  line: ' + line)
 
     # Send line to serial
     def text_sendLineToDevice(self):
@@ -185,12 +185,12 @@ class HMI(object):
 
     def rec_AppendArray(self, data):
         self.widget.rec_textEdit.append(arToStr(data))
-        self.hmilog('Get ' + str(data.size) +' '+ tp.getTypeStr(tp.getTypeNum(data.dtype.name)) + ' array data.')
+        self.hmilog('Get  ' + str(data.size) +' '+ tp.getTypeStr(tp.getTypeNum(data.dtype.name)) + ' array data.')
         hmidbg('Get array: '+ str(data))
 
     def rec_AppendStruct(self, data):
         self.widget.rec_textEdit.append(stToStr(data))
-        self.hmilog('Get ' + tp.getFs(data.dtype) + ' struct data.')
+        self.hmilog('Get  ' + tp.getFs(data.dtype) + ' struct data.')
         hmidbg('Get struct: '+ str(data))
 
     # ---- 接收區功能實現 end ---------------------------------------------------
@@ -223,6 +223,7 @@ class HMI(object):
                 text = '\n'.join(l for l in lines[usedLines::])
             self.widget.send_textEdit.clear()
             self.widget.send_textEdit.append(text)
+            self.hmilog('Send ' + str(data.size) +' '+ tp.getTypeStr(tp.getTypeNum(data.dtype.name)) + ' array data.')
 
     def send_btnSendStruct(self):
         text = self.widget.send_textEdit.toPlainText()
@@ -237,6 +238,7 @@ class HMI(object):
             text = '\n'.join(l for l in lines[usedLines::])
             self.widget.send_textEdit.clear()
             self.widget.send_textEdit.append(text)
+            self.hmilog('Send ' + tp.getFs(data.dtype) + ' struct data.')
 
     # ---- 發送區功能實現 end ---------------------------------------------------
 
