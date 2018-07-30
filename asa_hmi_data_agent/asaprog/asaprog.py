@@ -91,7 +91,7 @@ class Asaprog(object):
 
         # ---- Basic Functions Group start -------------------------------------
         self.widget.pushButton_selectFile.clicked.connect(self.chooseProgFile)
-        self.widget.lineEdit_selectFile.textChanged.connect(self.checkIsHexFile)
+        # self.widget.lineEdit_selectFile.textChanged.connect()
         self.widget.pushButton_startProg.clicked.connect(self.startProg)
         self.widget.pushButton_stopProg.clicked.connect(self.stopProg)
         # ---- Basic Functions Group end ---------------------------------------
@@ -147,7 +147,7 @@ class Asaprog(object):
         if hexfile == '':
             self.widget.label_statusContent.setText(u"未選擇燒錄檔案")
             return
-        elif self.checkIsHexFile() is False:
+        elif self.checkIsHexFile(hexfile) is False:
             self.widget.label_statusContent.setText(u"請重新選擇燒錄檔案")
             return
 
