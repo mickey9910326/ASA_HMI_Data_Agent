@@ -114,7 +114,7 @@ class Ui_MainWidgetAsaProg(object):
         self.pushButton_startProg.setText(_translate("MainWidgetAsaProg", "開始燒錄"))
         self.pushButton_stopProg.setText(_translate("MainWidgetAsaProg", "強制終止"))
         self.groupBox_specialTools.setTitle(_translate("MainWidgetAsaProg", "燒錄特殊功能應用程式"))
-        self.pushButton_progStk500.setText(_translate("MainWidgetAsaProg", "燒錄 \"M128_STK500\" "))
+        self.pushButton_progStk500.setText(_translate("MainWidgetAsaProg", "燒錄 \"M128_STK500\"  (可將ASA_M128轉變為STK500裝置使用)"))
         self.groupBox.setTitle(_translate("MainWidgetAsaProg", "燒錄狀態"))
         self.label_statusTitle.setText(_translate("MainWidgetAsaProg", "當前狀態："))
         self.label_programSizeTitle.setText(_translate("MainWidgetAsaProg", "程式大小："))
