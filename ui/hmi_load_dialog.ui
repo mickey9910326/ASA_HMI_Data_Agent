@@ -18,6 +18,9 @@
   <property name="windowTitle">
    <string>HmiLoadDialog</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">

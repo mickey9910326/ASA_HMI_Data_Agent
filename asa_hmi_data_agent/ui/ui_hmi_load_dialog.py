@@ -15,6 +15,7 @@ class Ui_HmiLoadDialog(object):
         font = QtGui.QFont()
         font.setFamily("微軟正黑體")
         HmiLoadDialog.setFont(font)
+        HmiLoadDialog.setModal(True)
         self.gridLayout = QtWidgets.QGridLayout(HmiLoadDialog)
         self.gridLayout.setObjectName("gridLayout")
         self.tabWidget = QtWidgets.QTabWidget(HmiLoadDialog)
