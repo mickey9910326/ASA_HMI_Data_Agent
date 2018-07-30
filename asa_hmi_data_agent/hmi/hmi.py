@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QFileDialog
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
 from asa_hmi_data_agent import hmipac
+import asa_hmi_data_agent.hmipac.type as tp
 from .text_to_data import getFirstArray, getFirstStruct, textToData
 from .data_to_text import arToStr, stToStr
 
@@ -184,12 +185,12 @@ class HMI(object):
 
     def rec_AppendArray(self, data):
         self.widget.rec_textEdit.append(arToStr(data))
-        self.hmilog('Get ' + str(data.size) +' '+ getTypeStr(getTypeNum(data.dtype)) + ' array data.')
+        self.hmilog('Get ' + str(data.size) +' '+ tp.getTypeStr(tp.getTypeNum(data.dtype.name)) + ' array data.')
         hmidbg('Get array: '+ str(data))
 
     def rec_AppendStruct(self, data):
         self.widget.rec_textEdit.append(stToStr(data))
-        self.hmilog('Get ' + getFs(data.dtype) + ' struct data.')
+        self.hmilog('Get ' + tp.getFs(data.dtype) + ' struct data.')
         hmidbg('Get struct: '+ str(data))
 
     # ---- 接收區功能實現 end ---------------------------------------------------
