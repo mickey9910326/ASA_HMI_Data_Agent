@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2018-07-30
+### Added
+- m128_stk500 prog functinos
+- add m128_stk500.hex in tools
+- add test of data_to_text
+
+### Changed
+- fix hmi receive gata bug
+- change hmiSaveDialog, hmiLoadDialog to modal
+- change avrdude, asaprog debug pring functions
+
 ## [0.4.0] - 2018-07-29
 ### Added
 - add hmi/data_to_text
