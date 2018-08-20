@@ -247,7 +247,7 @@ class HMI(object):
             self.widget.send_textEdit.append(self.hmiLoadDialog.resText)
 
     def loseConnectHandler(self):
-        self.text_appendLog('log: Lost connect with '+self.ser.port+'!')
+        self.hmilog('log: Lost connect with '+self.ser.port+'!')
         self.ser.close()
         self.widget.s_btnPortToggle.setText("開啟串列埠")
         self.mainWindow.setWindowTitle('ASA_HMI_Data_Agent   '+ 'Lost connect with '+self.ser.port+'!')
