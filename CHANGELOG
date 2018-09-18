@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.2] - 2018-09-18
+### Added
+- hmi send data log
+- hmi decoder except handle
+
+### fixed
+- fix chksum error
+
 ## [0.4.1] - 2018-07-30
 ### Added
 - m128_stk500 prog functinos

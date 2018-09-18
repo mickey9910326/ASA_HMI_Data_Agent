@@ -21,6 +21,7 @@ class SerialThread(QThread):
     signalGetArrayData = pyqtSignal(np.ndarray)
     signalGetStructData = pyqtSignal(np.ndarray)
     signalLoseConnect   = pyqtSignal()
+    signalFatalError    = pyqtSignal()
 
     def __init__(self, ser):
         QThread.__init__(self)
@@ -37,15 +38,19 @@ class SerialThread(QThread):
                 break
             else:
                 de.add_text(ch)
-                type, data = de.get()
-                if type is 0:
-                    pass
-                elif type is 1:
-                    self.signalGetArrayData.emit(data)
-                elif type is 2:
-                    self.signalGetStructData.emit(data)
-                elif type is 3:
-                    self.signalGetLine.emit(data)
+                try:
+                    type, data = de.get()
+                except:
+                    signalFatalError.emit()
+                else:
+                    if type is 0:
+                        pass
+                    elif type is 1:
+                        self.signalGetArrayData.emit(data)
+                    elif type is 2:
+                        self.signalGetStructData.emit(data)
+                    elif type is 3:
+                        self.signalGetLine.emit(data)
 
 # ---- class Serial Thread End -------------------------------------------------
 
@@ -70,6 +75,7 @@ class HMI(object):
         self.SerialThread.signalGetArrayData[np.ndarray].connect(self.rec_AppendArray)
         self.SerialThread.signalGetStructData[np.ndarray].connect(self.rec_AppendStruct)
         self.SerialThread.signalLoseConnect.connect(self.loseConnectHandler)
+        self.SerialThread.signalFatalError.connect(lambda:self.loseConnectHandler)
         # ---- Serial Thread Init End ------------------------------------------
 
         # ---- Function Linking start ------------------------------------------
@@ -148,7 +154,7 @@ class HMI(object):
     # Append the line from serial in terminal
     def text_terminalAppendLineFromDevice(self, line):
         self.widget.text_terminal.append('>>  '+line)
-        hmidbg('Get line: ' + line)
+        hmidbg('Get  line: ' + line)
 
     # Send line to serial
     def text_sendLineToDevice(self):
@@ -185,12 +191,12 @@ class HMI(object):
 
     def rec_AppendArray(self, data):
         self.widget.rec_textEdit.append(arToStr(data))
-        self.hmilog('Get ' + str(data.size) +' '+ tp.getTypeStr(tp.getTypeNum(data.dtype.name)) + ' array data.')
+        self.hmilog('Get  ' + str(data.size) +' '+ tp.getTypeStr(tp.getTypeNum(data.dtype.name)) + ' array data.')
         hmidbg('Get array: '+ str(data))
 
     def rec_AppendStruct(self, data):
         self.widget.rec_textEdit.append(stToStr(data))
-        self.hmilog('Get ' + tp.getFs(data.dtype) + ' struct data.')
+        self.hmilog('Get  ' + tp.getFs(data.dtype) + ' struct data.')
         hmidbg('Get struct: '+ str(data))
 
     # ---- 接收區功能實現 end ---------------------------------------------------
@@ -223,6 +229,7 @@ class HMI(object):
                 text = '\n'.join(l for l in lines[usedLines::])
             self.widget.send_textEdit.clear()
             self.widget.send_textEdit.append(text)
+            self.hmilog('Send ' + str(data.size) +' '+ tp.getTypeStr(tp.getTypeNum(data.dtype.name)) + ' array data.')
 
     def send_btnSendStruct(self):
         text = self.widget.send_textEdit.toPlainText()
@@ -237,6 +244,7 @@ class HMI(object):
             text = '\n'.join(l for l in lines[usedLines::])
             self.widget.send_textEdit.clear()
             self.widget.send_textEdit.append(text)
+            self.hmilog('Send ' + tp.getFs(data.dtype) + ' struct data.')
 
     # ---- 發送區功能實現 end ---------------------------------------------------
 
@@ -245,10 +253,17 @@ class HMI(object):
             self.widget.send_textEdit.append(self.hmiLoadDialog.resText)
 
     def loseConnectHandler(self):
-        self.text_appendLog('log: Lost connect with '+self.ser.port+'!')
+        self.hmilog('log: Lost connect with '+self.ser.port+'!')
         self.ser.close()
         self.widget.s_btnPortToggle.setText("開啟串列埠")
         self.mainWindow.setWindowTitle('ASA_HMI_Data_Agent   '+ 'Lost connect with '+self.ser.port+'!')
+        self.s_updatePortlist()
+
+    def fatalErrorHandler(self):
+        self.hmilog('log: Fatal error 請確認M128程式正確，並重新開啟串列埠!')
+        self.ser.close()
+        self.widget.s_btnPortToggle.setText("開啟串列埠")
+        self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   "+ self.ser.port +' is closed.')
         self.s_updatePortlist()
 
     def quickSave(self, text):
