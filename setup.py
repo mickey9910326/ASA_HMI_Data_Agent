@@ -3,7 +3,7 @@ import os
 from PyInstaller.__main__ import run
 import pathlib
 
-__VERSION__ = 'v0.4.1'
+__VERSION__ = 'v0.4.2'
 
 if __name__ == '__main__':
 

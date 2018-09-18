@@ -11,6 +11,7 @@ You can find  the lastest patch in the above url.
 ### HMI 功能:
 - 修復檢查碼錯誤
 - 新增發送資料log
+- 處理一些崩潰情況
 
 ## [0.4.1] - 2018-07-30
 ### HMI 功能:
