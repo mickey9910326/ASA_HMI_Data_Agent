@@ -21,6 +21,7 @@ class SerialThread(QThread):
     signalGetArrayData = pyqtSignal(np.ndarray)
     signalGetStructData = pyqtSignal(np.ndarray)
     signalLoseConnect   = pyqtSignal()
+    signalFatalError    = pyqtSignal()
 
     def __init__(self, ser):
         QThread.__init__(self)
@@ -37,15 +38,19 @@ class SerialThread(QThread):
                 break
             else:
                 de.add_text(ch)
-                type, data = de.get()
-                if type is 0:
-                    pass
-                elif type is 1:
-                    self.signalGetArrayData.emit(data)
-                elif type is 2:
-                    self.signalGetStructData.emit(data)
-                elif type is 3:
-                    self.signalGetLine.emit(data)
+                try:
+                    type, data = de.get()
+                except:
+                    signalFatalError.emit()
+                else:
+                    if type is 0:
+                        pass
+                    elif type is 1:
+                        self.signalGetArrayData.emit(data)
+                    elif type is 2:
+                        self.signalGetStructData.emit(data)
+                    elif type is 3:
+                        self.signalGetLine.emit(data)
 
 # ---- class Serial Thread End -------------------------------------------------
 
@@ -70,6 +75,7 @@ class HMI(object):
         self.SerialThread.signalGetArrayData[np.ndarray].connect(self.rec_AppendArray)
         self.SerialThread.signalGetStructData[np.ndarray].connect(self.rec_AppendStruct)
         self.SerialThread.signalLoseConnect.connect(self.loseConnectHandler)
+        self.SerialThread.signalFatalError.connect(lambda:self.loseConnectHandler)
         # ---- Serial Thread Init End ------------------------------------------
 
         # ---- Function Linking start ------------------------------------------
@@ -251,6 +257,13 @@ class HMI(object):
         self.ser.close()
         self.widget.s_btnPortToggle.setText("開啟串列埠")
         self.mainWindow.setWindowTitle('ASA_HMI_Data_Agent   '+ 'Lost connect with '+self.ser.port+'!')
+        self.s_updatePortlist()
+
+    def fatalErrorHandler(self):
+        self.hmilog('log: Fatal error 請確認M128程式正確，並重新開啟串列埠!')
+        self.ser.close()
+        self.widget.s_btnPortToggle.setText("開啟串列埠")
+        self.mainWindow.setWindowTitle("ASA_HMI_Data_Agent   "+ self.ser.port +' is closed.')
         self.s_updatePortlist()
 
     def quickSave(self, text):

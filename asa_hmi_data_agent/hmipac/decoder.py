@@ -111,7 +111,10 @@ class Decoder(object):
                     return 1, self.databuf
                 else:
                     print('arrChkSum error')
-                    raise
+                    self._state.databuf = bytes()
+                    self._state.status = 0
+                    return 1, self.databuf
+                    # raise
 
             elif self._state.status == 20:
                 # print('state is ' + str(self._state.status))
@@ -162,7 +165,11 @@ class Decoder(object):
                     return 2, data
                 else:
                     print('stChkSum error')
-                    raise
+                    self._state.status = 0
+                    data = decode_struct( self._state.formatString, self._state.databuf )
+                    self._state.databuf = bytes()
+                    return 2, data
+                    # raise
         return 0, None
 
     def _decodeDatabufToStr(self):

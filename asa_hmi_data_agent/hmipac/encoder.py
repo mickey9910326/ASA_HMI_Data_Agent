@@ -10,7 +10,8 @@ def encodeArToPac(data):
     type = getTypeNum(data.dtype.name)
     data = data.tobytes()
     l    = len(data)
-    length = bytes([type, l>>8, l&0xFF])
+    pac += bytes([type])
+    length = bytes([l>>8, l&0xFF])
     pac += length
     pac += data
     pac += bytes([sum(length + data)&0xFF])
@@ -24,5 +25,6 @@ def encodeStToPac(data):
     pac += bytes([l>>8, l&0xFF, len(fs)])
     pac += fs
     pac += data
-    pac += bytes([(sum(pac) - sum(_HEADER))&0xFF])
+    chksum = (sum(fs+data)+len(fs))&0xFF
+    pac += bytes([chksum])
     return pac
