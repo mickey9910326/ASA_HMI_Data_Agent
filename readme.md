@@ -21,18 +21,13 @@
       ：提供支援ASAPROG及STK500的botloader，讓ASA_M128在prog模式下可以進行載入執行程式，也可以當作STK500 DEVICE
 
 
-### TODO List
-
-- HMI
-    - Handle exception when sending error format.
-- ASA_M128_STK500
-    - Add part fuse and lock bits info to improve Bitsselector.
-- ASA_M128 燒錄
-    - 完成燒錄特定檔案功能
-
 ---
+### Q&A
 
-### 高 DPI 介面顯示問題
-對ASA_HMI_Data_Agent.exe點選右鍵->內容->相容性
+#### Q.有些windows系統無法正常開啟
+A. 缺少某windows更新，請到release下載noupx版本
+
+#### Q.桌面高DPI，文字太小
+A. 對ASA_HMI_Data_Agent.exe點選右鍵->內容->相容性
 勾選`覆蓋高DPI縮放行為`，並選擇`系統(增強)`
 ![](https://i.imgur.com/wIiLdOJ.png)
