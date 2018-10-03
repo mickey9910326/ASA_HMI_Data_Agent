@@ -417,8 +417,9 @@ class Avrdude(object):
 
         with open(self.settingsFile, 'w') as configfile:
             self.conf.write(configfile)
-        self.widget.comboBox_config.setCurrentText(section)
         self.settingsListUpdate()
+        self.widget.comboBox_config.setCurrentText(section)
+        self.settingsLoad()
 
     def settingsLoad(self):
         section = self.widget.comboBox_config.currentText()
