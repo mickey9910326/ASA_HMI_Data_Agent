@@ -7,7 +7,7 @@ import zipfile
 import pathlib
 import shutil
 
-__VERSION__ = 'v0.4.2'
+__VERSION__ = 'v0.4.4'
 
 TARGET_ZIP = 'dist/' + 'ASA_HMI_Data_Agent'+ '_' + __VERSION__ + '.zip'
 TARGET_DIR = 'dist/ASA_HMI_Data_Agent'
