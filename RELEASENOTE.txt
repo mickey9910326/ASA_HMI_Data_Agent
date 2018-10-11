@@ -7,6 +7,11 @@ release page: https://github.com/mickey9910326/ASA_HMI_Data_Agent/releases
 You can find  the lastest patch in the above url.
 
 # 中文
+## [0.4.2] - 2018-10-12
+### avrdude 功能:
+- 更新avrdude為6.3版本
+- 更新可用元件
+
 ## [0.4.2] - 2018-09-18
 ### HMI 功能:
 - 修復檢查碼錯誤

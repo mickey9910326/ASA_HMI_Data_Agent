@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.3_dev] - 2018-10-03
+### Added
+- script get_tool_files : get avrdude and m128_stk500
+- script pyuic_all_ui : tenfer all ui to py file
+
+### Changed
+- update setup.py : simplify
+- update bit_info to meet the avrdude 6.3
+
+### fixed
+- fix after save setting will change back to default
+
 ## [0.4.2] - 2018-09-18
 ### Added
 - hmi send data log
