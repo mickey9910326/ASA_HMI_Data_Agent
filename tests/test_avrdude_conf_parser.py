@@ -11,4 +11,11 @@ if __name__ == '__main__':
     print(s3)
 
     descList = parser.listAllPartDesc()
+    print(len(descList))
     print(descList)
+
+    devices = parser.GetDeviceInfo()
+
+    print(len(devices))
+    for device in devices:
+        print(device)
