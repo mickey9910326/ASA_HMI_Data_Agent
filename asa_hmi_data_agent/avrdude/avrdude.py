@@ -273,14 +273,13 @@ class Avrdude(object):
         # ---- Fuse & Lock Group end -----------------------------------------
 
         # ---- MCU Group start -------------------------------------------------
-        self.praser = AvrdudeConfParser()
-        descList = self.praser.listAllPartDesc()
+        self.devices = AvrdudeConfParser().GetDeviceInfo()
 
         self.widget.pushButton_mcuDetect.clicked.connect(self.mcu_detect)
         self.widget.comboBox_mcuSelect.clear()
         self.widget.comboBox_mcuSelect.addItem('請選擇MCU...')
-        for desc in descList:
-            self.widget.comboBox_mcuSelect.addItem(desc)
+        for device in self.devices:
+            self.widget.comboBox_mcuSelect.addItem(device['desc'])
         # ---- MCU Group end ---------------------------------------------------
 
         # ---- need updateCammand items start ----------------------------------
@@ -328,7 +327,7 @@ class Avrdude(object):
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
             desc = self.widget.comboBox_mcuSelect.currentText()
-            desc, id, signature = self.praser.GetBasicInfoByDesc(desc)
+            id = [device for device in self.devices if device['desc'] == desc][0]['id']
             cmd += ' -p ' + id
 
         cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
@@ -345,7 +344,7 @@ class Avrdude(object):
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
             desc = self.widget.comboBox_mcuSelect.currentText()
-            desc, id, signature = self.praser.GetBasicInfoByDesc(desc)
+            id = [device for device in self.devices if device['desc'] == desc][0]['id']
             cmd += ' -p ' + id
 
         cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
