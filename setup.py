@@ -54,7 +54,7 @@ if __name__ == '__main__':
         '-F',
 
         # NOTE if you want exe not to print info to I/O, use '-w' .
-        '-w',
+        # '-w',
 
         # NOTE if ypu want to extra debug info, use the '-debug'.
         # '--debug',
@@ -67,14 +67,16 @@ if __name__ == '__main__':
         '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\plugins',
         '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit',
         '--paths=C:\\Users\\Lite\\AppData\\Roaming\\pyinstaller\\bincache00_py36_32bit',
-        '--paths=C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x86',
-        '--paths=C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64',
+        '--paths=C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\10.0.17763.0\\ucrt\\DLLs\\x86',
+        '--paths=C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\10.0.17763.0\\ucrt\\DLLs\\x64',
 
         # NOTE Need DLLs in package numpy and scipy.
         '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\scipy\\extra-dll',
         '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\numpy\\.libs',
+        '--paths=D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\zmq',
         # NOTE Need extra moudle in package scipy.
         '--hidden-import=scipy._lib.messagestream',
+        '--hidden-import=numpy.core._dtype_ctypes',
 
         # '--name=ASA_HMI_Data_Agent'
         # '--icon', 'rxx.ico',
