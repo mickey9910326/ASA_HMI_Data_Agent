@@ -11,6 +11,7 @@ from asa_hmi_data_agent.ui.ui_asa_prog import Ui_MainWidgetAsaProg
 from asa_hmi_data_agent.hmi.hmi import HMI
 from asa_hmi_data_agent.avrdude.avrdude import Avrdude
 from asa_hmi_data_agent.asaprog.asaprog import Asaprog
+from asa_hmi_data_agent.socket_api import AdtSocketHandler
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     serToggle = pyqtSignal(bool, str)
@@ -33,6 +34,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Asaprog = Asaprog(WidgetAsaProg,self)
 
         self.serToggle[bool, str].connect(self.serToggleHandler)
+        self.adtSocketHandler = AdtSocketHandler()
+        self.adtSocketHandler.start()
 
     # --------------------------------------------------------------------------
     def serToggleHandler(self, b, port):
