@@ -14,3 +14,4 @@ gui:
 	@pyuic5 ui/bit_selector.ui -o asa_hmi_data_agent/ui/ui_bit_selector.py
 	@pyuic5 ui/hmi_save_dialog.ui -o asa_hmi_data_agent/ui/ui_hmi_save_dialog.py
 	@pyuic5 ui/hmi_load_dialog.ui -o asa_hmi_data_agent/ui/ui_hmi_load_dialog.py
+	@pyuic5 ui/adt_settings.ui -o asa_hmi_data_agent/ui/ui_adt_settings.py
