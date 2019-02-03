@@ -59,7 +59,6 @@ def termOpen(port, baudrate, id):
     if res['err']:
         print('Open port {} in terminal {} error.'.format(port, id))
         print('Error msg: {}'.format(res['msg']))
-    print(res)
 
 def termClose(id):
     adtsh = AdtSocketHandler()

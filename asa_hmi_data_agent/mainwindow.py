@@ -14,6 +14,8 @@ from asa_hmi_data_agent.asaprog.asaprog import Asaprog
 from asa_hmi_data_agent.socket_api import AdtSocketHandler
 from asa_hmi_data_agent.adt_settings.adt_settings import AdtSettings
 
+from asa_hmi_data_agent.listport import serial_ports
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     serToggle = pyqtSignal(bool, str)
     hmiSertIsTerminated = bool(False)
@@ -46,7 +48,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.serToggle[bool, str].connect(self.serToggleHandler)
 
         self.adtSocketHandler = AdtSocketHandler()
-        self.adtSocketHandler.start()
         self.adtSocketHandler.signalTermOpen[int, str, int].connect(self.ctlHmiTermOpen)
         self.adtSocketHandler.signalTermClose[int].connect(self.ctlHmiTermClose)
         self.adtSocketHandler.signalTermClear[int].connect(self.ctlHmiTermClear)
@@ -77,28 +78,71 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def ctlHmiTermOpen(self, id, port, baudrate):
         if id is 1:
-            if self.HMI.ser.isOpen():
-                return
-            self.HMI.ser.baudrate = 38400
-            self.HMI.widget.s_portComboBox.setCurrentText(port)
-            self.HMI.s_portToggle()
-        elif id is 2 and self.tabHmi_2.isHidden() is False:
-            if self.HMI2.ser.isOpen():
-                return
-            self.HMI2.ser.baudrate = 38400
-            self.HMI2.widget.s_portComboBox.setCurrentText(port)
-            self.HMI2.s_portToggle()
+            target = self.HMI
+            isHidden = self.tabHmi_1.isHidden()
+        elif id is 2:
+            target = self.HMI2
+            isHidden = self.tabHmi_2.isHidden()
+
+        if isHidden:
+            err = True
+            msg = 'Terminal {} is not available now, plz open it at adt tab settings'.format(id)
+        elif target.ser.isOpen():
+            err = True
+            msg = 'Terminal {} has been opened.'.format(id)
+        else:
+            availablePorts = serial_ports()
+            if port in availablePorts:
+                err = False
+                msg = ''
+                target.widget.s_portComboBox.clear()
+                for p in availablePorts:
+                    target.widget.s_portComboBox.addItem(p)
+                target.widget.s_portComboBox.setCurrentIndex(availablePorts.index(port))
+                target.ser.baudrate = baudrate
+                target.widget.s_portComboBox.setCurrentText(port)
+                target.s_portToggle()
+            else:
+                err = True
+                msg = 'port {} is not available.'.format(port)
+        res = { 'err' : err, 'msg' : msg }
+        self.adtSocketHandler.sendRes(res)
 
     def ctlHmiTermClose(self, id):
         if id is 1:
-            if self.HMI.ser.isOpen():
-                self.HMI.s_portToggle()
-        elif id is 2 and self.tabHmi_2.isHidden() is False:
-            if self.HMI2.ser.isOpen():
-                self.HMI2.s_portToggle()
+            target = self.HMI
+            isHidden = self.tabHmi_1.isHidden()
+        elif id is 2:
+            target = self.HMI2
+            isHidden = self.tabHmi_2.isHidden()
+
+        if isHidden:
+            err = True
+            msg = 'Terminal {} is not available now, plz open it at adt tab settings'.format(id)
+        elif target.ser.isOpen() is False:
+            err = True
+            msg = 'Terminal {} has been closed.'.format(id)
+        else:
+            err = False
+            msg = ''
+            target.s_portToggle()
+        res = { 'err' : err, 'msg' : msg }
+        self.adtSocketHandler.sendRes(res)
 
     def ctlHmiTermClear(self, id):
         if id is 1:
-            self.HMI.text_terminalClear()
-        elif id is 2 and self.tabHmi_2.isHidden() is False:
-            self.HMI2.text_terminalClear()
+            target = self.HMI
+            isHidden = self.tabHmi_1.isHidden()
+        elif id is 2:
+            target = self.HMI2
+            isHidden = self.tabHmi_2.isHidden()
+
+        if isHidden:
+            err = True
+            msg = 'Terminal {} is not available now, plz open it at adt tab settings'.format(id)
+        else:
+            err = False
+            msg = ''
+            target.text_terminalClear()
+        res = { 'err' : err, 'msg' : msg }
+        self.adtSocketHandler.sendRes(res)
