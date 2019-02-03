@@ -10,7 +10,7 @@ def getRelatedFiles():
     relatedDirs  = ['tools', 'settings', 'tmp']
 
     for dir in relatedDirs:
-        shutil.copytree(dir, 'dist/'+dir)
+        shutil.copytree('asa_hmi_data_agent/'+dir, 'dist/'+dir)
 
 def build_exec():
     opts  = ['asa_hmi_data_agent/__main__.py']

@@ -1,7 +1,9 @@
+from asa_hmi_data_agent.util import ADTPATH
+
 class AvrdudeConfParser():
 
     def __init__(self):
-        self.confFile = 'tools/avrdude.conf'
+        self.confFile = ADTPATH+'/tools/avrdude.conf'
 
     def setConfFile(self, s):
         self.confFile = s

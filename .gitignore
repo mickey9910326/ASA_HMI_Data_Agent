@@ -6,5 +6,7 @@ dist/*
 _build/
 .pytest_cache
 
-tools/*
+tools
 *.zip
+
+*.egg-info

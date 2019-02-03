@@ -12,7 +12,7 @@ import zipfile
 import pathlib
 import shutil
 
-TARGET_ZIP = 'dist/' + 'ASA_HMI_Data_Agent'+ '_' + VERSION + '.zip'
+TARGET_ZIP = 'dist/' + 'ASA_HMI_Data_Agent'+ '_v' + VERSION + '.zip'
 TARGET_DIR = 'dist/'
 
 def rmPreFiles():
@@ -43,7 +43,6 @@ def zipTargets():
             targets += [os.path.join(root, file)]
     with zipfile.ZipFile(target_zip, 'w') as z:
         for target in targets:
-            print(target)
             z.write(target, target.replace('dist','ASA_HMI_Data_Agent'))
 
 def run():
