@@ -6,8 +6,6 @@ from time import sleep
 import serial
 import math
 
-
-
 class AdtSettings(QObject):
     widget = Ui_MainWidgetAdtSettings()
     signalTermNumApply = pyqtSignal(int)

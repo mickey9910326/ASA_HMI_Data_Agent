@@ -40,3 +40,10 @@ class AdtSocketHandler(object):
         else:
             self.close()
             return None
+
+#
+# stanard res
+# res = {
+#     'err' : bool
+#     'msg' : str
+# }

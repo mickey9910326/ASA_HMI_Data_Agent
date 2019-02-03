@@ -44,8 +44,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.adtSettings.signalTermNumApply.connect(self.ctlHmiTermNum)
 
         self.serToggle[bool, str].connect(self.serToggleHandler)
+
         self.adtSocketHandler = AdtSocketHandler()
         self.adtSocketHandler.start()
+        self.adtSocketHandler.signalTermOpen[int, str, int].connect(self.ctlHmiTermOpen)
+        self.adtSocketHandler.signalTermClose[int].connect(self.ctlHmiTermClose)
+        self.adtSocketHandler.signalTermClear[int].connect(self.ctlHmiTermClear)
 
     # --------------------------------------------------------------------------
     def serToggleHandler(self, b, port):
@@ -70,3 +74,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.tabHmi_2.hide()
         elif num is 2:
             self.tabHmi_2.show()
+
+    def ctlHmiTermOpen(self, id, port, baudrate):
+        if id is 1:
+            if self.HMI.ser.isOpen():
+                return
+            self.HMI.ser.baudrate = 38400
+            self.HMI.widget.s_portComboBox.setCurrentText(port)
+            self.HMI.s_portToggle()
+        elif id is 2 and self.tabHmi_2.isHidden() is False:
+            if self.HMI2.ser.isOpen():
+                return
+            self.HMI2.ser.baudrate = 38400
+            self.HMI2.widget.s_portComboBox.setCurrentText(port)
+            self.HMI2.s_portToggle()
+
+    def ctlHmiTermClose(self, id):
+        if id is 1:
+            if self.HMI.ser.isOpen():
+                self.HMI.s_portToggle()
+        elif id is 2 and self.tabHmi_2.isHidden() is False:
+            if self.HMI2.ser.isOpen():
+                self.HMI2.s_portToggle()
+
+    def ctlHmiTermClear(self, id):
+        if id is 1:
+            self.HMI.text_terminalClear()
+        elif id is 2 and self.tabHmi_2.isHidden() is False:
+            self.HMI2.text_terminalClear()
