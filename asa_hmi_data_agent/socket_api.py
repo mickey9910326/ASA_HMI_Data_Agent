@@ -1,10 +1,11 @@
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import QObject
 from PyQt5.QtCore import pyqtSignal
+
+from asa_hmi_data_agent.cli_tools.commands import *
+
 import zmq
-from adt_scripts.util import *
 import json
-from functools import partial
 
 STATE_REC = 1
 STATE_REP = 2

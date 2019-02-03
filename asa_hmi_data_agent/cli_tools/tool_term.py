@@ -1,5 +1,7 @@
+from asa_hmi_data_agent.cli_tools.commands import *
+from asa_hmi_data_agent.cli_tools.socket_handler import SocketHandler
+
 import argparse
-from util import *
 
 def argHandler():
     parser = argparse.ArgumentParser(description='Controll the terminal in adt.')
@@ -9,7 +11,7 @@ def argHandler():
     parser_open = subparsers.add_parser('open', help='Open the terminal in adt.')
     parser_open.add_argument(
         '-P', '-p', '--port',
-        dest='port', action ='store', type = str,
+        dest='port', action ='store', type = str, required = True,
         help='assign the port to load'
     )
     parser_open.add_argument(
@@ -46,7 +48,7 @@ def argHandler():
     return args
 
 def termOpen(port, baudrate, id):
-    adtsh = AdtSocketHandler()
+    adtsh = SocketHandler()
     cmd = {
         'cmd'    : AdtCmd.TERM.value,
         'subcmd' : AdtSubCmdTerm.OPEN.value,
@@ -61,7 +63,7 @@ def termOpen(port, baudrate, id):
         print('Error msg: {}'.format(res['msg']))
 
 def termClose(id):
-    adtsh = AdtSocketHandler()
+    adtsh = SocketHandler()
     cmd = {
         'cmd'    : AdtCmd.TERM.value,
         'subcmd' : AdtSubCmdTerm.CLOSE.value,
@@ -74,7 +76,7 @@ def termClose(id):
         print('Error msg: {}'.format(res['msg']))
 
 def termClear(id):
-    adtsh = AdtSocketHandler()
+    adtsh = SocketHandler()
     cmd = {
         'cmd'    : AdtCmd.TERM.value,
         'subcmd' : AdtSubCmdTerm.CLEAR.value,

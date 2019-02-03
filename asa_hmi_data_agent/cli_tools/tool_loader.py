@@ -1,8 +1,8 @@
-import zmq
-import json
+from asa_hmi_data_agent.cli_tools.commands import *
+from asa_hmi_data_agent.cli_tools.socket_handler import SocketHandler
+
 import argparse
 import progressbar
-from util import *
 
 def argHandler():
     parser = argparse.ArgumentParser(description='tell adt to load hex into asa-series board')
@@ -34,7 +34,7 @@ def run():
         'subcmd' : AdtSubCmdLoader.STATE.value,
     }
 
-    adtsh = AdtSocketHandler()
+    adtsh = SocketHandler()
     res = adtsh.send_cmd(startCmd)
     if res is None:
         return

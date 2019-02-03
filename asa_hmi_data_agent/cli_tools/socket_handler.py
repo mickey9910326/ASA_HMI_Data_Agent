@@ -1,24 +1,9 @@
-import enum
 import zmq
 import json
 
-class AdtCmd(enum.IntEnum):
-    TERM = 1
-    LOADER = 2
-    STK500 = 3
-
-class AdtSubCmdLoader(enum.IntEnum):
-    START = 1
-    STATE = 2
-
-class AdtSubCmdTerm(enum.IntEnum):
-    OPEN  = 1
-    CLOSE = 2
-    CLEAR = 3
-
-class AdtSocketHandler(object):
+class SocketHandler(object):
     def __init__(self):
-        super(AdtSocketHandler, self).__init__()
+        super(SocketHandler, self).__init__()
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.poll = zmq.Poller()
@@ -40,10 +25,3 @@ class AdtSocketHandler(object):
         else:
             self.close()
             return None
-
-#
-# stanard res
-# res = {
-#     'err' : bool
-#     'msg' : str
-# }
