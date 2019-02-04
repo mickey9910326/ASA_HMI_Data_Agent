@@ -16,7 +16,7 @@ REQUIREMENTS = [
 def run():
     setup(
         name='asa-hmi-data-agent',
-        version='0.4.4',
+        version='0.5.0',
         description = 'ASA developing tools on PC.',
         long_description='',
         author = 'mickey9910326',
@@ -30,8 +30,8 @@ def run():
             'console_scripts': [
                 'asa_hmi_data_agent = asa_hmi_data_agent.__main__:run',
                 'adt = asa_hmi_data_agent.__main__:run',
-                'adt-term = asa_hmi_data_agent.cli_tools.tool_loader:run',
-                'adt-loader = asa_hmi_data_agent.cli_tools.tool_term:run'
+                'adt-term = asa_hmi_data_agent.cli_tools.tool_term:run',
+                'adt-loader = asa_hmi_data_agent.cli_tools.tool_loader:run'
             ],
         },
         install_requires=REQUIREMENTS

@@ -1,13 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.4.4_dev] - 2018-02-04
+## [0.5.0] - 2019-02-04
 ### Added
 - script setup.py : generate sdist for PYPI
 - script scripts.setup_exec : use pyinstaller to build exec
 - adt-term : cli tool to control terminal in adt
 - adt-loader : cli tool to control asaloader in adt
 - add socket api to comunicate with adt
+- can open 2 terminal now
 
 ### Changed
 - move 'tools', 'settings', 'tmp' into module folder 'asa_hmi_data_agent'
