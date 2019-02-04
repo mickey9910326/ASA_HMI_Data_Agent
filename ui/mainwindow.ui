@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>800</height>
+    <width>500</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,6 +35,14 @@
        <attribute name="title">
         <string>HMI</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QWidget" name="tabHmi_1" native="true"/>
+        </item>
+        <item>
+         <widget class="QWidget" name="tabHmi_2" native="true"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tabAsaProg">
        <attribute name="title">
@@ -44,6 +52,11 @@
       <widget class="QWidget" name="tabAvrdude">
        <attribute name="title">
         <string>STK500燒錄</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabAdtSettings">
+       <attribute name="title">
+        <string>設定</string>
        </attribute>
       </widget>
      </widget>

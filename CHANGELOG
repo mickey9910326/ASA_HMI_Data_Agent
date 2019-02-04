@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2019-02-04
+### Added
+- script setup.py : generate sdist for PYPI
+- script scripts.setup_exec : use pyinstaller to build exec
+- adt-term : cli tool to control terminal in adt
+- adt-loader : cli tool to control asaloader in adt
+- add socket api to comunicate with adt
+- can open 2 terminal now
+
+### Changed
+- move 'tools', 'settings', 'tmp' into module folder 'asa_hmi_data_agent'
+- avrdude functions use abs path to call and acess files now
+
 ## [0.4.3_dev] - 2018-10-03
 ### Added
 - script get_tool_files : get avrdude and m128_stk500
@@ -10,7 +23,7 @@ All notable changes to this project will be documented in this file.
 - update setup.py : simplify
 - update bit_info to meet the avrdude 6.3
 
-### fixed
+### Fixed
 - fix after save setting will change back to default
 
 ## [0.4.2] - 2018-09-18

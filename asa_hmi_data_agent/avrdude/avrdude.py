@@ -10,6 +10,7 @@ import time
 from asa_hmi_data_agent.ui.ui_bit_selector import Ui_BitSelector
 from asa_hmi_data_agent.avrdude.avrdudeConfParser import AvrdudeConfParser
 
+from asa_hmi_data_agent.util import ADTPATH
 
 # ---- class ShellThread Start -------------------------------------------------
 class ShellThread(QThread):
@@ -126,7 +127,7 @@ class BitsSelector(QDialog, Ui_BitSelector):
     def show(self, partDesc):
         super(QDialog, self).show()
         config = ConfigParser()
-        config.read('settings\\bits_info.ini')
+        config.read(ADTPATH+'/settings/bits_info.ini')
         try:
             bitInfoList = config[partDesc]['fuse_l'].replace(' ', '').split(',')
             for bit in range(0,8):
@@ -208,7 +209,7 @@ class Avrdude(object):
         self.mainWindow = mainWindow
 
         # ---- Settings Group start --------------------------------------------
-        self.settingsFile = 'settings/avrdude_settings.ini'
+        self.settingsFile = ADTPATH+'/settings/avrdude_settings.ini'
         self.conf = ConfigParser()
         self.settingsListUpdate()
         self.settingsLoad()
@@ -273,14 +274,13 @@ class Avrdude(object):
         # ---- Fuse & Lock Group end -----------------------------------------
 
         # ---- MCU Group start -------------------------------------------------
-        self.praser = AvrdudeConfParser()
-        descList = self.praser.listAllPartDesc()
+        self.devices = AvrdudeConfParser().GetDeviceInfo()
 
         self.widget.pushButton_mcuDetect.clicked.connect(self.mcu_detect)
         self.widget.comboBox_mcuSelect.clear()
         self.widget.comboBox_mcuSelect.addItem('請選擇MCU...')
-        for desc in descList:
-            self.widget.comboBox_mcuSelect.addItem(desc)
+        for device in self.devices:
+            self.widget.comboBox_mcuSelect.addItem(device['desc'])
         # ---- MCU Group end ---------------------------------------------------
 
         # ---- need updateCammand items start ----------------------------------
@@ -323,12 +323,12 @@ class Avrdude(object):
 
     def getBasicParameter(self):
         cmd = str()
-        cmd += 'tools\\avrdude'
+        cmd += ADTPATH+'/tools/avrdude'
         cmd += ' -c stk500'
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
             desc = self.widget.comboBox_mcuSelect.currentText()
-            desc, id, signature = self.praser.GetBasicInfoByDesc(desc)
+            id = [device for device in self.devices if device['desc'] == desc][0]['id']
             cmd += ' -p ' + id
 
         cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
@@ -345,7 +345,7 @@ class Avrdude(object):
 
         if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
             desc = self.widget.comboBox_mcuSelect.currentText()
-            desc, id, signature = self.praser.GetBasicInfoByDesc(desc)
+            id = [device for device in self.devices if device['desc'] == desc][0]['id']
             cmd += ' -p ' + id
 
         cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
@@ -579,17 +579,17 @@ class Avrdude(object):
     # ---- Fuse & Lock Group start ---------------------------------------------
     def fuse_read(self):
         cmd = self.getBasicParameter()
-        cmd += ' -U lfuse:r:' + 'tmp\\fuse_low.txt'   + ':h'
-        cmd += ' -U hfuse:r:' + 'tmp\\fuse_high.txt'  + ':h'
-        cmd += ' -U efuse:r:' + 'tmp\\fuse_extra.txt' + ':h'
+        cmd += ' -U lfuse:r:' + ADTPATH + '/tmp/fuse_low.txt'   + ':h'
+        cmd += ' -U hfuse:r:' + ADTPATH + '/tmp/fuse_high.txt'  + ':h'
+        cmd += ' -U efuse:r:' + ADTPATH + '/tmp/fuse_extra.txt' + ':h'
         self.shellThread.setCmdType(1)
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
 
     def fuse_update_from_tmp(self):
-        fl = open('tmp\\fuse_low.txt', 'r')
-        fh = open('tmp\\fuse_high.txt', 'r')
-        fe = open('tmp\\fuse_extra.txt', 'r')
+        fl = open(ADTPATH+'/tmp/fuse_low.txt', 'r')
+        fh = open(ADTPATH+'/tmp/fuse_high.txt', 'r')
+        fe = open(ADTPATH+'/tmp/fuse_extra.txt', 'r')
         # self.widget.lineEdit_lock.setText()
         self.widget.lineEdit_fuseLow.setText(fl.read(4))
         self.widget.lineEdit_fuseHigh.setText(fh.read(4))
@@ -608,12 +608,12 @@ class Avrdude(object):
 
     def lock_read(self):
         cmd = self.getBasicParameter()
-        cmd += ' -U lock:r:' + 'tmp\\lock.txt' + ':h'
+        cmd += ' -U lock:r:' + ADTPATH + '/tmp/lock.txt' + ':h'
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
 
     def lock_update_from_tmp(self):
-        f = open('tmp\\lock.txt', 'r')
+        f = open(ADTPATH + '/tmp/lock.txt', 'r')
         self.widget.lineEdit_lock.setText(f.read(4))
         f.close()
 

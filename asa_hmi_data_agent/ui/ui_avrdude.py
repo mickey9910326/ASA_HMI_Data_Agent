@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui\avrdude.ui'
+# Form implementation generated from reading ui file 'ui/avrdude.ui'
 #
-# Created by: PyQt5 UI code generator 5.9
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWidgetAvrdude(object):
     def setupUi(self, MainWidgetAvrdude):
         MainWidgetAvrdude.setObjectName("MainWidgetAvrdude")
-        MainWidgetAvrdude.resize(557, 700)
+        MainWidgetAvrdude.resize(500, 700)
         self.gridLayout_8 = QtWidgets.QGridLayout(MainWidgetAvrdude)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.groupBox_config = QtWidgets.QGroupBox(MainWidgetAvrdude)
