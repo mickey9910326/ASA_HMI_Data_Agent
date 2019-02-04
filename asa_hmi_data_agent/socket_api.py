@@ -14,6 +14,8 @@ class AdtSocketReceiver(QThread):
     signalTermOpen  = pyqtSignal(int, str, int)
     signalTermClose = pyqtSignal(int)
     signalTermClear = pyqtSignal(int)
+    signalLoaderStart = pyqtSignal(str, str)
+    signalLoaderState = pyqtSignal()
 
     def __init__(self, context, socket):
         QThread.__init__(self)
@@ -36,17 +38,9 @@ class AdtSocketReceiver(QThread):
 
     def doCmdLoader(self, cmd):
         if cmd['subcmd'] == AdtSubCmdLoader.START:
-            res = {
-                'times' : 100
-            }
-            self.socket.send_json(json.dumps(res))
+            self.signalLoaderStart.emit(cmd['port'], cmd['hexfile'])
         elif cmd['subcmd'] == AdtSubCmdLoader.STATE:
-            i = i+1
-            res = {
-                'times' : i
-            }
-            print(res)
-            self.socket.send_json(json.dumps(res))
+            self.signalLoaderState.emit()
 
     def doCmdTerm(self, cmd):
         if cmd['subcmd'] == AdtSubCmdTerm.OPEN:
@@ -60,6 +54,8 @@ class AdtSocketHandler(QObject):
     signalTermOpen  = pyqtSignal(int, str, int)
     signalTermClose = pyqtSignal(int)
     signalTermClear = pyqtSignal(int)
+    signalLoaderStart = pyqtSignal(str, str)
+    signalLoaderState = pyqtSignal()
 
     def __init__(self):
         super(AdtSocketHandler, self).__init__()
@@ -73,6 +69,9 @@ class AdtSocketHandler(QObject):
         self.receiver.signalTermOpen[int, str, int].connect(self.signalTermOpen.emit)
         self.receiver.signalTermClose[int].connect(self.signalTermClose.emit)
         self.receiver.signalTermClear[int].connect(self.signalTermClear.emit)
+        self.receiver.signalTermClear[int].connect(self.signalTermClear.emit)
+        self.receiver.signalLoaderStart[str, str].connect(self.signalLoaderStart.emit)
+        self.receiver.signalLoaderState.connect(self.signalLoaderState.emit)
 
     def sendRes(self, res):
         self.socket.send_json(json.dumps(res))

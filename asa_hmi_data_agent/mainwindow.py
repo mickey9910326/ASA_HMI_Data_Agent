@@ -1,5 +1,7 @@
 import sys
 import serial
+import time
+
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 
@@ -10,7 +12,7 @@ from asa_hmi_data_agent.ui.ui_asa_prog import Ui_MainWidgetAsaProg
 
 from asa_hmi_data_agent.hmi.hmi import HMI
 from asa_hmi_data_agent.avrdude.avrdude import Avrdude
-from asa_hmi_data_agent.asaprog.asaprog import Asaprog
+from asa_hmi_data_agent.asa_loader import AsaLoader
 from asa_hmi_data_agent.socket_api import AdtSocketHandler
 from asa_hmi_data_agent.adt_settings.adt_settings import AdtSettings
 
@@ -38,7 +40,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.HMI2 = HMI(widgetHmi2,self)
         self.tabHmi_2.hide()
         self.Avrdude = Avrdude(widgetAvrdude,self)
-        self.Asaprog = Asaprog(WidgetAsaProg,self)
+        self.asaLoader = AsaLoader(WidgetAsaProg,self)
 
         self.adtSettings = AdtSettings()
         self.adtSettings.setupUi(self.tabAdtSettings)
@@ -51,6 +53,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.adtSocketHandler.signalTermOpen[int, str, int].connect(self.ctlHmiTermOpen)
         self.adtSocketHandler.signalTermClose[int].connect(self.ctlHmiTermClose)
         self.adtSocketHandler.signalTermClear[int].connect(self.ctlHmiTermClear)
+        self.adtSocketHandler.signalLoaderStart[str, str].connect(self.ctlLoaderStart)
+        self.adtSocketHandler.signalLoaderState.connect(self.ctlLoaderState)
 
     # --------------------------------------------------------------------------
     def serToggleHandler(self, b, port):
@@ -100,7 +104,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     target.widget.s_portComboBox.addItem(p)
                 target.widget.s_portComboBox.setCurrentIndex(availablePorts.index(port))
                 target.ser.baudrate = baudrate
-                target.widget.s_portComboBox.setCurrentText(port)
                 target.s_portToggle()
             else:
                 err = True
@@ -145,4 +148,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             msg = ''
             target.text_terminalClear()
         res = { 'err' : err, 'msg' : msg }
+        self.adtSocketHandler.sendRes(res)
+
+    # --------------------------------------------------------------------------
+    def ctlLoaderStart(self, port, hexfile):
+        self.asaLoader.widget.lineEdit_selectFile.setText(hexfile)
+        availablePorts = serial_ports()
+        if port in availablePorts:
+            self.asaLoader.widget.comboBox_selectPort.clear()
+            for p in availablePorts:
+                self.asaLoader.widget.comboBox_selectPort.addItem(p)
+            self.asaLoader.widget.comboBox_selectPort.setCurrentIndex(availablePorts.index(port))
+            self.asaLoader.startProg()
+            time.sleep(0.5)
+            err = False
+            msg = ''
+            max = self.asaLoader.shellThread.loader.total_steps
+        else:
+            err = True
+            msg = 'port {} is not available.'.format(port)
+            max = 0
+        res = {
+            'err': err,
+            'msg': msg,
+            'max': max
+        }
+        self.adtSocketHandler.sendRes(res)
+
+    def ctlLoaderState(self):
+        res = {
+            'err': False,
+            'msg': '',
+            'times': self.asaLoader.shellThread.loader.times
+        }
         self.adtSocketHandler.sendRes(res)

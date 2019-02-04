@@ -1,8 +1,9 @@
-from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from asa_hmi_data_agent.listport import serial_ports
 from time import sleep
-import py_asa_loader
+
+import asaprog
 import serial
 import math
 
@@ -21,56 +22,52 @@ class ShellThread(QThread):
     def setParameter(self, port, hexfile):
         self.port = port
         self.hexfile = hexfile
+        self.max = 0
 
     def run(self):
-        try:
-            loader = py_asa_loader.Loader(self.port, self.hexfile)
+        loader = asaprog.Loader(self.port, self.hexfile)
+        self.loader = loader
+        self.signalInitProgressbar.emit(0, loader.total_steps-1)
 
-            isAsaDevice = loader.checkIsAsaDevice()
-            self.signalCheckIsAsaDevice.emit(isAsaDevice)
+        for i in range(loader.total_steps):
+            try:
+                loader.step()
+            except asaprog.ChkDeviceException as e:
+                self.signalCheckIsAsaDevice.emit(False)
+                progdbg('Error: The device is not asa-board.')
+                break
+            except asaprog.CantOpenComportException as e:
+                self.signalGetSerialException.emit()
+                progdbg('Error: Cannot open the comport \'{}\'.'.format(loader.port))
+                break
+            except asaprog.EndingException as e:
+                self.signalLastData.emit(False)
+                progdbg('Error: The device ignored the ending command .')
+                break
+            except serial.serialutil.SerialException as e:
+                self.signalGetSerialException.emit()
+                break
 
-            if isAsaDevice is False:
-                return
-
-            times = math.floor(len(loader.bin)/256)
-            remain = len(loader.bin)%256
-
-            if remain is not 0:
-                self.signalInitProgressbar.emit(0,times+1)
+            if i == 0:
+                self.signalSetProgressbar.emit(i)
+                self.signalCheckIsAsaDevice.emit(True)
+            elif i == loader.total_steps-1:
+                self.signalSetProgressbar.emit(i)
+                self.signalLastData.emit(True)
             else:
-                self.signalInitProgressbar.emit(0,times)
-
-            delay = 0.03
-            for i in range(times):
-                loader.loadData(loader.bin[i*256:(i+1)*256])
                 self.signalSetProgressbar.emit(i)
-                sleep(delay)
-
-            if remain is not 0:
-                i = i+1
-                loader.loadData(loader.bin[i*256:-1])
-                self.signalSetProgressbar.emit(i)
-                sleep(delay)
-
-            isOK = loader.lastData()
-            if isOK:
-                i = i+1
-                self.signalSetProgressbar.emit(i)
-            self.signalLastData.emit(isOK)
-        except serial.serialutil.SerialException as e:
-            self.signalGetSerialException.emit()
 
     def stop(self):
         self.terminate()
 
 # ---- class ShellThread End ---------------------------------------------------
 
-class Asaprog(object):
+class AsaLoader(object):
     # ---- __init__ start ------------------------------------------------------
     def __init__(self, widget, mainWindow):
         self.widget = widget
         self.mainWindow = mainWindow
-        self.widget.progressBar.setValue(0);
+        self.widget.progressBar.setValue(0)
 
         # ---- Thread Init start -----------------------------------------------
         self.shellThread = ShellThread()
@@ -124,7 +121,7 @@ class Asaprog(object):
 
     def checkIsHexFile(self, filename):
         try:
-            hexbin = py_asa_loader.parseHex(filename)
+            hexbin = asaprog.parseIHex(filename)
         except (NameError,UnicodeDecodeError):
             self.widget.label_programSizeContent.setText(u"非HEX檔案格式，請重新選擇檔案")
             self.widget.label_etcContent.setText('-')

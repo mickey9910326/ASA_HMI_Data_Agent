@@ -23,11 +23,11 @@ def run():
     args = argHandler()
     print(args)
     startCmd = {
-        'cmd' : AdtCmd.LOADER.value,
-        'subcmd' : AdtSubCmdLoader.START.value,
-        'set' : args.set,
-        'hex' : args.hexfile,
-        'port' : args.port
+        'cmd': AdtCmd.LOADER.value,
+        'subcmd': AdtSubCmdLoader.START.value,
+        'port': args.port,
+        'hexfile': args.hexfile,
+        'set': args.set
     }
     stateCmd = {
         'cmd' : AdtCmd.LOADER.value,
@@ -36,12 +36,12 @@ def run():
 
     adtsh = SocketHandler()
     res = adtsh.send_cmd(startCmd)
-    if res is None:
-        return
-
     print(res)
-    print(type(res))
-    max = res['times']
+    if res is None:
+        print('error!')
+        return
+    max = res['max']
+
     widgets=[
     ' [', progressbar.Timer(), '] ',
     progressbar.Bar(),
@@ -51,10 +51,11 @@ def run():
 
     times = 0
     while times != max:
-        state = adtsh.send_cmd(stateCmd)
+        res = adtsh.send_cmd(stateCmd)
+        print(res)
         if res is None:
             return
-        times = state['times']
+        times = res['times']
         bar.update(times)
 
 if __name__ == '__main__':
