@@ -16,7 +16,7 @@ from asa_hmi_data_agent.asa_loader import AsaLoader
 from asa_hmi_data_agent.socket_api import AdtSocketHandler
 from asa_hmi_data_agent.adt_settings.adt_settings import AdtSettings
 
-from asa_hmi_data_agent.listport import serial_ports
+from asa_hmi_data_agent.listport import getAvailableSerialPorts
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     serToggle = pyqtSignal(bool, str)
@@ -95,7 +95,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             err = True
             msg = 'Terminal {} has been opened.'.format(id)
         else:
-            availablePorts = serial_ports()
+            availablePorts = getAvailableSerialPorts()
             if port in availablePorts:
                 err = False
                 msg = ''
@@ -153,7 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # --------------------------------------------------------------------------
     def ctlLoaderStart(self, port, hexfile):
         self.asaLoader.widget.lineEdit_selectFile.setText(hexfile)
-        availablePorts = serial_ports()
+        availablePorts = getAvailableSerialPorts()
         if port in availablePorts:
             self.asaLoader.widget.comboBox_selectPort.clear()
             for p in availablePorts:

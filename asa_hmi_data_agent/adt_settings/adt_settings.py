@@ -1,7 +1,7 @@
 from asa_hmi_data_agent.ui.ui_adt_settings import Ui_MainWidgetAdtSettings
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal, QObject
 from PyQt5.QtWidgets import QFileDialog
-from asa_hmi_data_agent.listport import serial_ports
+from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from time import sleep
 import serial
 import math

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
-from asa_hmi_data_agent.listport import serial_ports
+from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from time import sleep
 
 import asaprog
@@ -101,7 +101,7 @@ class AsaLoader(object):
     # ---- Serial Group start --------------------------------------------------
     # Update port list in s_portComboBox
     def serial_updatePortlist(self):
-        availablePorts = serial_ports()
+        availablePorts = getAvailableSerialPorts()
         progdbg('Update ports: ' + str(availablePorts))
         self.widget.comboBox_selectPort.clear()
         for port in availablePorts:

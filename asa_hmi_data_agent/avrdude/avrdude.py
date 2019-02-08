@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtGui import QTextCursor
-from asa_hmi_data_agent.listport import serial_ports
+from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from configparser import ConfigParser
 import serial
 import subprocess
@@ -453,7 +453,7 @@ class Avrdude(object):
     # ---- Serial Group start --------------------------------------------------
     # Update port list in s_portComboBox
     def serial_updatePortlist(self):
-        availablePorts = serial_ports()
+        availablePorts = getAvailableSerialPorts()
         dudedbg('Update ports: ' + str(availablePorts))
         self.widget.comboBox_serialSetPort.clear()
         for port in availablePorts:

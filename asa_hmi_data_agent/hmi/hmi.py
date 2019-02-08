@@ -1,6 +1,6 @@
 import sys
 import serial
-from asa_hmi_data_agent.listport import serial_ports
+from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog
 # from asa_hmi_data_agent.hmi.decodeASAformat import *
@@ -116,7 +116,7 @@ class HMI(object):
         if self.ser.isOpen():
             pass
         else :
-            availablePorts = serial_ports()
+            availablePorts = getAvailableSerialPorts()
             hmidbg('Update ports: ' + str(availablePorts))
             self.widget.s_portComboBox.clear()
             for port in availablePorts:
