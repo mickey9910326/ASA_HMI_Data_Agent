@@ -1,24 +1,20 @@
-import sys
-import serial
-import time
+from asa_hmi_data_agent.ui.ui_mainwindow import Ui_MainWindow
+
+from asa_hmi_data_agent.adt_settings.adt_settings import AdtSettings
+from asa_hmi_data_agent.listport import getAvailableSerialPorts
+from asa_hmi_data_agent.socket_api import AdtSocketHandler
+from asa_hmi_data_agent.asaloader import AsaLoader
+from asa_hmi_data_agent.avrdude import Avrdude
+from asa_hmi_data_agent.hmi import HMI
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
 
-from asa_hmi_data_agent.ui.ui_mainwindow import Ui_MainWindow
-from asa_hmi_data_agent.ui.ui_hmi import Ui_MainWidgetHMI
-from asa_hmi_data_agent.ui.ui_avrdude import Ui_MainWidgetAvrdude
-
-from asa_hmi_data_agent.hmi.hmi import HMI
-from asa_hmi_data_agent.avrdude.avrdude import Avrdude
-from asa_hmi_data_agent.asaloader import AsaLoader
-from asa_hmi_data_agent.socket_api import AdtSocketHandler
-from asa_hmi_data_agent.adt_settings.adt_settings import AdtSettings
-
-from asa_hmi_data_agent.listport import getAvailableSerialPorts
+import serial
+import time
+import sys
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    serToggle = pyqtSignal(bool, str)
     hmiSertIsTerminated = bool(False)
 
     # ---- __init__ start ------------------------------------------------------
@@ -26,17 +22,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # ---- init ui start ---------------------------------------------------
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
-        widgetHmi = Ui_MainWidgetHMI()
-        widgetHmi2 = Ui_MainWidgetHMI()
-        widgetAvrdude = Ui_MainWidgetAvrdude()
-        widgetHmi.setupUi(self.tabHmi_1)
-        widgetHmi2.setupUi(self.tabHmi_2)
-        widgetAvrdude.setupUi(self.tabAvrdude)
         # ---- init ui end -----------------------------------------------------
-        self.HMI = HMI(widgetHmi,self)
-        self.HMI2 = HMI(widgetHmi2,self)
+        self.HMI = HMI(self.tabHmi_1)
+        self.HMI.sigChangeWindowTitle.connect(
+            lambda s: self.setWindowTitle(s)
+        )
+
+        self.HMI2 = HMI(self.tabHmi_2)
         self.tabHmi_2.hide()
-        self.Avrdude = Avrdude(widgetAvrdude,self)
+
+        self.avrdude = Avrdude(self.tabAvrdude)
+        self.avrdude.sigSerialPortCheck[bool, str].connect(self.serToggleHandler)
+
         self.asaLoader = AsaLoader(self.tabAsaProg)
         self.asaLoader.sigSerialPortCheck[bool, str].connect(self.serToggleHandler)
 
@@ -44,8 +41,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.adtSettings.setupUi(self.tabAdtSettings)
         self.adtSettings.init()
         self.adtSettings.signalTermNumApply.connect(self.ctlHmiTermNum)
-
-        self.serToggle[bool, str].connect(self.serToggleHandler)
 
         self.adtSocketHandler = AdtSocketHandler()
         self.adtSocketHandler.signalTermOpen[int, str, int].connect(self.ctlHmiTermOpen)

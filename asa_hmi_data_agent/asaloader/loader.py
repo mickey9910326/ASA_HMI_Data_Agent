@@ -4,13 +4,13 @@ from asa_hmi_data_agent.util import ADTPATH
 
 from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal, QObject
 from PyQt5.QtWidgets import QFileDialog
+
 from time import sleep
 import datetime
-import os.path
-
 import asaprog
 import serial
 import math
+import os
 
 # ---- class LoaderThread Start -------------------------------------------------
 class LoaderThread(QThread):
@@ -39,7 +39,6 @@ class LoaderThread(QThread):
             try:
                 loader.step()
             except asaprog.ChkDeviceException as e:
-                sigState()
                 self.sigChkAsaDevice.emit(False)
                 debugLog('Error: The device is not asa-board.')
                 break
@@ -210,7 +209,7 @@ class AsaLoader(QObject):
     # ---- Special Functions Group end -----------------------------------------
 
 def debugLog(msg):
-    s = '[{}] loader log: {}'.format(
+    s = '[{}] loader   log: {}'.format(
         datetime.datetime.now().strftime("%H:%M:%S"),
         msg
     )

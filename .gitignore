@@ -10,3 +10,5 @@ tools
 *.zip
 
 *.egg-info
+
+.vscode

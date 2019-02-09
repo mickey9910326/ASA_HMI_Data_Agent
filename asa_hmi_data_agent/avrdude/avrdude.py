@@ -1,16 +1,18 @@
-from PyQt5.QtCore import pyqtSlot, QThread, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QDialog
-from PyQt5.QtGui import QTextCursor
-from asa_hmi_data_agent.listport import getAvailableSerialPorts
-from configparser import ConfigParser
-import serial
-import subprocess
-import time
-
+from asa_hmi_data_agent.ui.ui_avrdude import Ui_MainWidgetAvrdude
 from asa_hmi_data_agent.ui.ui_bit_selector import Ui_BitSelector
 from asa_hmi_data_agent.avrdude.avrdudeConfParser import AvrdudeConfParser
-
 from asa_hmi_data_agent.util import ADTPATH
+from asa_hmi_data_agent.listport import getAvailableSerialPorts
+from configparser import ConfigParser
+
+from PyQt5.QtCore import QObject, QThread, pyqtSlot, pyqtSignal
+from PyQt5.QtWidgets import QFileDialog, QDialog
+from PyQt5.QtGui import QTextCursor
+
+import subprocess
+import datetime
+import serial
+import time
 
 # ---- class ShellThread Start -------------------------------------------------
 class ShellThread(QThread):
@@ -36,7 +38,7 @@ class ShellThread(QThread):
         self.signalGetLine.emit('[' + times + '] ' + self.cmd + '\n')
         self.shellIsRunning = True
 
-        dudedbg(str(self.cmd.split(' ')))
+        debugLog(str(self.cmd.split(' ')))
         self.p = subprocess.Popen(self.cmd.split(' ') , stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
         while self.p.poll() is None:
             s = self.p.stderr.readline()
@@ -201,21 +203,25 @@ def radioButtonClick(btn):
         btn.setChecked(False)
         btn.setAutoExclusive(True)
 
+# ---- class Avrdude Start -----------------------------------------------------
+class Avrdude(QObject):
+    sigChangeWindowTitle = pyqtSignal(str)
+    sigSerialPortCheck = pyqtSignal(bool, str)
 
-class Avrdude(object):
     # ---- __init__ start ------------------------------------------------------
-    def __init__(self, widget, mainWindow):
-        self.widget = widget
-        self.mainWindow = mainWindow
+    def __init__(self, widget):
+        super(Avrdude, self).__init__()
+        self.ui = Ui_MainWidgetAvrdude()
+        self.ui.setupUi(widget)
 
         # ---- Settings Group start --------------------------------------------
         self.settingsFile = ADTPATH+'/settings/avrdude_settings.ini'
         self.conf = ConfigParser()
         self.settingsListUpdate()
         self.settingsLoad()
-        self.widget.pushButton_configSave.clicked.connect(self.settingsSave)
-        self.widget.pushButton_configDelete.clicked.connect(self.settingsDelete)
-        self.widget.comboBox_config.currentIndexChanged.connect(self.settingsLoad)
+        self.ui.pushButton_configSave.clicked.connect(self.settingsSave)
+        self.ui.pushButton_configDelete.clicked.connect(self.settingsDelete)
+        self.ui.comboBox_config.currentIndexChanged.connect(self.settingsLoad)
         # ---- Settings Group end ----------------------------------------------
 
         # ---- Serial object Init Start ----------------------------------------
@@ -229,83 +235,84 @@ class Avrdude(object):
         self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
         # self.shellThread.signalGetLine[str].connect(self.terminalAppendLine)
         self.shellThread.started.connect(
-            lambda : self.mainWindow.serToggle.emit(True, self.widget.comboBox_serialSetPort.currentText())
+            lambda : self.sigChangeWindowTitle.emit(True, self.ui.comboBox_serialSetPort.currentText())
         )
         self.shellThread.finished.connect(
-            lambda : self.mainWindow.serToggle.emit(False, self.widget.comboBox_serialSetPort.currentText())
+            lambda: self.sigChangeWindowTitle.emit(
+                False, self.ui.comboBox_serialSetPort.currentText())
         )
         # ---- Shell Thread Init End -------------------------------------------
 
         # ---- Serial Group start ----------------------------------------------
         self.serial_updatePortlist()
-        self.widget.pushButton_updatePort.clicked.connect(self.serial_updatePortlist)
-        self.widget.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_serialSetBaud.setText('38400')
+        self.ui.pushButton_updatePort.clicked.connect(self.serial_updatePortlist)
+        self.ui.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_serialSetBaud.setText('38400')
         # ---- Serial Group end ------------------------------------------------
 
         # ---- Flash Group start -----------------------------------------------
-        self.widget.toolButton_flash.clicked.connect(self.flash_chooseBinaryFile)
-        self.widget.pushButton_flashGo.clicked.connect(self.flash_execute)
-        self.widget.radioButton_flashWrite.clicked.connect (lambda:self.flash_radioButtonClick(self.widget.radioButton_flashWrite))
-        self.widget.radioButton_flashRead.clicked.connect  (lambda:self.flash_radioButtonClick(self.widget.radioButton_flashRead))
-        self.widget.radioButton_flashVerify.clicked.connect(lambda:self.flash_radioButtonClick(self.widget.radioButton_flashVerify))
+        self.ui.toolButton_flash.clicked.connect(self.flash_chooseBinaryFile)
+        self.ui.pushButton_flashGo.clicked.connect(self.flash_execute)
+        self.ui.radioButton_flashWrite.clicked.connect (lambda:self.flash_radioButtonClick(self.ui.radioButton_flashWrite))
+        self.ui.radioButton_flashRead.clicked.connect  (lambda:self.flash_radioButtonClick(self.ui.radioButton_flashRead))
+        self.ui.radioButton_flashVerify.clicked.connect(lambda:self.flash_radioButtonClick(self.ui.radioButton_flashVerify))
         # ---- Flash Group end -------------------------------------------------
 
         # ---- Eeprom Group start ----------------------------------------------
-        self.widget.toolButton_eeprom.clicked.connect(self.eeprom_chooseBinaryFile)
-        self.widget.pushButton_eepromGo.clicked.connect(self.eeprom_execute)
-        self.widget.radioButton_eepromWrite.clicked.connect (lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromWrite))
-        self.widget.radioButton_eepromRead.clicked.connect  (lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromRead))
-        self.widget.radioButton_eepromVerify.clicked.connect(lambda:self.eeprom_radioButtonClick(self.widget.radioButton_eepromVerify))
+        self.ui.toolButton_eeprom.clicked.connect(self.eeprom_chooseBinaryFile)
+        self.ui.pushButton_eepromGo.clicked.connect(self.eeprom_execute)
+        self.ui.radioButton_eepromWrite.clicked.connect (lambda:self.eeprom_radioButtonClick(self.ui.radioButton_eepromWrite))
+        self.ui.radioButton_eepromRead.clicked.connect  (lambda:self.eeprom_radioButtonClick(self.ui.radioButton_eepromRead))
+        self.ui.radioButton_eepromVerify.clicked.connect(lambda:self.eeprom_radioButtonClick(self.ui.radioButton_eepromVerify))
         # ---- Eeprom Group end ------------------------------------------------
 
         # ---- Fuse & Lock Group start ---------------------------------------
         self.shellThread.signalReadFuseDone.connect(self.fuse_update_from_tmp)
         self.shellThread.signalReadLockDone.connect(self.lock_update_from_tmp)
-        self.widget.lineEdit_lock.setText('0x00')
-        self.widget.lineEdit_fuseHigh.setText('0x00')
-        self.widget.lineEdit_fuseLow.setText('0x00')
-        self.widget.lineEdit_fuseExtra.setText('0x00')
-        self.widget.pushButton_fuseRead.clicked.connect(self.fuse_read)
-        self.widget.pushButton_fuseWrite.clicked.connect(self.fuse_write)
-        self.widget.pushButton_lockRead.clicked.connect(self.lock_read)
-        self.widget.pushButton_flashGo.clicked.connect(self.lock_write)
-        self.widget.pushButton_bitSelector.clicked.connect(self.bitsSelectorShow)
+        self.ui.lineEdit_lock.setText('0x00')
+        self.ui.lineEdit_fuseHigh.setText('0x00')
+        self.ui.lineEdit_fuseLow.setText('0x00')
+        self.ui.lineEdit_fuseExtra.setText('0x00')
+        self.ui.pushButton_fuseRead.clicked.connect(self.fuse_read)
+        self.ui.pushButton_fuseWrite.clicked.connect(self.fuse_write)
+        self.ui.pushButton_lockRead.clicked.connect(self.lock_read)
+        self.ui.pushButton_flashGo.clicked.connect(self.lock_write)
+        self.ui.pushButton_bitSelector.clicked.connect(self.bitsSelectorShow)
         # ---- Fuse & Lock Group end -----------------------------------------
 
         # ---- MCU Group start -------------------------------------------------
         self.devices = AvrdudeConfParser().GetDeviceInfo()
 
-        self.widget.pushButton_mcuDetect.clicked.connect(self.mcu_detect)
-        self.widget.comboBox_mcuSelect.clear()
-        self.widget.comboBox_mcuSelect.addItem('請選擇MCU...')
+        self.ui.pushButton_mcuDetect.clicked.connect(self.mcu_detect)
+        self.ui.comboBox_mcuSelect.clear()
+        self.ui.comboBox_mcuSelect.addItem('請選擇MCU...')
         for device in self.devices:
-            self.widget.comboBox_mcuSelect.addItem(device['desc'])
+            self.ui.comboBox_mcuSelect.addItem(device['desc'])
         # ---- MCU Group end ---------------------------------------------------
 
         # ---- need updateCammand items start ----------------------------------
-        self.widget.comboBox_serialSetPort.currentIndexChanged.connect(self.updateCammand)
-        self.widget.comboBox_mcuSelect.currentIndexChanged.connect(self.updateCammand)
+        self.ui.comboBox_serialSetPort.currentIndexChanged.connect(self.updateCammand)
+        self.ui.comboBox_mcuSelect.currentIndexChanged.connect(self.updateCammand)
 
-        self.widget.checkBox_lockSet.clicked.connect(self.updateCammand)
-        self.widget.checkBox_fuseSet.clicked.connect(self.updateCammand)
-        self.widget.checkBox_eraseChip.clicked.connect(self.updateCammand)
-        self.widget.checkBox_cancelVerify.clicked.connect(self.updateCammand)
+        self.ui.checkBox_lockSet.clicked.connect(self.updateCammand)
+        self.ui.checkBox_fuseSet.clicked.connect(self.updateCammand)
+        self.ui.checkBox_eraseChip.clicked.connect(self.updateCammand)
+        self.ui.checkBox_cancelVerify.clicked.connect(self.updateCammand)
 
-        self.widget.lineEdit_lock.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_flash.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_eeprom.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_fuseHigh.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_fuseLow.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_fuseExtra.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
-        self.widget.lineEdit_additionalParameter.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_lock.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_flash.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_eeprom.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_fuseHigh.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_fuseLow.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_fuseExtra.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_serialSetBaud.textChanged.connect(self.updateCammand)
+        self.ui.lineEdit_additionalParameter.textChanged.connect(self.updateCammand)
         # ---- need updateCammand items end ------------------------------------
 
-        self.widget.checkBox_eraseChip.setChecked(True)
+        self.ui.checkBox_eraseChip.setChecked(True)
         self.updateCammand()
-        self.widget.pushButton_startProgram.clicked.connect(self.startProgram)
-        self.widget.pushButton_stopProgram.clicked.connect(self.stopProgram)
+        self.ui.pushButton_startProgram.clicked.connect(self.startProgram)
+        self.ui.pushButton_stopProgram.clicked.connect(self.stopProgram)
 
         # ---- BitsSelector start ----------------------------------------------
         self.bitsSelector = BitsSelector()
@@ -315,7 +322,7 @@ class Avrdude(object):
     # ---- Methods Section start -----------------------------------------------
     def startProgram(self):
         self.updateCammand()
-        self.shellThread.setCmd(self.widget.textBrowser_cmd.toPlainText())
+        self.shellThread.setCmd(self.ui.textBrowser_cmd.toPlainText())
         self.shellThread.start()
 
     def stopProgram(self):
@@ -326,15 +333,15 @@ class Avrdude(object):
         cmd += ADTPATH+'/tools/avrdude'
         cmd += ' -c stk500'
 
-        if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
-            desc = self.widget.comboBox_mcuSelect.currentText()
+        if  self.ui.comboBox_mcuSelect.currentIndex() > 0:
+            desc = self.ui.comboBox_mcuSelect.currentText()
             id = [device for device in self.devices if device['desc'] == desc][0]['id']
             cmd += ' -p ' + id
 
-        cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
+        cmd += ' -b ' + self.ui.lineEdit_serialSetBaud.text()
 
-        if self.widget.comboBox_serialSetPort.currentText() is not '':
-            cmd += ' -P ' + self.widget.comboBox_serialSetPort.currentText()
+        if self.ui.comboBox_serialSetPort.currentText() is not '':
+            cmd += ' -P ' + self.ui.comboBox_serialSetPort.currentText()
         return cmd
 
     # check all items and update cmd in line
@@ -343,107 +350,107 @@ class Avrdude(object):
         cmd += 'tools\\avrdude'
         cmd += ' -c stk500'
 
-        if  self.widget.comboBox_mcuSelect.currentIndex() > 0:
-            desc = self.widget.comboBox_mcuSelect.currentText()
+        if  self.ui.comboBox_mcuSelect.currentIndex() > 0:
+            desc = self.ui.comboBox_mcuSelect.currentText()
             id = [device for device in self.devices if device['desc'] == desc][0]['id']
             cmd += ' -p ' + id
 
-        cmd += ' -b ' + self.widget.lineEdit_serialSetBaud.text()
+        cmd += ' -b ' + self.ui.lineEdit_serialSetBaud.text()
 
-        if self.widget.comboBox_serialSetPort.currentText() is not '':
-            cmd += ' -P ' + self.widget.comboBox_serialSetPort.currentText()
+        if self.ui.comboBox_serialSetPort.currentText() is not '':
+            cmd += ' -P ' + self.ui.comboBox_serialSetPort.currentText()
 
-        if self.widget.checkBox_eraseChip.isChecked():
+        if self.ui.checkBox_eraseChip.isChecked():
             cmd += ' -e'
 
-        if self.widget.checkBox_cancelVerify.isChecked():
+        if self.ui.checkBox_cancelVerify.isChecked():
             cmd += ' -V'
 
-        if self.widget.lineEdit_additionalParameter.text() is not '':
-            cmd += ' ' + self.widget.lineEdit_additionalParameter.text()
+        if self.ui.lineEdit_additionalParameter.text() is not '':
+            cmd += ' ' + self.ui.lineEdit_additionalParameter.text()
 
         tmp = self.flash_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U flash:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
+            cmd += ' -U flash:' + tmp + ':' + self.ui.lineEdit_flash.text() + ':i'
 
         tmp = self.eeprom_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
+            cmd += ' -U eeprom:' + tmp + ':' + self.ui.lineEdit_flash.text() + ':i'
 
-        if self.widget.checkBox_fuseSet.isChecked():
-            cmd += ' -U hfuse:w:' + self.widget.lineEdit_fuseHigh.text()  + ':m'
-            cmd += ' -U lfuse:w:' + self.widget.lineEdit_fuseLow.text()   + ':m'
-            cmd += ' -U efuse:w:' + self.widget.lineEdit_fuseExtra.text() + ':m'
+        if self.ui.checkBox_fuseSet.isChecked():
+            cmd += ' -U hfuse:w:' + self.ui.lineEdit_fuseHigh.text()  + ':m'
+            cmd += ' -U lfuse:w:' + self.ui.lineEdit_fuseLow.text()   + ':m'
+            cmd += ' -U efuse:w:' + self.ui.lineEdit_fuseExtra.text() + ':m'
 
-        if self.widget.checkBox_lockSet.isChecked():
-            cmd += ' -U lock:w:' + self.widget.lineEdit_lock.text() + ':m'
+        if self.ui.checkBox_lockSet.isChecked():
+            cmd += ' -U lock:w:' + self.ui.lineEdit_lock.text() + ':m'
 
-        self.widget.textBrowser_cmd.clear()
-        self.widget.textBrowser_cmd.append(cmd)
+        self.ui.textBrowser_cmd.clear()
+        self.ui.textBrowser_cmd.append(cmd)
 
     def terminalAppendLine(self, s):
-        text = self.widget.textBrowser_cmdterminal.toPlainText() + s
-        self.widget.textBrowser_cmdterminal.clear()
-        self.widget.textBrowser_cmdterminal.setText(text)
-        self.widget.textBrowser_cmdterminal.moveCursor(QTextCursor.End)
+        text = self.ui.textBrowser_cmdterminal.toPlainText() + s
+        self.ui.textBrowser_cmdterminal.clear()
+        self.ui.textBrowser_cmdterminal.setText(text)
+        self.ui.textBrowser_cmdterminal.moveCursor(QTextCursor.End)
     # ---- Settings Group start ------------------------------------------------
     def settingsListUpdate(self):
         self.conf.read(self.settingsFile)
-        self.widget.comboBox_config.clear()
+        self.ui.comboBox_config.clear()
         for section in self.conf.sections():
-            self.widget.comboBox_config.addItem(section)
+            self.ui.comboBox_config.addItem(section)
 
     def settingsSave(self):
-        section = self.widget.comboBox_config.currentText()
+        section = self.ui.comboBox_config.currentText()
         if self.conf.has_section(section) is False:
             self.conf.add_section(section)
-        self.conf.set(section, 'port', self.widget.comboBox_serialSetPort.currentText())
-        self.conf.set(section, 'baud', self.widget.lineEdit_serialSetBaud.text())
-        self.conf.set(section, 'mcu', self.widget.comboBox_mcuSelect.currentText())
-        self.conf.set(section, 'flashFile', self.widget.lineEdit_flash.text())
+        self.conf.set(section, 'port', self.ui.comboBox_serialSetPort.currentText())
+        self.conf.set(section, 'baud', self.ui.lineEdit_serialSetBaud.text())
+        self.conf.set(section, 'mcu', self.ui.comboBox_mcuSelect.currentText())
+        self.conf.set(section, 'flashFile', self.ui.lineEdit_flash.text())
         self.conf.set(section, 'flashExecType', self.flash_radioButtonCheck())
-        self.conf.set(section, 'eepromFile', self.widget.lineEdit_eeprom.text())
+        self.conf.set(section, 'eepromFile', self.ui.lineEdit_eeprom.text())
         self.conf.set(section, 'eepromExecType', self.eeprom_radioButtonCheck())
-        self.conf.set(section, 'fuseL', self.widget.lineEdit_fuseLow.text())
-        self.conf.set(section, 'fuseH', self.widget.lineEdit_fuseHigh.text())
-        self.conf.set(section, 'fuseE', self.widget.lineEdit_fuseExtra.text())
-        self.conf.set(section, 'lock', self.widget.lineEdit_lock.text())
-        self.conf.set(section, 'fuseSet', str(self.widget.checkBox_fuseSet.isChecked()))
-        self.conf.set(section, 'lockSet', str(self.widget.checkBox_lockSet.isChecked()))
+        self.conf.set(section, 'fuseL', self.ui.lineEdit_fuseLow.text())
+        self.conf.set(section, 'fuseH', self.ui.lineEdit_fuseHigh.text())
+        self.conf.set(section, 'fuseE', self.ui.lineEdit_fuseExtra.text())
+        self.conf.set(section, 'lock', self.ui.lineEdit_lock.text())
+        self.conf.set(section, 'fuseSet', str(self.ui.checkBox_fuseSet.isChecked()))
+        self.conf.set(section, 'lockSet', str(self.ui.checkBox_lockSet.isChecked()))
 
-        self.conf.set(section, 'cancelVerify', str(self.widget.checkBox_cancelVerify.isChecked()))
-        self.conf.set(section, 'earseChip',    str(self.widget.checkBox_eraseChip.isChecked()))
-        self.conf.set(section, 'additionalParameter', self.widget.lineEdit_additionalParameter.text())
+        self.conf.set(section, 'cancelVerify', str(self.ui.checkBox_cancelVerify.isChecked()))
+        self.conf.set(section, 'earseChip',    str(self.ui.checkBox_eraseChip.isChecked()))
+        self.conf.set(section, 'additionalParameter', self.ui.lineEdit_additionalParameter.text())
 
         with open(self.settingsFile, 'w') as configfile:
             self.conf.write(configfile)
         self.settingsListUpdate()
-        self.widget.comboBox_config.setCurrentText(section)
+        self.ui.comboBox_config.setCurrentText(section)
         self.settingsLoad()
 
     def settingsLoad(self):
-        section = self.widget.comboBox_config.currentText()
+        section = self.ui.comboBox_config.currentText()
         if section is '':
             return
-        self.widget.comboBox_serialSetPort.setCurrentText(self.conf[section]['port'])
-        self.widget.lineEdit_serialSetBaud.setText(self.conf[section]['baud'])
-        self.widget.comboBox_mcuSelect.setCurrentText(self.conf[section]['mcu'])
-        self.widget.lineEdit_flash.setText(self.conf[section]['flashfile'])
+        self.ui.comboBox_serialSetPort.setCurrentText(self.conf[section]['port'])
+        self.ui.lineEdit_serialSetBaud.setText(self.conf[section]['baud'])
+        self.ui.comboBox_mcuSelect.setCurrentText(self.conf[section]['mcu'])
+        self.ui.lineEdit_flash.setText(self.conf[section]['flashfile'])
         self.flash_radioButtonSet(self.conf[section]['flashexectype'])
-        self.widget.lineEdit_eeprom.setText(self.conf[section]['eepromfile'])
+        self.ui.lineEdit_eeprom.setText(self.conf[section]['eepromfile'])
         self.eeprom_radioButtonSet(self.conf[section]['eepromexectype'])
-        self.widget.lineEdit_fuseLow.setText(self.conf[section]['fusel'])
-        self.widget.lineEdit_fuseHigh.setText(self.conf[section]['fuseh'])
-        self.widget.lineEdit_fuseExtra.setText(self.conf[section]['fusee'])
-        self.widget.lineEdit_lock.setText(self.conf[section]['lock'])
-        self.widget.checkBox_fuseSet.setChecked(self.conf.getboolean(section,'fuseset'))
-        self.widget.checkBox_lockSet.setChecked(self.conf.getboolean(section,'lockset'))
-        self.widget.checkBox_cancelVerify.setChecked(self.conf.getboolean(section,'cancelverify'))
-        self.widget.checkBox_eraseChip.setChecked(self.conf.getboolean(section,'earsechip'))
-        self.widget.lineEdit_additionalParameter.setText(self.conf[section]['additionalparameter'])
+        self.ui.lineEdit_fuseLow.setText(self.conf[section]['fusel'])
+        self.ui.lineEdit_fuseHigh.setText(self.conf[section]['fuseh'])
+        self.ui.lineEdit_fuseExtra.setText(self.conf[section]['fusee'])
+        self.ui.lineEdit_lock.setText(self.conf[section]['lock'])
+        self.ui.checkBox_fuseSet.setChecked(self.conf.getboolean(section,'fuseset'))
+        self.ui.checkBox_lockSet.setChecked(self.conf.getboolean(section,'lockset'))
+        self.ui.checkBox_cancelVerify.setChecked(self.conf.getboolean(section,'cancelverify'))
+        self.ui.checkBox_eraseChip.setChecked(self.conf.getboolean(section,'earsechip'))
+        self.ui.lineEdit_additionalParameter.setText(self.conf[section]['additionalparameter'])
 
     def settingsDelete(self):
-        section = self.widget.comboBox_config.currentText()
+        section = self.ui.comboBox_config.currentText()
         self.conf.remove_section(section)
         with open(self.settingsFile, 'w') as configfile:
             self.conf.write(configfile)
@@ -454,60 +461,63 @@ class Avrdude(object):
     # Update port list in s_portComboBox
     def serial_updatePortlist(self):
         availablePorts = getAvailableSerialPorts()
-        dudedbg('Update ports: ' + str(availablePorts))
-        self.widget.comboBox_serialSetPort.clear()
+        debugLog('Update ports: ' + str(availablePorts))
+        self.ui.comboBox_serialSetPort.clear()
         for port in availablePorts:
-            self.widget.comboBox_serialSetPort.addItem(port)
+            self.ui.comboBox_serialSetPort.addItem(port)
     # ---- Serial Group end ----------------------------------------------------
 
     # ---- Flash Group start ---------------------------------------------------
     def flash_chooseBinaryFile(self):
-        name, _ = QFileDialog.getOpenFileName(self.mainWindow, 'Open File','', 'All Files (*);;Hex Files (*.hex)' ,initialFilter='Hex Files (*.hex)')
+        name, _ = QFileDialog.getOpenFileName(
+            filter='All Files (*);;Hex Files (*.hex)',
+            initialFilter='Hex Files (*.hex)'
+        )
         if name is not '':
-            self.widget.lineEdit_flash.setText(name)
+            self.ui.lineEdit_flash.setText(name)
 
     def flash_radioButtonClick(self,btn):
-        if btn is not self.widget.radioButton_flashWrite:
-            self.widget.radioButton_flashWrite.setChecked(0)
-        if btn is not self.widget.radioButton_flashRead:
-            self.widget.radioButton_flashRead.setChecked(0)
-        if btn is not self.widget.radioButton_flashVerify:
-            self.widget.radioButton_flashVerify.setChecked(0)
+        if btn is not self.ui.radioButton_flashWrite:
+            self.ui.radioButton_flashWrite.setChecked(0)
+        if btn is not self.ui.radioButton_flashRead:
+            self.ui.radioButton_flashRead.setChecked(0)
+        if btn is not self.ui.radioButton_flashVerify:
+            self.ui.radioButton_flashVerify.setChecked(0)
         self.updateCammand();
 
     def flash_radioButtonCheck(self):
-        if self.widget.radioButton_flashWrite.isChecked():
+        if self.ui.radioButton_flashWrite.isChecked():
             return 'w'
-        elif self.widget.radioButton_flashRead.isChecked():
+        elif self.ui.radioButton_flashRead.isChecked():
             return 'r'
-        elif self.widget.radioButton_flashVerify.isChecked():
+        elif self.ui.radioButton_flashVerify.isChecked():
             return 'v'
         else:
             return ''
 
     def flash_radioButtonSet(self, execType):
         if execType is 'w':
-            self.widget.radioButton_flashWrite.setChecked(True)
-            self.widget.radioButton_flashRead.setChecked(False)
-            self.widget.radioButton_flashVerify.setChecked(False)
+            self.ui.radioButton_flashWrite.setChecked(True)
+            self.ui.radioButton_flashRead.setChecked(False)
+            self.ui.radioButton_flashVerify.setChecked(False)
         elif execType is 'r':
-            self.widget.radioButton_flashWrite.setChecked(False)
-            self.widget.radioButton_flashRead.setChecked(True)
-            self.widget.radioButton_flashVerify.setChecked(False)
+            self.ui.radioButton_flashWrite.setChecked(False)
+            self.ui.radioButton_flashRead.setChecked(True)
+            self.ui.radioButton_flashVerify.setChecked(False)
         elif execType is 'v':
-            self.widget.radioButton_flashWrite.setChecked(False)
-            self.widget.radioButton_flashRead.setChecked(False)
-            self.widget.radioButton_flashVerify.setChecked(True)
+            self.ui.radioButton_flashWrite.setChecked(False)
+            self.ui.radioButton_flashRead.setChecked(False)
+            self.ui.radioButton_flashVerify.setChecked(True)
         else:
-            self.widget.radioButton_flashWrite.setChecked(False)
-            self.widget.radioButton_flashRead.setChecked(False)
-            self.widget.radioButton_flashVerify.setChecked(False)
+            self.ui.radioButton_flashWrite.setChecked(False)
+            self.ui.radioButton_flashRead.setChecked(False)
+            self.ui.radioButton_flashVerify.setChecked(False)
 
     def flash_execute(self):
         cmd = self.getBasicParameter()
         tmp = self.flash_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U flash:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
+            cmd += ' -U flash:' + tmp + ':' + self.ui.lineEdit_flash.text() + ':i'
         times = time.strftime("%H:%M:%S", time.gmtime())
         self.terminalAppendLine('[' + times + '] ' + 'Flash Go!' + '\n')
         self.shellThread.setCmd(cmd)
@@ -516,52 +526,55 @@ class Avrdude(object):
 
     # ---- Eeprom Group start --------------------------------------------------
     def eeprom_chooseBinaryFile(self):
-        name, _ = QFileDialog.getOpenFileName(self.mainWindow, 'Open File','', 'All Files (*);;Hex Files (*.hex)' ,initialFilter='Hex Files (*.hex)')
+        name, _ = QFileDialog.getOpenFileName(
+            filter='All Files (*);;Hex Files (*.hex)',
+            initialFilter='Hex Files (*.hex)'
+        )
         if name is not '':
-            self.widget.lineEdit_eeprom.setText(name)
+            self.ui.lineEdit_eeprom.setText(name)
 
     def eeprom_radioButtonClick(self,btn):
-        if btn is not self.widget.radioButton_eepromWrite:
-            self.widget.radioButton_eepromWrite.setChecked(0)
-        if btn is not self.widget.radioButton_eepromRead:
-            self.widget.radioButton_eepromRead.setChecked(0)
-        if btn is not self.widget.radioButton_eepromVerify:
-            self.widget.radioButton_eepromVerify.setChecked(0)
+        if btn is not self.ui.radioButton_eepromWrite:
+            self.ui.radioButton_eepromWrite.setChecked(0)
+        if btn is not self.ui.radioButton_eepromRead:
+            self.ui.radioButton_eepromRead.setChecked(0)
+        if btn is not self.ui.radioButton_eepromVerify:
+            self.ui.radioButton_eepromVerify.setChecked(0)
         self.updateCammand();
 
     def eeprom_radioButtonCheck(self):
-        if self.widget.radioButton_eepromWrite.isChecked():
+        if self.ui.radioButton_eepromWrite.isChecked():
             return 'w'
-        elif self.widget.radioButton_eepromRead.isChecked():
+        elif self.ui.radioButton_eepromRead.isChecked():
             return 'r'
-        elif self.widget.radioButton_eepromVerify.isChecked():
+        elif self.ui.radioButton_eepromVerify.isChecked():
             return 'v'
         else:
             return ''
 
     def eeprom_radioButtonSet(self, execType):
         if execType is 'w':
-            self.widget.radioButton_eepromWrite.setChecked(True)
-            self.widget.radioButton_eepromRead.setChecked(False)
-            self.widget.radioButton_eepromVerify.setChecked(False)
+            self.ui.radioButton_eepromWrite.setChecked(True)
+            self.ui.radioButton_eepromRead.setChecked(False)
+            self.ui.radioButton_eepromVerify.setChecked(False)
         elif execType is 'r':
-            self.widget.radioButton_eepromWrite.setChecked(False)
-            self.widget.radioButton_eepromRead.setChecked(True)
-            self.widget.radioButton_eepromVerify.setChecked(False)
+            self.ui.radioButton_eepromWrite.setChecked(False)
+            self.ui.radioButton_eepromRead.setChecked(True)
+            self.ui.radioButton_eepromVerify.setChecked(False)
         elif execType is 'v':
-            self.widget.radioButton_eepromWrite.setChecked(False)
-            self.widget.radioButton_eepromRead.setChecked(False)
-            self.widget.radioButton_eepromVerify.setChecked(True)
+            self.ui.radioButton_eepromWrite.setChecked(False)
+            self.ui.radioButton_eepromRead.setChecked(False)
+            self.ui.radioButton_eepromVerify.setChecked(True)
         else:
-            self.widget.radioButton_eepromWrite.setChecked(False)
-            self.widget.radioButton_eepromRead.setChecked(False)
-            self.widget.radioButton_eepromVerify.setChecked(False)
+            self.ui.radioButton_eepromWrite.setChecked(False)
+            self.ui.radioButton_eepromRead.setChecked(False)
+            self.ui.radioButton_eepromVerify.setChecked(False)
 
     def eeprom_execute(self):
         cmd = self.getBasicParameter()
         tmp = self.eeprom_radioButtonCheck()
         if tmp is not '':
-            cmd += ' -U eeprom:' + tmp + ':' + self.widget.lineEdit_flash.text() + ':i'
+            cmd += ' -U eeprom:' + tmp + ':' + self.ui.lineEdit_flash.text() + ':i'
         times = time.strftime("%H:%M:%S", time.gmtime())
         self.terminalAppendLine('[' + times + '] ' + 'EEPROM Go!' + '\n')
         self.shellThread.setCmd(cmd)
@@ -590,19 +603,19 @@ class Avrdude(object):
         fl = open(ADTPATH+'/tmp/fuse_low.txt', 'r')
         fh = open(ADTPATH+'/tmp/fuse_high.txt', 'r')
         fe = open(ADTPATH+'/tmp/fuse_extra.txt', 'r')
-        # self.widget.lineEdit_lock.setText()
-        self.widget.lineEdit_fuseLow.setText(fl.read(4))
-        self.widget.lineEdit_fuseHigh.setText(fh.read(4))
-        self.widget.lineEdit_fuseExtra.setText(fe.read(4))
+        # self.ui.lineEdit_lock.setText()
+        self.ui.lineEdit_fuseLow.setText(fl.read(4))
+        self.ui.lineEdit_fuseHigh.setText(fh.read(4))
+        self.ui.lineEdit_fuseExtra.setText(fe.read(4))
         fl.close()
         fh.close()
         fe.close()
 
     def fuse_write(self):
         cmd = self.getBasicParameter()
-        cmd += ' -U lfuse:w:' + self.widget.lineEdit_fuseLow.text()   + ':m'
-        cmd += ' -U hfuse:w:' + self.widget.lineEdit_fuseHigh.text()  + ':m'
-        cmd += ' -U efuse:w:' + self.widget.lineEdit_fuseExtra.text() + ':m'
+        cmd += ' -U lfuse:w:' + self.ui.lineEdit_fuseLow.text()   + ':m'
+        cmd += ' -U hfuse:w:' + self.ui.lineEdit_fuseHigh.text()  + ':m'
+        cmd += ' -U efuse:w:' + self.ui.lineEdit_fuseExtra.text() + ':m'
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
 
@@ -614,12 +627,12 @@ class Avrdude(object):
 
     def lock_update_from_tmp(self):
         f = open(ADTPATH + '/tmp/lock.txt', 'r')
-        self.widget.lineEdit_lock.setText(f.read(4))
+        self.ui.lineEdit_lock.setText(f.read(4))
         f.close()
 
     def lock_write(self):
         cmd = self.getBasicParameter()
-        cmd += ' -U hfuse:w:' + self.widget.lineEdit_lock.text()  + ':m'
+        cmd += ' -U hfuse:w:' + self.ui.lineEdit_lock.text()  + ':m'
         self.shellThread.setCmdType(2)
         self.shellThread.setCmd(cmd)
         self.shellThread.start()
@@ -627,23 +640,25 @@ class Avrdude(object):
 
     # ---- BitsSelector start --------------------------------------------------
     def updateBitsFromSelector(self):
-        self.widget.lineEdit_fuseHigh .setText(self.bitsSelector.lineEdit_fuseHigh .text())
-        self.widget.lineEdit_fuseLow  .setText(self.bitsSelector.lineEdit_fuseLow  .text())
-        self.widget.lineEdit_fuseExtra.setText(self.bitsSelector.lineEdit_fuseExtra.text())
-        self.widget.lineEdit_lock     .setText(self.bitsSelector.lineEdit_lock.text())
+        self.ui.lineEdit_fuseHigh .setText(self.bitsSelector.lineEdit_fuseHigh .text())
+        self.ui.lineEdit_fuseLow  .setText(self.bitsSelector.lineEdit_fuseLow  .text())
+        self.ui.lineEdit_fuseExtra.setText(self.bitsSelector.lineEdit_fuseExtra.text())
+        self.ui.lineEdit_lock     .setText(self.bitsSelector.lineEdit_lock.text())
 
         pass
     def bitsSelectorShow(self):
-        self.bitsSelector.lineEdit_fuseHigh .setText(self.widget.lineEdit_fuseHigh .text())
-        self.bitsSelector.lineEdit_fuseLow  .setText(self.widget.lineEdit_fuseLow  .text())
-        self.bitsSelector.lineEdit_fuseExtra.setText(self.widget.lineEdit_fuseExtra.text())
-        self.bitsSelector.lineEdit_lock.setText(self.widget.lineEdit_lock.text())
-        self.bitsSelector.show(self.widget.comboBox_mcuSelect.currentText())
+        self.bitsSelector.lineEdit_fuseHigh .setText(self.ui.lineEdit_fuseHigh .text())
+        self.bitsSelector.lineEdit_fuseLow  .setText(self.ui.lineEdit_fuseLow  .text())
+        self.bitsSelector.lineEdit_fuseExtra.setText(self.ui.lineEdit_fuseExtra.text())
+        self.bitsSelector.lineEdit_lock.setText(self.ui.lineEdit_lock.text())
+        self.bitsSelector.show(self.ui.comboBox_mcuSelect.currentText())
     # ---- BitsSelector end ----------------------------------------------------
     # ---- Methods Section end -------------------------------------------------
-# ---- class radioButtonClick End ----------------------------------------------
+# ---- class Avrdude End -------------------------------------------------------
 
-# avrdude debug log
-def dudedbg(s):
-    s = 'dude log: ' + s
+def debugLog(msg):
+    s = '[{}] avrdude  log: {}'.format(
+        datetime.datetime.now().strftime("%H:%M:%S"),
+        msg
+    )
     print(s)
