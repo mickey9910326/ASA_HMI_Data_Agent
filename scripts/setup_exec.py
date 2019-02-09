@@ -1,4 +1,5 @@
-from scripts.util import *
+import conf
+from util import *
 
 import scripts.get_tool_files
 import scripts.pyuic_all_ui

@@ -10,8 +10,8 @@ PATH = [
     'D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\PyQt5\\Qt\\plugins',
 
     # NOTE Need Windows Kits 10 to support win10.
-    'C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\10.0.17763.0\\ucrt\\DLLs\\x86',
-    'C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\10.0.17763.0\\ucrt\\DLLs\\x64',
+    'C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x86',
+    'C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64',
 
     # NOTE Need libs in package numpy and scipy.
     'D:\\Programs\\Python\\Python36-32\\Lib\\site-packages\\scipy\\extra-dll',
