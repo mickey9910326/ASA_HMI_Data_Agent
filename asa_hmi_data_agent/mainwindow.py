@@ -92,10 +92,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if port in availablePorts:
                 err = False
                 msg = ''
-                target.widget.s_portComboBox.clear()
+                target.ui.s_portComboBox.clear()
                 for p in availablePorts:
-                    target.widget.s_portComboBox.addItem(p)
-                target.widget.s_portComboBox.setCurrentIndex(availablePorts.index(port))
+                    target.ui.s_portComboBox.addItem(p)
+                target.ui.s_portComboBox.setCurrentIndex(availablePorts.index(port))
                 target.ser.baudrate = baudrate
                 target.s_portToggle()
             else:
@@ -145,13 +145,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # --------------------------------------------------------------------------
     def ctlLoaderStart(self, port, hexfile):
-        self.asaLoader.widget.lineEdit_selectFile.setText(hexfile)
+        self.asaLoader.ui.lineEdit_selectFile.setText(hexfile)
         availablePorts = getAvailableSerialPorts()
         if port in availablePorts:
-            self.asaLoader.widget.comboBox_selectPort.clear()
+            self.asaLoader.ui.comboBox_selectPort.clear()
             for p in availablePorts:
-                self.asaLoader.widget.comboBox_selectPort.addItem(p)
-            self.asaLoader.widget.comboBox_selectPort.setCurrentIndex(availablePorts.index(port))
+                self.asaLoader.ui.comboBox_selectPort.addItem(p)
+            self.asaLoader.ui.comboBox_selectPort.setCurrentIndex(availablePorts.index(port))
             self.asaLoader.startProg()
             time.sleep(0.5)
             err = False
