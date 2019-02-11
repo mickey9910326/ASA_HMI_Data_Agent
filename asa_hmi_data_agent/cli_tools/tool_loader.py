@@ -3,6 +3,7 @@ from asa_hmi_data_agent.cli_tools.socket_handler import SocketHandler
 
 import argparse
 import progressbar
+import time
 
 def argHandler():
     parser = argparse.ArgumentParser(description='tell adt to load hex into asa-series board')
@@ -21,7 +22,6 @@ def argHandler():
 
 def run():
     args = argHandler()
-    print(args)
     startCmd = {
         'cmd': AdtCmd.LOADER.value,
         'subcmd': AdtSubCmdLoader.START.value,
@@ -36,7 +36,6 @@ def run():
 
     adtsh = SocketHandler()
     res = adtsh.send_cmd(startCmd)
-    print(res)
     if res is None:
         print('error!')
         return
@@ -51,9 +50,10 @@ def run():
 
     times = 0
     while times != max:
+        time.sleep(0.01)
         res = adtsh.send_cmd(stateCmd)
-        print(res)
         if res is None:
+            print('error!')
             return
         times = res['times']
         bar.update(times)

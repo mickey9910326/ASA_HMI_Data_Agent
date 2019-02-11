@@ -16,7 +16,7 @@ REQUIREMENTS = [
 def run():
     setup(
         name='asa-hmi-data-agent',
-        version='0.5.0',
+        version='0.5.3',
         description = 'ASA developing tools on PC.',
         long_description='',
         author = 'mickey9910326',
@@ -24,7 +24,7 @@ def run():
         url='https://github.com/mickey9910326/ASA_HMI_Data_Agent',
         license = 'GPL v3',
         packages=find_packages(),
-        package_data={ 'asa_hmi_data_agent': [ 'tools/*', 'settings/*', 'tmp/*' ] },
+        package_data={ 'asa_hmi_data_agent': [ 'tools/*', 'settings/*', 'tmp/*', 'ui/*']},
         zip_safe=False,
         entry_points = {
             'console_scripts': [

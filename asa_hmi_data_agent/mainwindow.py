@@ -152,11 +152,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for p in availablePorts:
                 self.asaLoader.ui.comboBox_selectPort.addItem(p)
             self.asaLoader.ui.comboBox_selectPort.setCurrentIndex(availablePorts.index(port))
-            self.asaLoader.startProg()
-            time.sleep(0.5)
+            self.asaLoader.startLoad()
+            time.sleep(0.5) # wait loader get total_steps done
             err = False
             msg = ''
-            max = self.asaLoader.shellThread.loader.total_steps
+            max = self.asaLoader.loaderThread.loader.total_steps
         else:
             err = True
             msg = 'port {} is not available.'.format(port)
@@ -172,6 +172,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         res = {
             'err': False,
             'msg': '',
-            'times': self.asaLoader.shellThread.loader.times
+            'times': self.asaLoader.loaderThread.loader.times
         }
         self.adtSocketHandler.sendRes(res)
