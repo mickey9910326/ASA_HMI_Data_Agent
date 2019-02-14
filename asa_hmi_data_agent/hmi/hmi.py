@@ -24,14 +24,13 @@ class SerialThread(QThread):
     sigGetStructData = pyqtSignal(np.ndarray)
     sigLoseConnect   = pyqtSignal()
     sigFatalError    = pyqtSignal()
-
+    
     def __init__(self, ser):
         QThread.__init__(self)
         self.ser = ser
+        self.de = hmipac.Decoder()
 
     def run(self):
-        de = hmipac.Decoder()
-
         while (self.ser.isOpen()):
             try:
                 ch = self.ser.read(1)
@@ -39,9 +38,9 @@ class SerialThread(QThread):
                 self.sigLoseConnect.emit()
                 break
             else:
-                de.add_text(ch)
+                self.de.add_text(ch)
                 try:
-                    type, data = de.get()
+                    type, data = self.de.get()
                 except:
                     sigFatalError.emit()
                 else:

@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.4] - 2019-02-14
+### Fixed
+- fix hmi.SerialThread.decoder._state use the same mwmory
+
 ## [0.5.0] - 2019-02-04
 ### Added
 - script setup.py : generate sdist for PYPI
