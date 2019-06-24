@@ -1,5 +1,6 @@
 import PyInstaller.__main__
-from scripts.build_exec import util
+import scripts.build_exec.util as util
+import conf
 
 import shutil
 

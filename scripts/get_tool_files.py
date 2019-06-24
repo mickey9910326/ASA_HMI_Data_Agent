@@ -1,3 +1,4 @@
+import conf
 import os
 import urllib.request
 from zipfile import ZipFile

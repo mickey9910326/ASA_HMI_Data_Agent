@@ -69,7 +69,6 @@ class AdtSocketHandler(QObject):
         self.receiver.signalTermOpen[int, str, int].connect(self.signalTermOpen.emit)
         self.receiver.signalTermClose[int].connect(self.signalTermClose.emit)
         self.receiver.signalTermClear[int].connect(self.signalTermClear.emit)
-        self.receiver.signalTermClear[int].connect(self.signalTermClear.emit)
         self.receiver.signalLoaderStart[str, str].connect(self.signalLoaderStart.emit)
         self.receiver.signalLoaderState.connect(self.signalLoaderState.emit)
 

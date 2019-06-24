@@ -7,7 +7,6 @@ _CONST_HEADER_GET_AR = b'\xaa\xaa\xaa'
 #  header of hmi get array
 _CONST_HEADER_GET_ST = b'\xbb\xbb\xbb'
 
-
 class Decoder(object):
     class State(object):
         status    = int(0)
@@ -21,14 +20,13 @@ class Decoder(object):
 
     _text = bytes()
     _idx  = int(0)
-    _state = State()
     _en_utf8 = bool(True)
     _en_big5 = bool(True)
 
     """docstring for Decoder."""
     def __init__(self):
         super(Decoder, self).__init__()
-        self._idx = int(0)
+        _state = Decoder.State()
 
     def add_text(self, text):
         self._text += text

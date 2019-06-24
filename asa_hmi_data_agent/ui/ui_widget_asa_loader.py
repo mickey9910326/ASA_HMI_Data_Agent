@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/asa_prog.ui'
+# Form implementation generated from reading ui file 'ui/widget_asa_loader.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -8,16 +8,16 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_MainWidgetAsaProg(object):
-    def setupUi(self, MainWidgetAsaProg):
-        MainWidgetAsaProg.setObjectName("MainWidgetAsaProg")
-        MainWidgetAsaProg.resize(500, 700)
+class Ui_WidgetAsaLoader(object):
+    def setupUi(self, WidgetAsaLoader):
+        WidgetAsaLoader.setObjectName("WidgetAsaLoader")
+        WidgetAsaLoader.resize(500, 700)
         font = QtGui.QFont()
         font.setFamily("微軟正黑體")
-        MainWidgetAsaProg.setFont(font)
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(MainWidgetAsaProg)
+        WidgetAsaLoader.setFont(font)
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(WidgetAsaLoader)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.groupBox_serial = QtWidgets.QGroupBox(MainWidgetAsaProg)
+        self.groupBox_serial = QtWidgets.QGroupBox(WidgetAsaLoader)
         self.groupBox_serial.setObjectName("groupBox_serial")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_serial)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -33,7 +33,7 @@ class Ui_MainWidgetAsaProg(object):
         self.pushButton_updatePortList.setObjectName("pushButton_updatePortList")
         self.horizontalLayout_2.addWidget(self.pushButton_updatePortList)
         self.verticalLayout_3.addWidget(self.groupBox_serial)
-        self.groupBox_basicFuns = QtWidgets.QGroupBox(MainWidgetAsaProg)
+        self.groupBox_basicFuns = QtWidgets.QGroupBox(WidgetAsaLoader)
         self.groupBox_basicFuns.setObjectName("groupBox_basicFuns")
         self.gridLayout = QtWidgets.QGridLayout(self.groupBox_basicFuns)
         self.gridLayout.setObjectName("gridLayout")
@@ -59,7 +59,7 @@ class Ui_MainWidgetAsaProg(object):
         self.pushButton_stopProg.setObjectName("pushButton_stopProg")
         self.gridLayout.addWidget(self.pushButton_stopProg, 1, 1, 1, 1)
         self.verticalLayout_3.addWidget(self.groupBox_basicFuns)
-        self.groupBox_specialTools = QtWidgets.QGroupBox(MainWidgetAsaProg)
+        self.groupBox_specialTools = QtWidgets.QGroupBox(WidgetAsaLoader)
         self.groupBox_specialTools.setObjectName("groupBox_specialTools")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox_specialTools)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -67,12 +67,12 @@ class Ui_MainWidgetAsaProg(object):
         self.pushButton_progStk500.setObjectName("pushButton_progStk500")
         self.verticalLayout.addWidget(self.pushButton_progStk500)
         self.verticalLayout_3.addWidget(self.groupBox_specialTools)
-        self.groupBox = QtWidgets.QGroupBox(MainWidgetAsaProg)
+        self.groupBox = QtWidgets.QGroupBox(WidgetAsaLoader)
         self.groupBox.setObjectName("groupBox")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.progressBar = QtWidgets.QProgressBar(self.groupBox)
-        self.progressBar.setProperty("value", 24)
+        self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.verticalLayout_2.addWidget(self.progressBar)
         self.formLayout = QtWidgets.QFormLayout()
@@ -100,26 +100,26 @@ class Ui_MainWidgetAsaProg(object):
         self.verticalLayout_2.addItem(spacerItem)
         self.verticalLayout_3.addWidget(self.groupBox)
 
-        self.retranslateUi(MainWidgetAsaProg)
-        QtCore.QMetaObject.connectSlotsByName(MainWidgetAsaProg)
+        self.retranslateUi(WidgetAsaLoader)
+        QtCore.QMetaObject.connectSlotsByName(WidgetAsaLoader)
 
-    def retranslateUi(self, MainWidgetAsaProg):
+    def retranslateUi(self, WidgetAsaLoader):
         _translate = QtCore.QCoreApplication.translate
-        self.groupBox_serial.setTitle(_translate("MainWidgetAsaProg", "串列埠設定"))
-        self.label_selecSerialPort.setText(_translate("MainWidgetAsaProg", "選擇串列埠："))
-        self.pushButton_updatePortList.setText(_translate("MainWidgetAsaProg", "更新串列埠"))
-        self.groupBox_basicFuns.setTitle(_translate("MainWidgetAsaProg", "燒錄一般應用程式"))
-        self.pushButton_selectFile.setText(_translate("MainWidgetAsaProg", "選擇檔案"))
-        self.label_steps.setText(_translate("MainWidgetAsaProg", "<html><head/><body><p>1. 用USB線將ASA_M128與電腦接上。</p><p>2. 將ASA_M128指撥開關撥到&quot;prog&quot;，並按下reset按鈕。</p><p>3. 選擇ASA_M128連接到之串列埠。</p><p>4. 點選選擇檔案，並選取欲燒錄之檔案。</p><p>5. 點選開始燒錄。</p><p>6. 等待下方進度條跑到100%即完成燒錄。</p></body></html>"))
-        self.pushButton_startProg.setText(_translate("MainWidgetAsaProg", "開始燒錄"))
-        self.pushButton_stopProg.setText(_translate("MainWidgetAsaProg", "強制終止"))
-        self.groupBox_specialTools.setTitle(_translate("MainWidgetAsaProg", "燒錄特殊功能應用程式"))
-        self.pushButton_progStk500.setText(_translate("MainWidgetAsaProg", "燒錄 \"M128_STK500\"  (可將ASA_M128轉變為STK500裝置使用)"))
-        self.groupBox.setTitle(_translate("MainWidgetAsaProg", "燒錄狀態"))
-        self.label_statusTitle.setText(_translate("MainWidgetAsaProg", "當前狀態："))
-        self.label_programSizeTitle.setText(_translate("MainWidgetAsaProg", "程式大小："))
-        self.label_programSizeContent.setText(_translate("MainWidgetAsaProg", "-"))
-        self.label_etcTitle.setText(_translate("MainWidgetAsaProg", "預估花費時間："))
-        self.label_etcContent.setText(_translate("MainWidgetAsaProg", "-"))
-        self.label_statusContent.setText(_translate("MainWidgetAsaProg", "等待燒錄"))
+        self.groupBox_serial.setTitle(_translate("WidgetAsaLoader", "串列埠設定"))
+        self.label_selecSerialPort.setText(_translate("WidgetAsaLoader", "選擇串列埠："))
+        self.pushButton_updatePortList.setText(_translate("WidgetAsaLoader", "更新串列埠"))
+        self.groupBox_basicFuns.setTitle(_translate("WidgetAsaLoader", "燒錄一般應用程式"))
+        self.pushButton_selectFile.setText(_translate("WidgetAsaLoader", "選擇檔案"))
+        self.label_steps.setText(_translate("WidgetAsaLoader", "<html><head/><body><p>1. 用USB線將ASA_M128與電腦接上。</p><p>2. 將ASA_M128指撥開關撥到&quot;prog&quot;，並按下reset按鈕。</p><p>3. 選擇ASA_M128連接到之串列埠。</p><p>4. 點選選擇檔案，並選取欲燒錄之檔案。</p><p>5. 點選開始燒錄。</p><p>6. 等待下方進度條跑到100%即完成燒錄。</p></body></html>"))
+        self.pushButton_startProg.setText(_translate("WidgetAsaLoader", "開始燒錄"))
+        self.pushButton_stopProg.setText(_translate("WidgetAsaLoader", "強制終止"))
+        self.groupBox_specialTools.setTitle(_translate("WidgetAsaLoader", "燒錄特殊功能應用程式"))
+        self.pushButton_progStk500.setText(_translate("WidgetAsaLoader", "燒錄 \"M128_STK500\"  (可將ASA_M128轉變為STK500裝置使用)"))
+        self.groupBox.setTitle(_translate("WidgetAsaLoader", "燒錄狀態"))
+        self.label_statusTitle.setText(_translate("WidgetAsaLoader", "當前狀態："))
+        self.label_programSizeTitle.setText(_translate("WidgetAsaLoader", "程式大小："))
+        self.label_programSizeContent.setText(_translate("WidgetAsaLoader", "-"))
+        self.label_etcTitle.setText(_translate("WidgetAsaLoader", "預估花費時間："))
+        self.label_etcContent.setText(_translate("WidgetAsaLoader", "-"))
+        self.label_statusContent.setText(_translate("WidgetAsaLoader", "等待燒錄"))
 

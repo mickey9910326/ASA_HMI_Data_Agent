@@ -2,7 +2,8 @@ import sys
 import glob
 import serial
 
-def serial_ports():
+
+def getAvailableSerialPorts():
     """ Lists serial port names
 
         :raises EnvironmentError:
@@ -32,4 +33,4 @@ def serial_ports():
 
 
 if __name__ == '__main__':
-    print(serial_ports())
+    print(getAvailableSerialPorts())
