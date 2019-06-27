@@ -1,7 +1,7 @@
 from .type import *
 import enum
 
-__all__ = ['Decoder']
+__all__ = ['Decoder', 'DecoderState', 'PacType']
 
 
 def _ar_raw2ndarray(typeNum, data):
@@ -53,7 +53,7 @@ class InnerState(enum.IntEnum):
     STATE_ST_DATA = 34
 
 
-class State(enum.IntEnum):
+class DecoderState(enum.IntEnum):
     NOTPROCESSING = 0  # packet decoder doesn't start decode
     PROCESSING = 1  # packet decoder is decoding now
     DONE = 2  # packet decoding is done
@@ -67,7 +67,7 @@ class PacType(enum.IntEnum):
 
 globals().update(InnerState.__members__)
 globals().update(PacType.__members__)
-globals().update(State.__members__)
+globals().update(DecoderState.__members__)
 
 
 class Decoder(object):
@@ -96,7 +96,7 @@ class Decoder(object):
         count = int(0)
         chksum = int(0)
 
-    _state = State(NOTPROCESSING)
+    _state = DecoderState(NOTPROCESSING)
     _res = None
 
     def __init__(self):
@@ -274,13 +274,13 @@ class Decoder(object):
     def _storeData(self):
         self._res = dict()
         if self._sm.packet_type == PAC_TYPE_AR:
-            self._res['packet_type'] = PAC_TYPE_AR
+            self._res['type'] = PAC_TYPE_AR
             self._res['data'] = _ar_raw2ndarray(
                 self._sm.ar_dtype,
                 self._sm.databuf
             )
         elif self._sm.packet_type == PAC_TYPE_MT:
-            self._res['packet_type'] = PAC_TYPE_MT
+            self._res['type'] = PAC_TYPE_MT
             self._res['data'] = self._data = _mt_raw2ndarray(
                 self._sm.ar_dtype,
                 self._sm.mt_numy,
@@ -288,7 +288,7 @@ class Decoder(object):
                 self._sm.databuf
             )
         elif self._sm.packet_type == PAC_TYPE_ST:
-            self._res['packet_type'] = PAC_TYPE_AR
+            self._res['type'] = PAC_TYPE_ST
             self._res['data'] = _st_raw2ndarray(
                 str(self._sm.st_fs),
                 self._sm.databuf

@@ -28,7 +28,9 @@ class SerialThread(QThread):
     def __init__(self, ser):
         QThread.__init__(self)
         self.ser = ser
-        self.de = hmipac.Decoder()
+        self.hpd = hmipac.Decoder() # hmi packet decoder
+        self.ch_buf = bytes()
+        self.ch_buf2 = bytes()
 
     def run(self):
         while (self.ser.isOpen()):
@@ -38,20 +40,23 @@ class SerialThread(QThread):
                 self.sigLoseConnect.emit()
                 break
             else:
-                self.de.add_text(ch)
-                try:
-                    type, data = self.de.get()
-                except:
-                    sigFatalError.emit()
-                else:
-                    if type is 0:
+                self.hpd.put(ch[0])
+                print(self.hpd.state)
+                if self.hpd.state is hmipac.DecoderState.NOTPROCESSING:
+                    self.ch_buf += ch
+                elif self.hpd.state is hmipac.DecoderState.PROCESSING:
+                    self.ch_buf2 += ch
+                elif self.hpd.state is hmipac.DecoderState.DONE:
+                    packet = self.hpd.get()
+                    if packet['type'] == hmipac.PacType.PAC_TYPE_AR:
+                        self.sigGetArrayData.emit(packet['data'])
+                    elif packet['type'] == hmipac.PacType.PAC_TYPE_MT:
                         pass
-                    elif type is 1:
-                        self.sigGetArrayData.emit(data)
-                    elif type is 2:
-                        self.sigGetStructData.emit(data)
-                    elif type is 3:
-                        self.sigGetLine.emit(data)
+                    elif packet['type'] == hmipac.PacType.PAC_TYPE_ST:
+                        pass
+                        # self.sigGetStructData.emit(packet['data'])
+                    # self.sigGetLine.emit(data)
+
 
 # ---- class Serial Thread End -------------------------------------------------
 

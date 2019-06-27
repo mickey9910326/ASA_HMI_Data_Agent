@@ -1,2 +1,2 @@
-from .decoder import Decoder
+from .decoder import *
 from .encoder import *
