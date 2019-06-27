@@ -1,7 +1,8 @@
 from .type import *
+from .pac_type import PacType
 import enum
 
-__all__ = ['Decoder', 'DecoderState', 'PacType']
+__all__ = ['Decoder', 'DecoderState']
 
 
 def _ar_raw2ndarray(typeNum, data):
@@ -17,8 +18,6 @@ def _mt_raw2ndarray(typeNum, numy, numx, data):
 def _st_raw2ndarray(formatString, data):
     """ transfer raw struct data to ndarray type data in numpy"""
     dt = fs2dt(formatString)
-    print(formatString)
-    print(dt)
     if dt is None:
         return None
     elif dt.itemsize != len(data):
@@ -59,13 +58,6 @@ class DecoderState(enum.IntEnum):
     NOTPROCESSING = 0  # packet decoder doesn't start decode
     PROCESSING = 1  # packet decoder is decoding now
     DONE = 2  # packet decoding is done
-
-
-class PacType(enum.IntEnum):
-    PAC_TYPE_AR = 1
-    PAC_TYPE_MT = 2
-    PAC_TYPE_ST = 3
-
 
 globals().update(InnerState.__members__)
 globals().update(PacType.__members__)
