@@ -100,7 +100,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_Terminal">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -153,6 +153,9 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetFixedSize</enum>
+        </property>
         <item>
          <widget class="QLineEdit" name="text_lineEditToBeSend">
           <property name="enabled">
@@ -221,7 +224,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tabSend">
          <attribute name="title">
@@ -245,22 +248,21 @@
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
              <widget class="QPushButton" name="send_btnClear">
+              <property name="minimumSize">
+               <size>
+                <width>87</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="text">
                <string>清除暫存區</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="send_btnSendStruct">
+             <widget class="QPushButton" name="send_btnSend">
               <property name="text">
-               <string>傳送結構形式</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="send_btnSendArray">
-              <property name="text">
-               <string>傳送矩陣形式</string>
+               <string>傳送</string>
               </property>
              </widget>
             </item>
@@ -270,7 +272,7 @@
                <enum>Qt::Vertical</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
+               <enum>QSizePolicy::Expanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -307,71 +309,83 @@
                <enum>Qt::Vertical</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Fixed</enum>
+               <enum>QSizePolicy::Expanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
                 <width>10</width>
-                <height>20</height>
+                <height>50</height>
                </size>
               </property>
              </spacer>
             </item>
             <item>
-             <widget class="QLabel" name="labelSendVerify">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <property name="spacing">
+               <number>0</number>
               </property>
-              <property name="minimumSize">
-               <size>
-                <width>75</width>
-                <height>23</height>
-               </size>
+              <property name="sizeConstraint">
+               <enum>QLayout::SetMinimumSize</enum>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>75</width>
-                <height>23</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>資料格式驗證</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QTextBrowser" name="send_textBrowserVerify">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>75</width>
-                <height>25</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>75</width>
-                <height>25</height>
-               </size>
-              </property>
-              <property name="verticalScrollBarPolicy">
-               <enum>Qt::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="horizontalScrollBarPolicy">
-               <enum>Qt::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="sizeAdjustPolicy">
-               <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-              </property>
-             </widget>
+              <item>
+               <widget class="QLabel" name="send_labelWarn">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
+                </property>
+                <property name="text">
+                 <string>資料驗證：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGraphicsView" name="send_graphicWarn">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>20</width>
+                  <height>22</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Plain</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>0</number>
+                </property>
+                <property name="verticalScrollBarPolicy">
+                 <enum>Qt::ScrollBarAlwaysOff</enum>
+                </property>
+                <property name="horizontalScrollBarPolicy">
+                 <enum>Qt::ScrollBarAlwaysOff</enum>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QAbstractScrollArea::AdjustToContents</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -399,6 +413,12 @@
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
              <widget class="QPushButton" name="rec_btnClear">
+              <property name="minimumSize">
+               <size>
+                <width>87</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="text">
                <string>清除暫存區</string>
               </property>
@@ -461,12 +481,10 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>send_textEdit</tabstop>
   <tabstop>send_btnClear</tabstop>
-  <tabstop>send_btnSendStruct</tabstop>
-  <tabstop>send_btnSendArray</tabstop>
+  <tabstop>send_btnSend</tabstop>
   <tabstop>send_btnQuickSave</tabstop>
   <tabstop>send_btnSave</tabstop>
   <tabstop>send_btnReadFile</tabstop>
-  <tabstop>send_textBrowserVerify</tabstop>
   <tabstop>rec_textEdit</tabstop>
   <tabstop>rec_btnClear</tabstop>
   <tabstop>rec_btnQuickSave</tabstop>

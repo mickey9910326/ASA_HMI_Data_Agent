@@ -30,11 +30,16 @@ def mtToStr(data):
 
     res += "{t}_{y}x{x}:\n".format(t=getTypeStr(t), y=numy, x=numx)
 
-    for row_data in data.tolist():
+    for i in range(numy):
+        row_data = data_list[i]
         row = align(2, row_data)
         t = '  '.join(row.split('\n'))
-        row = ' [{}],\n'.format(row[2:-1])
-        res += row
+        row = ' [{}]'.format(row[2:-1])
+        if i != numy-1:
+            print(i, len(row_data))
+            res += row + ',\n'
+        else:
+            res += row + '\n'
     print(res)
     return res
 

@@ -1,14 +1,16 @@
 from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
-from asa_hmi_data_agent.hmi.text_to_data import getFirstArray, getFirstStruct, textToData
+from asa_hmi_data_agent.hmi.text_to_data import getFirstArray, getFirstStruct, getFirstMatrix
+from asa_hmi_data_agent.hmi.text_to_data import isTextFormated, getFirstDataType
 from asa_hmi_data_agent.hmi.data_to_text import arToStr, stToStr, mtToStr
 from asa_hmi_data_agent.ui.ui_hmi import Ui_MainWidgetHMI
 from asa_hmi_data_agent import hmipac
 import asa_hmi_data_agent.hmipac.type as tp
 
-from PyQt5.QtCore import QObject, QThread, pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtCore import QObject, QThread, pyqtSlot, pyqtSignal, Qt
+from PyQt5.QtWidgets import QFileDialog, QGraphicsEllipseItem, QGraphicsScene
+from PyQt5.QtGui import QColor
 
 import numpy as np
 import datetime
@@ -79,6 +81,9 @@ class HMI(QObject):
         self.hmiSaveDialog = HmiSaveDialog()
         self.hmiLoadDialog = HmiLoadDialog()
 
+        self.send_updateBtnSend()
+        self.send_updateWarningLight()
+
         # ---- Serial object Init Start ----------------------------------------
         self.ser = serial.Serial()
         self.ser.baudrate = 38400
@@ -114,10 +119,11 @@ class HMI(QObject):
         # 發送區
         self.ui.send_btnClear.clicked.connect(self.send_textEditClear)
         self.ui.send_btnReadFile.clicked.connect(self.hmiLoadDialog.show)
-        self.ui.send_btnSendArray.clicked.connect(self.send_btnSendArray)
-        self.ui.send_btnSendStruct.clicked.connect(self.send_btnSendStruct)
+        self.ui.send_btnSend.clicked.connect(self.send_firstData)
         self.ui.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.ui.send_textEdit.toPlainText()))
         self.ui.send_btnQuickSave.clicked.connect(lambda : self.quickSave(self.ui.send_textEdit.toPlainText()))
+        self.ui.send_textEdit.textChanged.connect(self.send_updateBtnSend)
+        self.ui.send_textEdit.textChanged.connect(self.send_updateWarningLight)
         # ---- Function Linking end --------------------------------------------
 
         # ---- HmiSaveDialog section start -------------------------------------
@@ -169,7 +175,7 @@ class HMI(QObject):
     # ---- 串列埠設定區功能實現 end ----------------------------------------------
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
-    # 
+    # Append the string from serial in terminal
     def text_appendStrFromDevice(self, s):
         for ch in s:
             if ch != '\n' and ch != '\r':
@@ -251,7 +257,6 @@ class HMI(QObject):
         ))
         debugLog('Get matrix: ' + str(data))
 
-
     def rec_AppendStruct(self, data):
         self.ui.rec_textEdit.append(stToStr(data))
         self.hmilog('Get  {} struct data.'.format(tp.getFs(data.dtype)))
@@ -263,51 +268,68 @@ class HMI(QObject):
     def send_textEditClear(self):
         self.ui.send_textEdit.clear()
 
-    def send_verifyShowOK(self):
-        self.ui.send_textBrowserVerify.clear()
-        self.ui.send_textBrowserVerify.append('OK')
-
-    def send_verifyShowFAIL(self):
-        self.ui.send_textBrowserVerify.clear()
-        self.ui.send_textBrowserVerify.append('FAIL')
-
-    def send_btnSendArray(self):
+    def send_firstData(self):
         text = self.ui.send_textEdit.toPlainText()
-        try:
+        t = getFirstDataType(text)
+        if t == 1:
             usedLines, data = getFirstArray(text)
-        except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
-            debugLog('getFirstArray exception:' + str(type(e)))
-            self.send_verifyShowFAIL()
-        else:
-            self.ser.write(hmipac.encodeArToPac(data))
-            lines = text.split('\n')
-            if usedLines == len(lines):
-                text = ''
-            else:
-                text = '\n'.join(l for l in lines[usedLines::])
-            self.ui.send_textEdit.clear()
-            self.ui.send_textEdit.append(text)
-            self.hmilog('Send {} {} array data.'.format(
-                str(data.size),
-                tp.getTypeStr(tp.getTypeNum(data.dtype.name))
-            ))
-
-    def send_btnSendStruct(self):
-        text = self.ui.send_textEdit.toPlainText()
-        try:
+            packet = hmipac.encodeArToPac(data)
+            self.hmilog('Send array data.'.)
+        elif t == 2:
+            usedLines, data = getFirstMatrix(text)
+            packet = hmipac.encodeMtToPac(data)
+            self.hmilog('Send matrix data.')
+        elif t == 3:
             usedLines, data = getFirstStruct(text)
-        except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
-            debugLog('getFirstStruct exception:' + str(type(e)))
-            self.send_verifyShowFAIL()
+            packet = hmipac.encodeStToPac(data)
+            self.hmilog('Send struct data.')
+
+        self.ser.write(packet)
+        lines = text.split('\n')
+        text = '\n'.join(l for l in lines[usedLines::])
+        self.ui.send_textEdit.clear()
+        self.ui.send_textEdit.append(text)
+
+
+    def send_updateBtnSend(self):
+        text = self.ui.send_textEdit.toPlainText()
+        if isTextFormated(text):
+            t = getFirstDataType(text)
+            if t == 1:
+                self.ui.send_btnSend.setText("發送陣列")
+                self.ui.send_btnSend.setEnabled(True)
+            elif t == 2:
+                self.ui.send_btnSend.setText("發送矩陣")
+                self.ui.send_btnSend.setEnabled(True)
+            elif t == 3:
+                self.ui.send_btnSend.setText("發送結構")
+                self.ui.send_btnSend.setEnabled(True)
+            else:
+                self.ui.send_btnSend.setText("發送資料")
+                self.ui.send_btnSend.setEnabled(False)
         else:
-            self.ser.write(hmipac.encodeStToPac(data))
-            lines = text.split('\n')
-            text = '\n'.join(l for l in lines[usedLines::])
-            self.ui.send_textEdit.clear()
-            self.ui.send_textEdit.append(text)
-            self.hmilog('Send {} struct data.'.format(tp.getFs(data.dtype)))
+            self.ui.send_btnSend.setText("發送資料")
+            self.ui.send_btnSend.setEnabled(False)
+
+    def send_updateWarningLight(self):
+        text = self.ui.send_textEdit.toPlainText()
+        if isTextFormated(text):
+            scene = QGraphicsScene()
+            item = QGraphicsEllipseItem(0, 30, 15, 15)
+            item.setPen(QColor(65, 128, 17))
+            item.setBrush(QColor(128,174,93))
+            scene.addItem(item)
+            self.ui.send_graphicWarn.setScene(scene)
+        else:
+            scene = QGraphicsScene()
+            item = QGraphicsEllipseItem(0,30,15,15)
+            item.setPen(QColor(144, 25, 19))
+            item.setBrush(QColor(196,109,104))
+            scene.addItem(item)
+            self.ui.send_graphicWarn.setScene(scene)
 
     # ---- 發送區功能實現 end ---------------------------------------------------
+
 
     def updateTextFromLoadDialog(self):
         if self.hmiLoadDialog.resText != '':

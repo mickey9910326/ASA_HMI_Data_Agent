@@ -131,6 +131,17 @@ def textToData(text):
             res.append(data)
             isContinued = True
             text = '\n'.join((text.split('\n'))[usedLines::])
+
+        try:
+            usedLines, data = getFirstMatrix(text)
+        except (ValueError, SyntaxError, TypeError, UnboundLocalError) as e:
+            # print(e)
+            pass
+        else:
+            res.append(data)
+            isContinued = True
+            text = '\n'.join((text.split('\n'))[usedLines::])
+
         try:
             usedLines, data = getFirstStruct(text)
         except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
@@ -141,6 +152,82 @@ def textToData(text):
             isContinued = True
             text = '\n'.join((text.split('\n'))[usedLines::])
     return res
+
+
+def isTextFormated(text):
+    lines = text.split('\n')
+    usedLines = 0
+    status = int(0)
+    i = 0
+    while i < len(lines):
+        s = lines[i]
+        if isCommentLine(s) or isSpaceLine(s) or isNullLine(s):
+            i += 1
+        else:
+            c = False
+            try:
+                usedLines, data = getFirstArray('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                c = True
+
+            try:
+                usedLines, data = getFirstMatrix('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                c = True
+            
+            try:
+                usedLines, data = getFirstStruct('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                c = True
+            
+            if c:
+                i += usedLines
+            else:
+                return False
+    return True
+
+
+def getFirstDataType(text):
+    lines = text.split('\n')
+    usedLines = 0
+    status = int(0)
+    i = 0
+    while i < len(lines):
+        s = lines[i]
+        if isCommentLine(s) or isSpaceLine(s) or isNullLine(s):
+            i += 1
+        else:
+            c = False
+            try:
+                usedLines, data = getFirstArray('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                return 1
+                c = True
+
+            try:
+                usedLines, data = getFirstMatrix('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                return 2
+
+            try:
+                usedLines, data = getFirstStruct('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                return 3
+
+            return 0
+
 
 def decodeMatrixDataText(text, np_dtype, np_shape):
     """ decode data text t matrix data list
@@ -182,7 +269,7 @@ def decodeFsLine(s):
     s = s.split(':')
     if len(s) != 2:
         return None
-    return getStDtype(removeSpace(s[0]))
+    return fs2dt(removeSpace(s[0]))
 
 def decodeMtFsLine(s):
     s = removeComment(s)
