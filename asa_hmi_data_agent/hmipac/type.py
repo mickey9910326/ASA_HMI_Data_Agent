@@ -229,3 +229,32 @@ def npDtypeToFs(dt):
 
 def getFs(dt):
     return npDtypeToFs(dt)
+
+
+def typeStr2TypeNum(s):
+    return getTypeNum(s)
+
+
+def typeNum2NpType(num):
+    return getNpType(num)
+
+
+def mtFs2Np(formatString):
+    """trans matrix format string to numpy dtype and shape"""
+    typeStr, s = formatString.split('_')
+    numy, numx = [int(d) for d in s.split('x')]
+    np_dtype = np.dtype(getNpType(typeStr2TypeNum(typeStr)))
+    np_shape = (numy, numx)
+
+    return np_dtype, np_shape
+
+
+def np2MtFs(np_dtype, np_shape):
+    """trans numpy dtype and shape to matrix format string"""
+    fs = "{t}_{d1}x{d2}".format(
+        t=getTypeStr(getTypeNum(np_dtype.name)),
+        d1=np_shape[0],
+        d2=np_shape[1]
+    )
+
+    return fs
