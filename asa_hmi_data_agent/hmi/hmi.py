@@ -19,6 +19,7 @@ import os
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):
+    sigGetStr         = pyqtSignal(str)
     sigGetLine       = pyqtSignal(str)
     sigGetArrayData  = pyqtSignal(np.ndarray)
     sigGetMatrixData = pyqtSignal(np.ndarray)
@@ -31,7 +32,6 @@ class SerialThread(QThread):
         self.ser = ser
         self.hpd = hmipac.Decoder() # hmi packet decoder
         self.ch_buf = bytes()
-        self.ch_buf2 = bytes()
 
     def run(self):
         while (self.ser.isOpen()):
@@ -46,18 +46,22 @@ class SerialThread(QThread):
                 self.hpd.put(ch[0])
                 print(self.hpd.state)
                 if self.hpd.state is hmipac.DecoderState.NOTPROCESSING:
-                    self.ch_buf += ch
+                    if len(self.ch_buf) > 0:
+                        self.sigGetStr.emit(self.ch_buf.decode('ascii'))
+                    self.sigGetStr.emit(ch.decode('ascii'))
                 elif self.hpd.state is hmipac.DecoderState.PROCESSING:
-                    self.ch_buf2 += ch
+                    self.ch_buf += ch
                 elif self.hpd.state is hmipac.DecoderState.DONE:
                     packet = self.hpd.get()
                     if packet['type'] == hmipac.PacType.PAC_TYPE_AR:
+                        self.ch_buf = bytes()
                         self.sigGetArrayData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_MT:
+                        self.ch_buf = bytes()
                         self.sigGetMatrixData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_ST:
+                        self.ch_buf = bytes()
                         self.sigGetStructData.emit(packet['data'])
-                    # self.sigGetLine.emit(data)
 
 
 # ---- class Serial Thread End -------------------------------------------------
@@ -65,6 +69,7 @@ class SerialThread(QThread):
 class HMI(QObject):
     sigChangeWindowTitle = pyqtSignal(str)
     sigSerialPortCheck = pyqtSignal(bool, str)
+    text_newline_flag = bool(True)
 
     # ---- __init__ start ------------------------------------------------------
     def __init__(self, widget):
@@ -82,6 +87,7 @@ class HMI(QObject):
 
         # ---- Serial Thread Init Start ----------------------------------------
         self.SerialThread = SerialThread(self.ser)
+        self.SerialThread.sigGetStr[str].connect(self.text_appendStrFromDevice)
         self.SerialThread.sigGetLine[str].connect(self.text_terminalAppendLineFromDevice)
         self.SerialThread.sigGetArrayData[np.ndarray].connect(self.rec_AppendArray)
         self.SerialThread.sigGetMatrixData[np.ndarray].connect(self.rec_AppendMatrix)
@@ -163,10 +169,29 @@ class HMI(QObject):
     # ---- 串列埠設定區功能實現 end ----------------------------------------------
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
+    # 
+    def text_appendStrFromDevice(self, s):
+        for ch in s:
+            if ch != '\n' and ch != '\r':
+                if self.text_newline_flag:
+                    self.text_appendStr('\n>>  ')
+                    self.text_newline_flag = False
+                self.text_appendStr(ch)
+
+            elif ch == '\n':
+                if self.text_newline_flag:
+                    self.text_appendStr('\n>>  ')
+                    self.text_newline_flag = False
+                self.text_newline_flag = True
+
     # Append the line from serial in terminal
     def text_terminalAppendLineFromDevice(self, line):
         self.ui.text_terminal.append('>>  '+line)
         debugLog('Get  line: ' + line)
+    
+    def text_appendStr(self, s):
+        text = self.ui.text_terminal.toPlainText() + s
+        self.ui.text_terminal.setText(text)
 
     # Send line to serial
     def text_sendLineToDevice(self):
@@ -224,7 +249,7 @@ class HMI(QObject):
             y = y,
             x = x
         ))
-        # debugLog('Get matrix: ' + str(data))
+        debugLog('Get matrix: ' + str(data))
 
 
     def rec_AppendStruct(self, data):
