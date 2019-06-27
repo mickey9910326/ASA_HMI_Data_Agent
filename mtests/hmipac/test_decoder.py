@@ -11,18 +11,18 @@ pd = hd.Decoder()
 for ch in packet_mt:
     pd.put(ch)
     print(pd.state)
-    if pd.state is hd.decoder.State.DONE:
+    if pd.state is hd.DecoderState.DONE:
         print(pd.get())
 
 for ch in packet_ar:
     pd.put(ch)
     print(pd.state)
-    if pd.state is hd.decoder.State.DONE:
+    if pd.state is hd.DecoderState.DONE:
         print(pd.get())
 
 for ch in packet_st:
     pd.put(ch)
     print(pd.state)
-    if pd.state is hd.decoder.State.DONE:
+    if pd.state is hd.DecoderState.DONE:
         print(pd.get())
 

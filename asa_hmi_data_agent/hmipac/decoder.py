@@ -16,7 +16,9 @@ def _mt_raw2ndarray(typeNum, numy, numx, data):
 
 def _st_raw2ndarray(formatString, data):
     """ transfer raw struct data to ndarray type data in numpy"""
-    dt = getStDtype(formatString)
+    dt = fs2dt(formatString)
+    print(formatString)
+    print(dt)
     if dt is None:
         return None
     elif dt.itemsize != len(data):
@@ -290,6 +292,6 @@ class Decoder(object):
         elif self._sm.packet_type == PAC_TYPE_ST:
             self._res['type'] = PAC_TYPE_ST
             self._res['data'] = _st_raw2ndarray(
-                str(self._sm.st_fs),
+                self._sm.st_fs.decode("ascii"),
                 self._sm.databuf
             )

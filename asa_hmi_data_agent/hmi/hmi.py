@@ -2,7 +2,7 @@ from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
 from asa_hmi_data_agent.hmi.text_to_data import getFirstArray, getFirstStruct, textToData
-from asa_hmi_data_agent.hmi.data_to_text import arToStr, stToStr
+from asa_hmi_data_agent.hmi.data_to_text import arToStr, stToStr, mtToStr
 from asa_hmi_data_agent.ui.ui_hmi import Ui_MainWidgetHMI
 from asa_hmi_data_agent import hmipac
 import asa_hmi_data_agent.hmipac.type as tp
@@ -21,6 +21,7 @@ import os
 class SerialThread(QThread):
     sigGetLine       = pyqtSignal(str)
     sigGetArrayData  = pyqtSignal(np.ndarray)
+    sigGetMatrixData = pyqtSignal(np.ndarray)
     sigGetStructData = pyqtSignal(np.ndarray)
     sigLoseConnect   = pyqtSignal()
     sigFatalError    = pyqtSignal()
@@ -40,6 +41,8 @@ class SerialThread(QThread):
                 self.sigLoseConnect.emit()
                 break
             else:
+                if ch == b'':
+                    continue
                 self.hpd.put(ch[0])
                 print(self.hpd.state)
                 if self.hpd.state is hmipac.DecoderState.NOTPROCESSING:
@@ -51,10 +54,9 @@ class SerialThread(QThread):
                     if packet['type'] == hmipac.PacType.PAC_TYPE_AR:
                         self.sigGetArrayData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_MT:
-                        pass
+                        self.sigGetMatrixData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_ST:
-                        pass
-                        # self.sigGetStructData.emit(packet['data'])
+                        self.sigGetStructData.emit(packet['data'])
                     # self.sigGetLine.emit(data)
 
 
@@ -82,6 +84,7 @@ class HMI(QObject):
         self.SerialThread = SerialThread(self.ser)
         self.SerialThread.sigGetLine[str].connect(self.text_terminalAppendLineFromDevice)
         self.SerialThread.sigGetArrayData[np.ndarray].connect(self.rec_AppendArray)
+        self.SerialThread.sigGetMatrixData[np.ndarray].connect(self.rec_AppendMatrix)
         self.SerialThread.sigGetStructData[np.ndarray].connect(self.rec_AppendStruct)
         self.SerialThread.sigLoseConnect.connect(self.loseConnectHandler)
         self.SerialThread.sigFatalError.connect(lambda:self.loseConnectHandler)
@@ -212,6 +215,17 @@ class HMI(QObject):
             tp.getTypeStr(tp.getTypeNum(data.dtype.name))
         ))
         debugLog('Get array: '+ str(data))
+    
+    def rec_AppendMatrix(self, data):
+        self.ui.rec_textEdit.append(mtToStr(data))
+        y, x = data.shape
+        self.hmilog('Get {t}_{y}x{x} matrix data.'.format(
+            t = data.dtype.name,
+            y = y,
+            x = x
+        ))
+        # debugLog('Get matrix: ' + str(data))
+
 
     def rec_AppendStruct(self, data):
         self.ui.rec_textEdit.append(stToStr(data))

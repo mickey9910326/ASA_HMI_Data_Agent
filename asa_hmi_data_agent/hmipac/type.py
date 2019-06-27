@@ -171,6 +171,33 @@ def getStDtype(formatString):
     return dt
 
 
+def fs2dt(formatString):
+    """trans format string to numpy dtype"""
+    args = list()
+    for i, typeStr in enumerate(formatString.split(',')):
+        if typeStr == '':
+            return None
+
+        s = typeStr.split('_')
+        if len(s) is not 2:
+            return None
+        elif s[0] == '' or s[1] == '':
+            return None
+
+        type = getTypeNum(s[0])
+        if type is None:
+            return None
+
+        try:
+            num = int(s[1])
+        except ValueError as e:
+            return None
+
+        args.append(('f'+str(i), getNpType(type), (num,)))
+    dt = np.dtype(args)
+    return dt
+
+
 def getStSize(typeList):
     size = 0
     for t in typeList:
@@ -195,7 +222,7 @@ def npDtypeToFs(dt):
     for i in range(len(dt)):
         type = getTypeStr(getTypeNum(dt[i].base.name))
         num  = dt[i].shape[0]
-        res += type + 'x' + str(num)
+        res += type + '_' + str(num)
         if i != last:
             res += ','
     return res
