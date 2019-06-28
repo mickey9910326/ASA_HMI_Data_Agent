@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>700</height>
+    <width>950</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,12 +35,27 @@
        <attribute name="title">
         <string>HMI</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QWidget" name="tabHmi_1" native="true"/>
-        </item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
          <widget class="QWidget" name="tabHmi_2" native="true"/>
+        </item>
+        <item>
+         <widget class="QWidget" name="tabHmi_1" native="true"/>
         </item>
        </layout>
       </widget>
