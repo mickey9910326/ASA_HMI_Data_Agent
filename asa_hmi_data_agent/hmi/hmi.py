@@ -2,7 +2,7 @@ from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
 from asa_hmi_data_agent.hmi.text_to_data import getFirstArray, getFirstStruct, getFirstMatrix
-from asa_hmi_data_agent.hmi.text_to_data import isTextFormated, getFirstDataType
+from asa_hmi_data_agent.hmi.text_to_data import isTextFormated, getFirstDataType, decodeText
 from asa_hmi_data_agent.hmi.data_to_text import arToStr, stToStr, mtToStr
 from asa_hmi_data_agent.ui.ui_hmi import Ui_MainWidgetHMI
 from asa_hmi_data_agent import hmipac
@@ -274,7 +274,7 @@ class HMI(QObject):
         if t == 1:
             usedLines, data = getFirstArray(text)
             packet = hmipac.encodeArToPac(data)
-            self.hmilog('Send array data.'.)
+            self.hmilog('Send array data.')
         elif t == 2:
             usedLines, data = getFirstMatrix(text)
             packet = hmipac.encodeMtToPac(data)
@@ -314,20 +314,29 @@ class HMI(QObject):
     def send_updateWarningLight(self):
         text = self.ui.send_textEdit.toPlainText()
         if isTextFormated(text):
-            scene = QGraphicsScene()
-            item = QGraphicsEllipseItem(0, 30, 15, 15)
-            item.setPen(QColor(65, 128, 17))
-            item.setBrush(QColor(128,174,93))
-            scene.addItem(item)
-            self.ui.send_graphicWarn.setScene(scene)
+            self.send_setWarnLightGreen()
+            self.ui.send_btnQuickSave.setEnabled(True)
+            self.ui.send_btnSave.setEnabled(True)
         else:
-            scene = QGraphicsScene()
-            item = QGraphicsEllipseItem(0,30,15,15)
-            item.setPen(QColor(144, 25, 19))
-            item.setBrush(QColor(196,109,104))
-            scene.addItem(item)
-            self.ui.send_graphicWarn.setScene(scene)
+            self.send_setWarnLightRed()
+            self.ui.send_btnQuickSave.setEnabled(False)
+            self.ui.send_btnSave.setEnabled(False)
+    
+    def send_setWarnLightGreen(self):
+        scene = QGraphicsScene()
+        item = QGraphicsEllipseItem(0, 30, 15, 15)
+        item.setPen(QColor(65, 128, 17))
+        item.setBrush(QColor(128,174,93))
+        scene.addItem(item)
+        self.ui.send_graphicWarn.setScene(scene)
 
+    def send_setWarnLightRed(self):
+        scene = QGraphicsScene()
+        item = QGraphicsEllipseItem(0, 30, 15, 15)
+        item.setPen(QColor(144, 25, 19))
+        item.setBrush(QColor(196, 109, 104))
+        scene.addItem(item)
+        self.ui.send_graphicWarn.setScene(scene)
     # ---- 發送區功能實現 end ---------------------------------------------------
 
 
@@ -363,7 +372,7 @@ class HMI(QObject):
                 f.write(text)
         elif file_extension == '.mat':
             try:
-                datalist = textToData(text)
+                datalist = decodeText(text)
             except (ValueError,SyntaxError,TypeError,UnboundLocalError) as e:
                 # TODO ERROR Dialog
                 debugLog('quickSave exception: ' + str(type(e)) )

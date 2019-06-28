@@ -4,7 +4,7 @@ import os.path
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog, QDialog, QTableWidgetItem
 from asa_hmi_data_agent.ui.ui_hmi_load_dialog import Ui_HmiLoadDialog
-from .data_to_text import arToStr, stToStr
+from .data_to_text import arToStr, stToStr, mtToStr
 from ..hmipac.type import *
 
 # Reference : https://docs.scipy.org/doc/scipy/reference/tutorial/io.html
@@ -65,7 +65,6 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
             matDict = scipy.io.loadmat(filename)
             self.filename = filename
             self.dataList = list()
-
         for key, val in matDict.items():
             if (
                     key == '__header__' or
@@ -77,19 +76,24 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
                 self.dataList.append(val)
                 self.nameList.append(key)
         for i in range(len(self.dataList)):
-            if self.dataList[i].dtype.names is None:
+            if len(self.dataList[i].shape) == 2:
+                #matrix
+                self.dataList[i] = self.dataList[i]
+            elif self.dataList[i].dtype.names is None:
                 # array
                 self.dataList[i] = self.dataList[i][0]
             else:
                 # struct
                 self.dataList[i] = reStructureData(self.dataList[i])
         self.updateTableFromDataList()
+        print(self.dataList)
 
     def updateTableFromDataList(self):
         self.tableWidget_mat.clearContents()
         self.tableWidget_mat.setRowCount(len(self.dataList))
         for row in range(len(self.dataList)):
             data = self.dataList[row]
+            print(data)
             nameStr = self.nameList[row]
             # NOTE the structured data of loadmat's return is strange.
             if data.shape is ():
@@ -97,6 +101,10 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
                 typeStr = getFs(data.dtype)
                 numsStr = '1'
                 sizeStr = str(data.dtype.itemsize)
+            elif len(data.shape) == 2:
+                typeStr = np2MtFs(data.dtype, data.shape)
+                numsStr = '1'
+                sizeStr = str(data.size * data.dtype.itemsize)
             else:
                 # Array
                 typeStr = getTypeStr(getTypeNum(data.dtype.name))
@@ -122,7 +130,9 @@ class HmiLoadDialog(QDialog, Ui_HmiLoadDialog):
             return
         self.resText = '// load from mat file: ' + self.filename + '\n\n'
         for i, data in enumerate(self.dataList):
-            if data.shape is ():
+            if len(data.shape) == 2:
+                self.resText += mtToStr(data)
+            elif data.shape is ():
                 self.resText += stToStr(data)
             else:
                 self.resText += arToStr(data)

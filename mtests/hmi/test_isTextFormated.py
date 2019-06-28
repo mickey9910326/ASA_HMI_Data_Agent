@@ -18,4 +18,5 @@ ui8:
     1,2,3,4,5,6
 """
 print(isTextFormated(text))
+print(decodeText(text))
 

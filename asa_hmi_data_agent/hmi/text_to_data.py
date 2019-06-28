@@ -249,6 +249,50 @@ def decodeMatrixDataText(text, np_dtype, np_shape):
     res = res.reshape(np_shape)
     return res
 
+
+def decodeText(text):
+    lines = text.split('\n')
+    usedLines = 0
+    status = int(0)
+    i = 0
+    res = list()
+    d = dict()
+    while i < len(lines):
+        s = lines[i]
+        if isCommentLine(s) or isSpaceLine(s) or isNullLine(s):
+            i += 1
+        else:
+            c = False
+            try:
+                usedLines, data = getFirstArray('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                res.append(data)
+                c = True
+
+            try:
+                usedLines, data = getFirstMatrix('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                res.append(data)
+                c = True
+
+            try:
+                usedLines, data = getFirstStruct('\n'.join(lines[i::]))
+            except:
+                pass
+            else:
+                res.append(data)
+                c = True
+
+            if c:
+                i += usedLines
+            else:
+                raise 
+    return res
+
 # line decode ------------------------------------------------------------------
 def decodeDataLine(s, typeNum):
     s = removeComment(s)
@@ -318,7 +362,6 @@ def decodeNameLine(s):
         return False
     s = removeComment(s)
     return s.isspace() or isNullLine(s)
-
 
 
 # remove -----------------------------------------------------------------------
