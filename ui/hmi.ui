@@ -98,7 +98,11 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLineEdit" name="s_lineEditBaudrate"/>
+           <widget class="QLineEdit" name="s_lineEditBaudrate">
+            <property name="text">
+             <string>38400</string>
+            </property>
+           </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="s_labelBaudrte">
@@ -289,7 +293,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tabSend">
         <attribute name="title">
@@ -401,7 +405,7 @@
              <item row="1" column="2">
               <widget class="QPushButton" name="send_btnSend">
                <property name="text">
-                <string>發送</string>
+                <string>發送資料</string>
                </property>
               </widget>
              </item>
@@ -554,7 +558,7 @@
              <item row="1" column="2">
               <widget class="QPushButton" name="rec_btnSend">
                <property name="text">
-                <string>發送</string>
+                <string>發送資料</string>
                </property>
               </widget>
              </item>
@@ -604,11 +608,34 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>s_portComboBox</tabstop>
+  <tabstop>s_btnUpdatePortList</tabstop>
+  <tabstop>s_lineEditBaudrate</tabstop>
+  <tabstop>s_btnPortToggle</tabstop>
   <tabstop>text_terminal</tabstop>
-  <tabstop>send_btnQuickSave</tabstop>
+  <tabstop>text_lineEditToBeSend</tabstop>
+  <tabstop>text_btnSend</tabstop>
+  <tabstop>text_btnClearTerminal</tabstop>
+  <tabstop>text_btnSaveTerminal</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>send_textEdit</tabstop>
+  <tabstop>send_btnMoveToSend</tabstop>
   <tabstop>send_btnSave</tabstop>
+  <tabstop>send_btnQuickSave</tabstop>
   <tabstop>send_btnReadFile</tabstop>
+  <tabstop>send_btnClear</tabstop>
+  <tabstop>send_btnAddData</tabstop>
+  <tabstop>send_btnSend</tabstop>
+  <tabstop>send_graphicWarn</tabstop>
   <tabstop>rec_textEdit</tabstop>
+  <tabstop>rec_btnMoveToSend</tabstop>
+  <tabstop>rec_btnSave</tabstop>
+  <tabstop>rec_btnQuickSave</tabstop>
+  <tabstop>rec_btnReadFile</tabstop>
+  <tabstop>rec_btnClear</tabstop>
+  <tabstop>rec_btnAddData</tabstop>
+  <tabstop>rec_btnSend</tabstop>
+  <tabstop>rec_graphicWarn</tabstop>
  </tabstops>
  <resources/>
  <connections/>
