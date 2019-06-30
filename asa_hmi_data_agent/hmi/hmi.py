@@ -21,7 +21,7 @@ import os
 
 # ---- class Serial Thread Start -----------------------------------------------
 class SerialThread(QThread):
-    sigGetStr         = pyqtSignal(str)
+    sigGetStr        = pyqtSignal(str)
     sigGetLine       = pyqtSignal(str)
     sigGetArrayData  = pyqtSignal(np.ndarray)
     sigGetMatrixData = pyqtSignal(np.ndarray)
@@ -83,6 +83,10 @@ class HMI(QObject):
 
         self.send_updateBtnSend()
         self.send_updateWarningLight()
+        self.rec_updateWarningLight()
+        self.ui.rec_btnAddData.setEnabled(False)
+        self.ui.rec_btnSend.setEnabled(False)
+        self.ui.rec_btnReadFile.setEnabled(False)
 
         # ---- Serial object Init Start ----------------------------------------
         self.ser = serial.Serial()
@@ -115,9 +119,11 @@ class HMI(QObject):
         self.ui.rec_btnClear.clicked.connect(self.rec_textEditClear)
         self.ui.rec_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
         self.ui.rec_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.ui.rec_textEdit.toPlainText()))
-        self.ui.rec_btnQuickSave.clicked.connect(lambda : self.quickSave(self.ui.rec_textEdit.toPlainText()))
+        self.ui.rec_btnQuickSave.clicked.connect(lambda: self.quickSave(self.ui.rec_textEdit.toPlainText()))
+        self.ui.rec_textEdit.textChanged.connect(self.rec_updateWarningLight)
         # 發送區
         self.ui.send_btnClear.clicked.connect(self.send_textEditClear)
+        self.ui.send_btnMoveToSend.clicked.connect(self.rec_textEditMovetoSend)
         self.ui.send_btnReadFile.clicked.connect(self.hmiLoadDialog.show)
         self.ui.send_btnSend.clicked.connect(self.send_firstData)
         self.ui.send_btnSave.clicked.connect(lambda : self.hmiSaveDialog.showAndLoadText(self.ui.send_textEdit.toPlainText()))
@@ -152,6 +158,15 @@ class HMI(QObject):
             pass
         elif (self.ser.isOpen() is False):
             self.ser.port = self.ui.s_portComboBox.currentText()
+            try:
+                self.ser.baudrate = self.ui.s_lineEditBaudrate.text()
+                self.ser.baudrate = self.ui.s_lineEditBaudrate.text()
+            except:
+                debugLog('Baudrate setting is error!')
+                self.hmilog('Baudrate setting is error!')
+                return
+            else:
+                pass
             debugLog('Try to open port: {}'.format(self.ser.port))
             try:
                 self.ser.open()
@@ -161,7 +176,7 @@ class HMI(QObject):
                 debugLog('Open port {} failed!'.format(self.ser.port))
                 self.hmilog('Open port {} failed!'.format(self.ser.port))
             else :
-                self.ui.s_btnPortToggle.setText("關閉串列埠")
+                self.s_updateUi_closeSerial()
                 self.hmilog('Open {} success!'.format(self.ser.port))
                 self.SerialThread.start()
         elif (self.ser.isOpen()):
@@ -169,9 +184,21 @@ class HMI(QObject):
             self.SerialThread.terminate()
             self.ser.close()
             self.sigChangeWindowTitle.emit('ASA_HMI_Data_Agent  - {} is closed.'.format(self.ser.port))
-            self.ui.s_btnPortToggle.setText("開啟串列埠")
+            self.s_updateUi_openSerial()
             debugLog('Close {} success!'.format(self.ser.port))
             self.hmilog('Close {} success!'.format(self.ser.port))
+    
+    def s_updateUi_closeSerial(self):
+        self.ui.s_btnPortToggle.setText("關閉串列埠")
+        self.ui.s_btnUpdatePortList.setEnabled(False)
+        self.ui.s_portComboBox.setEnabled(False)
+        self.ui.s_lineEditBaudrate.setEnabled(False)
+
+    def s_updateUi_openSerial(self):
+        self.ui.s_btnPortToggle.setText("開啟串列埠")
+        self.ui.s_btnUpdatePortList.setEnabled(True)
+        self.ui.s_portComboBox.setEnabled(True)
+        self.ui.s_lineEditBaudrate.setEnabled(True)
     # ---- 串列埠設定區功能實現 end ----------------------------------------------
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
@@ -262,6 +289,32 @@ class HMI(QObject):
         self.hmilog('Get  {} struct data.'.format(tp.getFs(data.dtype)))
         debugLog('Get struct: '+ str(data))
 
+    def rec_updateWarningLight(self):
+        text = self.ui.rec_textEdit.toPlainText()
+        if isTextFormated(text):
+            self.rec_setWarnLightGreen()
+            self.ui.rec_btnQuickSave.setEnabled(True)
+            self.ui.rec_btnSave.setEnabled(True)
+        else:
+            self.rec_setWarnLightRed()
+            self.ui.rec_btnQuickSave.setEnabled(False)
+            self.ui.rec_btnSave.setEnabled(False)
+
+    def rec_setWarnLightGreen(self):
+        scene = QGraphicsScene()
+        item = QGraphicsEllipseItem(0, 30, 15, 15)
+        item.setPen(QColor(65, 128, 17))
+        item.setBrush(QColor(128, 174, 93))
+        scene.addItem(item)
+        self.ui.rec_graphicWarn.setScene(scene)
+
+    def rec_setWarnLightRed(self):
+        scene = QGraphicsScene()
+        item = QGraphicsEllipseItem(0, 30, 15, 15)
+        item.setPen(QColor(144, 25, 19))
+        item.setBrush(QColor(196, 109, 104))
+        scene.addItem(item)
+        self.ui.rec_graphicWarn.setScene(scene)
     # ---- 接收區功能實現 end ---------------------------------------------------
 
     # ---- 發送區功能實現 start -------------------------------------------------
