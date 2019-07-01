@@ -8,6 +8,7 @@ from asa_hmi_data_agent.hmi.data_to_text import arToStr, stToStr, mtToStr
 from asa_hmi_data_agent.ui.ui_hmi import Ui_MainWidgetHMI
 from asa_hmi_data_agent import hmipac
 import asa_hmi_data_agent.hmipac.type as tp
+from asa_hmi_data_agent.hmicmd.decode import decode_cmd
 
 from PyQt5.QtCore import QObject, QThread, pyqtSlot, pyqtSignal, Qt
 from PyQt5.QtWidgets import QFileDialog, QGraphicsEllipseItem, QGraphicsScene
@@ -29,12 +30,15 @@ class SerialThread(QThread):
     sigGetStructData = pyqtSignal(np.ndarray)
     sigLoseConnect   = pyqtSignal()
     sigFatalError    = pyqtSignal()
+    sigGetCmd = pyqtSignal(dict)
     
     def __init__(self, ser):
         QThread.__init__(self)
         self.ser = ser
         self.hpd = hmipac.Decoder() # hmi packet decoder
         self.ch_buf = bytes()
+        self.tbd = bytes()
+        self.cmd_state = int(1)
 
     def run(self):
         while (self.ser.isOpen()):
@@ -46,12 +50,13 @@ class SerialThread(QThread):
             else:
                 if ch == b'':
                     continue
+                
+                # decoder for data packet
                 self.hpd.put(ch[0])
-                print(self.hpd.state)
                 if self.hpd.state is hmipac.DecoderState.NOTPROCESSING:
                     if len(self.ch_buf) > 0:
-                        self.sigGetStr.emit(self.ch_buf.decode('ascii'))
-                    self.sigGetStr.emit(ch.decode('ascii'))
+                        self.tbd += self.ch_buf
+                    self.tbd += ch
                 elif self.hpd.state is hmipac.DecoderState.PROCESSING:
                     self.ch_buf += ch
                 elif self.hpd.state is hmipac.DecoderState.DONE:
@@ -66,6 +71,27 @@ class SerialThread(QThread):
                         self.ch_buf = bytes()
                         self.sigGetStructData.emit(packet['data'])
 
+                # decoder for cmd
+                for c in self.tbd:
+                    if self.cmd_state == 1:
+                        if c == b'~'[0]:
+                            self.cmd = b'~'
+                            self.cmd_state = 2
+                    elif self.cmd_state == 2:
+                        if c == b'\r'[0] or c == b'\n'[0]:
+                            try:
+                                res = decode_cmd(self.cmd)
+                            except:
+                                pass
+                            else:
+                                if res:
+                                    self.sigGetCmd.emit(res)
+                            self.cmd_state = 1
+                        else:
+                            self.cmd += bytes([c])
+
+                self.sigGetStr.emit(self.tbd.decode('ascii'))
+                self.tbd = bytes()
 
 # ---- class Serial Thread End -------------------------------------------------
 
@@ -93,7 +119,7 @@ class HMI(QObject):
         # ---- Serial object Init Start ----------------------------------------
         self.ser = serial.Serial()
         self.ser.baudrate = 38400
-        self.ser.timeout = 10
+        self.ser.timeout = 1
         # ---- Serial object Init End ------------------------------------------
 
         # ---- Serial Thread Init Start ----------------------------------------
@@ -105,6 +131,7 @@ class HMI(QObject):
         self.SerialThread.sigGetStructData[np.ndarray].connect(self.rec_AppendStruct)
         self.SerialThread.sigLoseConnect.connect(self.loseConnectHandler)
         self.SerialThread.sigFatalError.connect(lambda:self.loseConnectHandler)
+        self.SerialThread.sigGetCmd[dict].connect(self.doCmd)
         # ---- Serial Thread Init End ------------------------------------------
 
         # ---- Function Linking start ------------------------------------------
@@ -239,6 +266,16 @@ class HMI(QObject):
             return False
         else:
             line = self.ui.text_lineEditToBeSend.text()
+            self.ui.text_lineEditToBeSend.clear()
+            self.ser.write(bytes(line+'\n', encoding = "utf-8") )
+            self.ui.text_terminal.append('<<  '+line)
+            debugLog('Send line: ' + line)
+
+    def text_send(self, s):
+        if self.ser.isOpen() is False:
+            return False
+        else:
+            line = s
             self.ui.text_lineEditToBeSend.clear()
             self.ser.write(bytes(line+'\n', encoding = "utf-8") )
             self.ui.text_terminal.append('<<  '+line)
@@ -456,6 +493,48 @@ class HMI(QObject):
         else:
             with open(name, 'w') as f:
                 f.write(text)
+    
+    # ---------------------
+    def doCmd(self, cmd):
+        print(cmd)
+        if cmd['cmd'] == 'get':
+            self.text_send('~ACK')
+        elif cmd['cmd'] == 'put':
+            text = self.ui.send_textEdit.toPlainText()
+            if isTextFormated(text):
+                t = getFirstDataType(text)
+                if t == 1 and cmd['class'] == 'array':
+                    usedLines, data = getFirstArray(text)
+                    print(data)
+                    fs = tp.getArrayFs(data)
+                    print(fs)
+                    if fs == cmd['fs'].decode('ascii'):
+                        self.text_send('~ACK')
+                        self.send_firstData()
+                    else:
+                        self.text_send('~BZ')
+                elif t == 2 and cmd['class'] == 'matrix':
+                    usedLines, data = getFirstMatrix(text)
+                    fs = tp.getMatrixFs(data)
+                    if fs == cmd['fs'].decode('ascii'):
+                        self.text_send('~ACK')
+                        self.send_firstData()
+                    else:
+                        self.text_send('~BZ')
+                elif t == 3 and cmd['class'] == 'struct':
+                    usedLines, data = getFirstStruct(text)
+                    fs = tp.getStructFs(data)
+                    if fs == cmd['fs'].decode('ascii'):
+                        self.text_send('~ACK')
+                        self.send_firstData()
+                    else:
+                        self.text_send('~BZ')
+                else:
+                    self.text_send('~BZ')
+            else:
+                self.text_send('~BZ')
+
+
 
 def debugLog(msg):
     s = '[{}] terminal log: {}'.format(

@@ -258,3 +258,22 @@ def np2MtFs(np_dtype, np_shape):
     )
 
     return fs
+
+
+def getArrayFs(data):
+    fs = "{t}_{d1}".format(
+        t=getTypeStr(getTypeNum(data.dtype.name)),
+        d1=len(data)
+    )
+    return fs
+
+def getMatrixFs(data):
+    fs = "{t}_{d1}x{d2}".format(
+        t=getTypeStr(getTypeNum(data.dtype.name)),
+        d1=data.shape[0],
+        d2=data.shape[1]
+    )
+    return fs
+
+def getStructFs(data):
+    return npDtypeToFs(data.dtype)
