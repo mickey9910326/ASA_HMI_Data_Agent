@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HmiNewDataDialog</class>
+ <widget class="QDialog" name="HmiNewDataDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>332</width>
+    <height>278</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>微軟正黑體</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>新增資料視窗</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_array">
+      <attribute name="title">
+       <string>陣列</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_abar">
+           <property name="text">
+            <string>_</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLineEdit" name="lineEdit_anum"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_anum">
+           <property name="text">
+            <string>數量</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_atype">
+           <property name="text">
+            <string>型態</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QComboBox" name="comboBox_atype">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <item>
+            <property name="text">
+             <string>i8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>i16</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>i32</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>i64</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui16</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui32</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui64</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>f32</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>f64</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="2">
+          <widget class="QPushButton" name="pushButton_aconfirm">
+           <property name="text">
+            <string>確認</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="3">
+          <widget class="QPushButton" name="pushButton_aconsel">
+           <property name="text">
+            <string>取消</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_matrix">
+      <attribute name="title">
+       <string>矩陣</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>_</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>x</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="label_dim2">
+           <property name="text">
+            <string>Dim2</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLineEdit" name="lineEdit_dim1"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_dim1">
+           <property name="text">
+            <string>Dim1</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QLineEdit" name="lineEdit_dim2"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QComboBox" name="comboBox_mtype">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <item>
+            <property name="text">
+             <string>i8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>i16</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>i32</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>i64</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui16</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui32</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ui64</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>f32</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>f64</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_mtype">
+           <property name="text">
+            <string>型態</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="2">
+          <widget class="QPushButton" name="pushButton_mconfirm">
+           <property name="text">
+            <string>確認</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="3">
+          <widget class="QPushButton" name="pushButton_mconsel">
+           <property name="text">
+            <string>取消</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_struct">
+      <attribute name="title">
+       <string>結構</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_struct">
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>型態</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>數量</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_sconfirm">
+           <property name="text">
+            <string>確認</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_sconsel">
+           <property name="text">
+            <string>取消</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>comboBox_atype</tabstop>
+  <tabstop>lineEdit_anum</tabstop>
+  <tabstop>pushButton_aconfirm</tabstop>
+  <tabstop>pushButton_aconsel</tabstop>
+  <tabstop>comboBox_mtype</tabstop>
+  <tabstop>lineEdit_dim1</tabstop>
+  <tabstop>lineEdit_dim2</tabstop>
+  <tabstop>pushButton_mconfirm</tabstop>
+  <tabstop>pushButton_mconsel</tabstop>
+  <tabstop>pushButton_sconfirm</tabstop>
+  <tabstop>pushButton_sconsel</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

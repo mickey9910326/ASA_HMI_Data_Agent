@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WidgeHmiNewStructData</class>
+ <widget class="QWidget" name="WidgeHmiNewStructData">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>120</width>
+    <height>22</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>微軟正黑體</family>
+   </font>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QComboBox" name="comboBox_type">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <item>
+      <property name="text">
+       <string>i8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>i16</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>i32</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>i64</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ui8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ui16</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ui32</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ui64</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>f32</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>f64</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="lineEdit_num"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

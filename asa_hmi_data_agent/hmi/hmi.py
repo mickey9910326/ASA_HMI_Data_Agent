@@ -1,6 +1,7 @@
 from asa_hmi_data_agent.listport import getAvailableSerialPorts
 from asa_hmi_data_agent.hmi.hmi_save_dialog import HmiSaveDialog
 from asa_hmi_data_agent.hmi.hmi_load_dialog import HmiLoadDialog
+from asa_hmi_data_agent.hmi.hmi_new_data_dialog import HmiNewDataDialog
 from asa_hmi_data_agent.hmi.text_to_data import getFirstArray, getFirstStruct, getFirstMatrix
 from asa_hmi_data_agent.hmi.text_to_data import isTextFormated, getFirstDataType, decodeText
 from asa_hmi_data_agent.hmi.data_to_text import arToStr, stToStr, mtToStr
@@ -80,6 +81,7 @@ class HMI(QObject):
         self.ui.setupUi(widget)
         self.hmiSaveDialog = HmiSaveDialog()
         self.hmiLoadDialog = HmiLoadDialog()
+        self.hmiNewDataDialog = HmiNewDataDialog()
 
         self.send_updateBtnSend()
         self.send_updateWarningLight()
@@ -130,6 +132,7 @@ class HMI(QObject):
         self.ui.send_btnQuickSave.clicked.connect(lambda : self.quickSave(self.ui.send_textEdit.toPlainText()))
         self.ui.send_textEdit.textChanged.connect(self.send_updateBtnSend)
         self.ui.send_textEdit.textChanged.connect(self.send_updateWarningLight)
+        self.ui.send_btnAddData.clicked.connect(self.hmiNewDataDialog.show)
         # ---- Function Linking end --------------------------------------------
 
         # ---- HmiSaveDialog section start -------------------------------------
@@ -139,6 +142,10 @@ class HMI(QObject):
         # ---- HmiLoadDialog section start -------------------------------------
         self.hmiLoadDialog.accepted.connect(self.updateTextFromLoadDialog)
         # ---- HmiLoadDialog section end ---------------------------------------
+
+        self.hmiNewDataDialog.sigArrayAccept.connect(self.send_AppendArray)
+        self.hmiNewDataDialog.sigMatrixAccept.connect(self.send_AppendMatrix)
+        self.hmiNewDataDialog.sigStructAccept.connect(self.send_AppendStruct)
 
     # ---- 串列埠設定區功能實現 start --------------------------------------------
     # Update port list in s_portComboBox
@@ -390,6 +397,15 @@ class HMI(QObject):
         item.setBrush(QColor(196, 109, 104))
         scene.addItem(item)
         self.ui.send_graphicWarn.setScene(scene)
+    
+    def send_AppendArray(self, data):
+        self.ui.send_textEdit.append(arToStr(data))
+
+    def send_AppendMatrix(self, data):
+        self.ui.send_textEdit.append(mtToStr(data))
+
+    def send_AppendStruct(self, data):
+        self.ui.send_textEdit.append(stToStr(data))
     # ---- 發送區功能實現 end ---------------------------------------------------
 
 
