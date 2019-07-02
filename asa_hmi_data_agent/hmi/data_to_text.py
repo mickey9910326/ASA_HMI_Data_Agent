@@ -21,6 +21,29 @@ def stToStr(data):
         res += s
     return res
 
+
+def mtToStr(data):
+    res = ''
+    t = getTypeNum(data.dtype.name)
+    data_list = data.tolist()
+    numy, numx = data.shape
+
+    res += "{t}_{y}x{x}:\n".format(t=getTypeStr(t), y=numy, x=numx)
+
+    for i in range(numy):
+        row_data = data_list[i]
+        row = align(2, row_data)
+        t = '  '.join(row.split('\n'))
+        row = ' [{}]'.format(row[2:-1])
+        if i != numy-1:
+            print(i, len(row_data))
+            res += row + ',\n'
+        else:
+            res += row + '\n'
+    print(res)
+    return res
+
+
 def align(prespace, list_data):
     ls   = [str(e) for e in list_data] # list of str(data)
     maxL = max([len(s) for s in ls]) # max length of str(data)
