@@ -171,6 +171,33 @@ def getStDtype(formatString):
     return dt
 
 
+def fs2dt(formatString):
+    """trans format string to numpy dtype"""
+    args = list()
+    for i, typeStr in enumerate(formatString.split(',')):
+        if typeStr == '':
+            return None
+
+        s = typeStr.split('_')
+        if len(s) is not 2:
+            return None
+        elif s[0] == '' or s[1] == '':
+            return None
+
+        type = getTypeNum(s[0])
+        if type is None:
+            return None
+
+        try:
+            num = int(s[1])
+        except ValueError as e:
+            return None
+
+        args.append(('f'+str(i), getNpType(type), (num,)))
+    dt = np.dtype(args)
+    return dt
+
+
 def getStSize(typeList):
     size = 0
     for t in typeList:
@@ -195,10 +222,58 @@ def npDtypeToFs(dt):
     for i in range(len(dt)):
         type = getTypeStr(getTypeNum(dt[i].base.name))
         num  = dt[i].shape[0]
-        res += type + 'x' + str(num)
+        res += type + '_' + str(num)
         if i != last:
             res += ','
     return res
 
 def getFs(dt):
     return npDtypeToFs(dt)
+
+
+def typeStr2TypeNum(s):
+    return getTypeNum(s)
+
+
+def typeNum2NpType(num):
+    return getNpType(num)
+
+
+def mtFs2Np(formatString):
+    """trans matrix format string to numpy dtype and shape"""
+    typeStr, s = formatString.split('_')
+    numy, numx = [int(d) for d in s.split('x')]
+    np_dtype = np.dtype(getNpType(typeStr2TypeNum(typeStr)))
+    np_shape = (numy, numx)
+
+    return np_dtype, np_shape
+
+
+def np2MtFs(np_dtype, np_shape):
+    """trans numpy dtype and shape to matrix format string"""
+    fs = "{t}_{d1}x{d2}".format(
+        t=getTypeStr(getTypeNum(np_dtype.name)),
+        d1=np_shape[0],
+        d2=np_shape[1]
+    )
+
+    return fs
+
+
+def getArrayFs(data):
+    fs = "{t}_{d1}".format(
+        t=getTypeStr(getTypeNum(data.dtype.name)),
+        d1=len(data)
+    )
+    return fs
+
+def getMatrixFs(data):
+    fs = "{t}_{d1}x{d2}".format(
+        t=getTypeStr(getTypeNum(data.dtype.name)),
+        d1=data.shape[0],
+        d2=data.shape[1]
+    )
+    return fs
+
+def getStructFs(data):
+    return npDtypeToFs(data.dtype)
