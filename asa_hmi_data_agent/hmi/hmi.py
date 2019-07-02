@@ -373,7 +373,13 @@ class HMI(QObject):
     # ---- 發送區功能實現 start -------------------------------------------------
     def send_textEditClear(self):
         self.ui.send_textEdit.clear()
-
+    
+    def send_clear_request_cmd(self):
+        self.request_cmd = {
+            'cmd': '',
+            'class': '',
+            'fs': ''
+        }
     def send_firstData(self):
         text = self.ui.send_textEdit.toPlainText()
         title = self.ui.send_btnSend.text()
@@ -419,6 +425,7 @@ class HMI(QObject):
                     if fs == self.request_cmd['fs'].decode('ascii'):
                         self.ui.send_btnSend.setText("ACK及發送陣列")
                         self.ui.send_btnSend.setEnabled(True)
+                        self.send_clear_request_cmd()
                     else:
                         self.ui.send_btnSend.setText("發送陣列")
                         self.ui.send_btnSend.setEnabled(True)
@@ -428,6 +435,7 @@ class HMI(QObject):
                     if fs == self.request_cmd['fs'].decode('ascii'):
                         self.ui.send_btnSend.setText("ACK及發送矩陣")
                         self.ui.send_btnSend.setEnabled(True)
+                        self.send_clear_request_cmd()
                     else:
                         self.ui.send_btnSend.setText("發送矩陣")
                         self.ui.send_btnSend.setEnabled(True)
@@ -437,6 +445,7 @@ class HMI(QObject):
                     if fs == self.request_cmd['fs'].decode('ascii'):
                         self.ui.send_btnSend.setText("ACK及發送結構")
                         self.ui.send_btnSend.setEnabled(True)
+                        self.send_clear_request_cmd()
                     else:
                         self.ui.send_btnSend.setText("發送結構")
                         self.ui.send_btnSend.setEnabled(True)
@@ -562,7 +571,6 @@ class HMI(QObject):
                     fs = tp.getArrayFs(data)
                     print(fs)
                     if fs == cmd['fs'].decode('ascii'):
-                        self.text_send('~ACK')
                         self.send_firstData()
                     else:
                         self.text_send('~BZ')
@@ -571,7 +579,6 @@ class HMI(QObject):
                     usedLines, data = getFirstMatrix(text)
                     fs = tp.getMatrixFs(data)
                     if fs == cmd['fs'].decode('ascii'):
-                        self.text_send('~ACK')
                         self.send_firstData()
                     else:
                         self.text_send('~BZ')
@@ -580,7 +587,6 @@ class HMI(QObject):
                     usedLines, data = getFirstStruct(text)
                     fs = tp.getStructFs(data)
                     if fs == cmd['fs'].decode('ascii'):
-                        self.text_send('~ACK')
                         self.send_firstData()
                     else:
                         self.text_send('~BZ')
