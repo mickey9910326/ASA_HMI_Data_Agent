@@ -18,6 +18,7 @@ import numpy as np
 import datetime
 import scipy.io
 import serial
+import time
 import sys
 import os
 
@@ -108,7 +109,15 @@ class HMI(QObject):
         self.hmiSaveDialog = HmiSaveDialog()
         self.hmiLoadDialog = HmiLoadDialog()
         self.hmiNewDataDialog = HmiNewDataDialog()
-
+        
+        # TODO 修改成非HARDCODE形式
+        self.request_cmd = {
+            'cmd': '',
+            'class': '',
+            'fs': ''
+        }
+        self.ack_flag = False
+        
         self.send_updateBtnSend()
         self.send_updateWarningLight()
         self.rec_updateWarningLight()
@@ -367,6 +376,13 @@ class HMI(QObject):
 
     def send_firstData(self):
         text = self.ui.send_textEdit.toPlainText()
+        title = self.ui.send_btnSend.text()
+        print(title)
+        print(title == "ACK及發送陣列")
+        print(title[0:3] == "ACK")
+        if title[0:3] == "ACK":
+            self.text_send("~ACK")
+            time.sleep(0.1)
         t = getFirstDataType(text)
         if t == 1:
             usedLines, data = getFirstArray(text)
@@ -392,18 +408,54 @@ class HMI(QObject):
         text = self.ui.send_textEdit.toPlainText()
         if isTextFormated(text):
             t = getFirstDataType(text)
-            if t == 1:
-                self.ui.send_btnSend.setText("發送陣列")
-                self.ui.send_btnSend.setEnabled(True)
-            elif t == 2:
-                self.ui.send_btnSend.setText("發送矩陣")
-                self.ui.send_btnSend.setEnabled(True)
-            elif t == 3:
-                self.ui.send_btnSend.setText("發送結構")
-                self.ui.send_btnSend.setEnabled(True)
-            else:
-                self.ui.send_btnSend.setText("發送資料")
-                self.ui.send_btnSend.setEnabled(False)
+            print(self.request_cmd)
+
+            if self.request_cmd:
+                if t == 1 and self.request_cmd['class'] == 'array':
+                    usedLines, data = getFirstArray(text)
+                    fs = tp.getArrayFs(data)
+                    print(fs)
+                    print(fs == self.request_cmd['fs'].decode('ascii'))
+                    if fs == self.request_cmd['fs'].decode('ascii'):
+                        self.ui.send_btnSend.setText("ACK及發送陣列")
+                        self.ui.send_btnSend.setEnabled(True)
+                    else:
+                        self.ui.send_btnSend.setText("發送陣列")
+                        self.ui.send_btnSend.setEnabled(True)
+                elif t == 2 and self.request_cmd['class'] == 'matrix':
+                    usedLines, data = getFirstMatrix(text)
+                    fs = tp.getMatrixFs(data)
+                    if fs == self.request_cmd['fs'].decode('ascii'):
+                        self.ui.send_btnSend.setText("ACK及發送矩陣")
+                        self.ui.send_btnSend.setEnabled(True)
+                    else:
+                        self.ui.send_btnSend.setText("發送矩陣")
+                        self.ui.send_btnSend.setEnabled(True)
+                elif t == 3 and self.request_cmd['class'] == 'struct':
+                    usedLines, data = getFirstStruct(text)
+                    fs = tp.getStructFs(data)
+                    if fs == self.request_cmd['fs'].decode('ascii'):
+                        self.ui.send_btnSend.setText("ACK及發送結構")
+                        self.ui.send_btnSend.setEnabled(True)
+                    else:
+                        self.ui.send_btnSend.setText("發送結構")
+                        self.ui.send_btnSend.setEnabled(True)
+                else:
+                    self.ui.send_btnSend.setText("發送資料")
+                    self.ui.send_btnSend.setEnabled(False)
+
+            # if t == 1:
+            #     self.ui.send_btnSend.setText("發送陣列")
+            #     self.ui.send_btnSend.setEnabled(True)
+            # elif t == 2:
+            #     self.ui.send_btnSend.setText("發送矩陣")
+            #     self.ui.send_btnSend.setEnabled(True)
+            # elif t == 3:
+            #     self.ui.send_btnSend.setText("發送結構")
+            #     self.ui.send_btnSend.setEnabled(True)
+            # else:
+            #     self.ui.send_btnSend.setText("發送資料")
+            #     self.ui.send_btnSend.setEnabled(False)
         else:
             self.ui.send_btnSend.setText("發送資料")
             self.ui.send_btnSend.setEnabled(False)
@@ -500,6 +552,7 @@ class HMI(QObject):
         if cmd['cmd'] == 'get':
             self.text_send('~ACK')
         elif cmd['cmd'] == 'put':
+            self.request_cmd = cmd
             text = self.ui.send_textEdit.toPlainText()
             if isTextFormated(text):
                 t = getFirstDataType(text)
@@ -513,6 +566,7 @@ class HMI(QObject):
                         self.send_firstData()
                     else:
                         self.text_send('~BZ')
+                        self.updateUi_NewData(1, cmd['fs'])
                 elif t == 2 and cmd['class'] == 'matrix':
                     usedLines, data = getFirstMatrix(text)
                     fs = tp.getMatrixFs(data)
@@ -521,6 +575,7 @@ class HMI(QObject):
                         self.send_firstData()
                     else:
                         self.text_send('~BZ')
+                        self.updateUi_NewData(2, cmd['fs'])
                 elif t == 3 and cmd['class'] == 'struct':
                     usedLines, data = getFirstStruct(text)
                     fs = tp.getStructFs(data)
@@ -529,11 +584,43 @@ class HMI(QObject):
                         self.send_firstData()
                     else:
                         self.text_send('~BZ')
+                        self.updateUi_NewData(3, cmd['fs'])
                 else:
                     self.text_send('~BZ')
+                    if cmd['class'] == 'array':
+                        self.updateUi_NewData(1, cmd['fs'])
+                    elif cmd['class'] == 'matrix':
+                        self.updateUi_NewData(2, cmd['fs'])
+                    elif cmd['class'] == 'struct':
+                        self.updateUi_NewData(3, cmd['fs'])
             else:
                 self.text_send('~BZ')
+                if cmd['class'] == 'array':
+                    self.updateUi_NewData(1, cmd['fs'])
+                elif cmd['class'] == 'matrix':
+                    self.updateUi_NewData(2, cmd['fs'])
+                elif cmd['class'] == 'struct':
+                    self.updateUi_NewData(3, cmd['fs'])
 
+    def updateUi_NewData(self, t, fs):
+        fs = fs.decode('ascii')
+        if t == 1:
+            ss = fs.split('_')
+            self.hmiNewDataDialog.comboBox_atype.setCurrentText(ss[0])
+            self.hmiNewDataDialog.lineEdit_anum.setText(ss[1])
+            self.hmiNewDataDialog.tabWidget.setCurrentIndex(0)
+        elif t == 2:
+            ss = fs.split('_')
+            dim1, dim2 = ss[1].split('x')
+            self.hmiNewDataDialog.comboBox_mtype.setCurrentText(ss[0])
+            self.hmiNewDataDialog.lineEdit_dim1.setText(dim1)
+            self.hmiNewDataDialog.lineEdit_dim2.setText(dim2)
+            self.hmiNewDataDialog.tabWidget.setCurrentIndex(1)
+        elif t == 3:
+            self.hmiNewDataDialog.struct_addWithData(fs)
+            self.hmiNewDataDialog.tabWidget.setCurrentIndex(2)
+        else:
+            pass
 
 
 def debugLog(msg):

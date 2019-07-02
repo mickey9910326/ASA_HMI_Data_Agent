@@ -96,6 +96,19 @@ class HmiNewDataDialog(QDialog, Ui_HmiNewDataDialog):
         self.sop[0].row = 0
         self.struct_sop_init(0)
     
+    def struct_addWithData(self, fs):
+        self.sd = list()
+        self.sop = list()
+        for i, s in enumerate(fs.split(',')):
+            t, n = s.split('_')
+            self.sd.append(SD())
+            self.sop.append(SOP())
+            self.sd[i].row = i
+            self.sop[i].row = i
+            self.struct_sop_init(i)
+            self.sd[i].comboBox_type.setCurrentText(t)
+            self.sd[i].lineEdit_num.setText(n)
+    
     def struct_update(self):
         for i in range(self.gridLayout_struct.rowCount()-1)[::-1]:
             if self.gridLayout_struct.itemAtPosition(i+1, 0):

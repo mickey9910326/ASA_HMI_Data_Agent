@@ -283,6 +283,8 @@ class Decoder(object):
             )
         elif self._sm.packet_type == PAC_TYPE_ST:
             self._res['type'] = PAC_TYPE_ST
+            print(self._sm.st_fs)
+            print(self._sm.databuf)
             self._res['data'] = _st_raw2ndarray(
                 self._sm.st_fs.decode("ascii"),
                 self._sm.databuf
