@@ -46,6 +46,7 @@ class SerialThread(QThread):
         while (self.ser.isOpen()):
             try:
                 ch = self.ser.read(1)
+                print("ch = {}".format(ch))
             except serial.serialutil.SerialException as e:
                 self.sigLoseConnect.emit()
                 break
@@ -65,15 +66,15 @@ class SerialThread(QThread):
                     packet = self.hpd.get()
                     if packet['type'] == hmipac.PacType.PAC_TYPE_AR:
                         self.ch_buf = bytes()
-                        if packet['data']:
-                            self.sigGetStructData.emit(packet['data'])
+                        if packet['data'] is not None:
+                            self.sigGetArrayData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_MT:
                         self.ch_buf = bytes()
-                        if packet['data']:
-                            self.sigGetStructData.emit(packet['data'])
+                        if packet['data'] is not None:
+                            self.sigGetMatrixData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_ST:
                         self.ch_buf = bytes()
-                        if packet['data']:
+                        if packet['data'] is not None:
                             self.sigGetStructData.emit(packet['data'])
 
                 # decoder for cmd
@@ -428,7 +429,7 @@ class HMI(QObject):
             t = getFirstDataType(text)
             print(self.request_cmd)
 
-            if self.request_cmd['class'] != '':
+            if self.request_cmd['cmd'] == 'put':
                 if t == 1 and self.request_cmd['class'] == 'array':
                     usedLines, data = getFirstArray(text)
                     fs = tp.getArrayFs(data)
