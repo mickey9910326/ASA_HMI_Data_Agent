@@ -65,13 +65,16 @@ class SerialThread(QThread):
                     packet = self.hpd.get()
                     if packet['type'] == hmipac.PacType.PAC_TYPE_AR:
                         self.ch_buf = bytes()
-                        self.sigGetArrayData.emit(packet['data'])
+                        if packet['data']:
+                            self.sigGetStructData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_MT:
                         self.ch_buf = bytes()
-                        self.sigGetMatrixData.emit(packet['data'])
+                        if packet['data']:
+                            self.sigGetStructData.emit(packet['data'])
                     elif packet['type'] == hmipac.PacType.PAC_TYPE_ST:
                         self.ch_buf = bytes()
-                        self.sigGetStructData.emit(packet['data'])
+                        if packet['data']:
+                            self.sigGetStructData.emit(packet['data'])
 
                 # decoder for cmd
                 for c in self.tbd:
@@ -93,7 +96,6 @@ class SerialThread(QThread):
                             self.cmd += bytes([c])
 
                 self.tbss += self.tbd
-                print(self.tbss)
                 self.tbd = bytes()
 
                 try:
@@ -426,7 +428,7 @@ class HMI(QObject):
             t = getFirstDataType(text)
             print(self.request_cmd)
 
-            if self.request_cmd:
+            if self.request_cmd['class'] != '':
                 if t == 1 and self.request_cmd['class'] == 'array':
                     usedLines, data = getFirstArray(text)
                     fs = tp.getArrayFs(data)
@@ -462,19 +464,19 @@ class HMI(QObject):
                 else:
                     self.ui.send_btnSend.setText("發送資料")
                     self.ui.send_btnSend.setEnabled(False)
-
-            # if t == 1:
-            #     self.ui.send_btnSend.setText("發送陣列")
-            #     self.ui.send_btnSend.setEnabled(True)
-            # elif t == 2:
-            #     self.ui.send_btnSend.setText("發送矩陣")
-            #     self.ui.send_btnSend.setEnabled(True)
-            # elif t == 3:
-            #     self.ui.send_btnSend.setText("發送結構")
-            #     self.ui.send_btnSend.setEnabled(True)
-            # else:
-            #     self.ui.send_btnSend.setText("發送資料")
-            #     self.ui.send_btnSend.setEnabled(False)
+            else:
+                if t == 1:
+                    self.ui.send_btnSend.setText("發送陣列")
+                    self.ui.send_btnSend.setEnabled(True)
+                elif t == 2:
+                    self.ui.send_btnSend.setText("發送矩陣")
+                    self.ui.send_btnSend.setEnabled(True)
+                elif t == 3:
+                    self.ui.send_btnSend.setText("發送結構")
+                    self.ui.send_btnSend.setEnabled(True)
+                else:
+                    self.ui.send_btnSend.setText("發送資料")
+                    self.ui.send_btnSend.setEnabled(False)
         else:
             self.ui.send_btnSend.setText("發送資料")
             self.ui.send_btnSend.setEnabled(False)
