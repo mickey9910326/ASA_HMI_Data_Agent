@@ -39,6 +39,7 @@ class SerialThread(QThread):
         self.hpd = hmipac.Decoder() # hmi packet decoder
         self.ch_buf = bytes()
         self.tbd = bytes()
+        self.tbss = bytes()
         self.cmd_state = int(1)
 
     def run(self):
@@ -91,9 +92,18 @@ class SerialThread(QThread):
                         else:
                             self.cmd += bytes([c])
 
-                self.sigGetStr.emit(self.tbd.decode('ascii'))
+                self.tbss += self.tbd
+                print(self.tbss)
                 self.tbd = bytes()
 
+                try:
+                    s = self.tbss.decode('utf8')
+                    print("s={}".format(self.tbss))
+                except:
+                    pass
+                else:
+                    self.sigGetStr.emit(s)
+                    self.tbss = bytes()
 # ---- class Serial Thread End -------------------------------------------------
 
 class HMI(QObject):
