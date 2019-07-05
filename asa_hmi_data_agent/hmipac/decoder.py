@@ -181,6 +181,7 @@ class Decoder(object):
         elif self._sm.state == InnerState.STATE_MT_TYPE:
             self._sm.chksum += ch
             self._sm.mt_type = ch
+            print("{} {}".format(self._sm.mt_type, ch))
             self._sm.state = InnerState.STATE_MT_NUMY
             self._state = PROCESSING
 
@@ -276,7 +277,7 @@ class Decoder(object):
         elif self._sm.packet_type == PAC_TYPE_MT:
             self._res['type'] = PAC_TYPE_MT
             self._res['data'] = self._data = _mt_raw2ndarray(
-                self._sm.ar_dtype,
+                self._sm.mt_type,
                 self._sm.mt_numy,
                 self._sm.mt_numx,
                 self._sm.databuf
