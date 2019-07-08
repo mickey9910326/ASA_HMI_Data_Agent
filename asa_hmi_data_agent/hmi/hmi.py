@@ -400,7 +400,7 @@ class HMI(QObject):
         print(title == "ACK及發送陣列")
         print(title[0:3] == "ACK")
         if title[0:3] == "ACK":
-            self.text_send("~ACK")
+            self.text_send("~Ready")
             time.sleep(0.1)
         t = getFirstDataType(text)
         if t == 1:
