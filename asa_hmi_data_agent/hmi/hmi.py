@@ -530,6 +530,9 @@ class HMI(QObject):
         self.ui.s_btnPortToggle.setText("開啟串列埠")
         self.sigChangeWindowTitle.emit('ASA_HMI_Data_Agent  - Lost connect with {}!'.format(self.ser.port))
         self.s_updatePortlist()
+        self.ui.s_btnUpdatePortList.setEnabled(True)
+        self.ui.s_portComboBox.setEnabled(True)
+        self.ui.s_lineEditBaudrate.setEnabled(True)
 
     def fatalErrorHandler(self):
         self.hmilog('log: Fatal error 請確認M128程式正確，並重新開啟串列埠!')
