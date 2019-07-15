@@ -16,7 +16,7 @@ REQUIREMENTS = [
 def run():
     setup(
         name='asa-hmi-data-agent',
-        version='0.6.3',
+        version='0.6.5',
         description = 'ASA developing tools on PC.',
         long_description='',
         author = 'mickey9910326',
