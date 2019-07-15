@@ -393,6 +393,7 @@ class HMI(QObject):
             'class': '',
             'fs': ''
         }
+
     def send_firstData(self):
         text = self.ui.send_textEdit.toPlainText()
         title = self.ui.send_btnSend.text()
@@ -421,6 +422,7 @@ class HMI(QObject):
         text = '\n'.join(l for l in lines[usedLines::])
         self.ui.send_textEdit.clear()
         self.ui.send_textEdit.append(text)
+        self.send_clear_request_cmd()
 
 
     def send_updateBtnSend(self):
@@ -438,7 +440,6 @@ class HMI(QObject):
                     if fs == self.request_cmd['fs'].decode('ascii'):
                         self.ui.send_btnSend.setText("ACK及發送陣列")
                         self.ui.send_btnSend.setEnabled(True)
-                        self.send_clear_request_cmd()
                     else:
                         self.ui.send_btnSend.setText("發送陣列")
                         self.ui.send_btnSend.setEnabled(True)
@@ -448,7 +449,6 @@ class HMI(QObject):
                     if fs == self.request_cmd['fs'].decode('ascii'):
                         self.ui.send_btnSend.setText("ACK及發送矩陣")
                         self.ui.send_btnSend.setEnabled(True)
-                        self.send_clear_request_cmd()
                     else:
                         self.ui.send_btnSend.setText("發送矩陣")
                         self.ui.send_btnSend.setEnabled(True)
@@ -458,7 +458,6 @@ class HMI(QObject):
                     if fs == self.request_cmd['fs'].decode('ascii'):
                         self.ui.send_btnSend.setText("ACK及發送結構")
                         self.ui.send_btnSend.setEnabled(True)
-                        self.send_clear_request_cmd()
                     else:
                         self.ui.send_btnSend.setText("發送結構")
                         self.ui.send_btnSend.setEnabled(True)
