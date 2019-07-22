@@ -258,6 +258,10 @@ class HMI(QObject):
     # ---- 串列埠設定區功能實現 end ----------------------------------------------
 
     # ---- 文字對話區功能實現 start ----------------------------------------------
+    def text_goBottom(self):
+        a = self.ui.text_terminal.verticalScrollBar()
+        a.setValue(a.maximum())
+
     # Append the string from serial in terminal
     def text_appendStrFromDevice(self, s):
         for ch in s:
@@ -277,10 +281,12 @@ class HMI(QObject):
     def text_terminalAppendLineFromDevice(self, line):
         self.ui.text_terminal.append('>>  '+line)
         debugLog('Get  line: ' + line)
+        self.text_goBottom()
     
     def text_appendStr(self, s):
         text = self.ui.text_terminal.toPlainText() + s
         self.ui.text_terminal.setText(text)
+        self.text_goBottom()
 
     # Send line to serial
     def text_sendLineToDevice(self):
@@ -292,6 +298,7 @@ class HMI(QObject):
             self.ser.write(bytes(line+'\n', encoding = "utf-8") )
             self.ui.text_terminal.append('<<  '+line)
             debugLog('Send line: ' + line)
+            self.text_goBottom()
 
     def text_send(self, s):
         if self.ser.isOpen() is False:
@@ -302,6 +309,7 @@ class HMI(QObject):
             self.ser.write(bytes(line+'\n', encoding = "utf-8") )
             self.ui.text_terminal.append('<<  '+line)
             debugLog('Send line: ' + line)
+            self.text_goBottom()
 
     # Svae the text in text terminal
     def text_terminalSave(self):
