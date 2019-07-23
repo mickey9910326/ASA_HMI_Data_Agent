@@ -7,6 +7,10 @@ release page: https://github.com/mickey9910326/ASA_HMI_Data_Agent/releases
 You can find  the lastest patch in the above url.
 
 # 中文
+## [0.6.6] - 2019-07-23
+### HMI 功能:
+- terminal 現在會自動置底了
+
 ## [0.6.1] - 2019-07-02
 ### HMI 功能:
 - 修正自動送資料送出兩次ACK問題
