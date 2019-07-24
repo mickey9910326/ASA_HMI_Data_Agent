@@ -71,7 +71,7 @@
       </widget>
       <widget class="QWidget" name="tabAdtSettings">
        <attribute name="title">
-        <string>設定</string>
+        <string>設定與更新</string>
        </attribute>
       </widget>
      </widget>

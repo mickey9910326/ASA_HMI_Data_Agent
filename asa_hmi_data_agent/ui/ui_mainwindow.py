@@ -63,5 +63,5 @@ class Ui_MainWindow(object):
         self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabHmi), _translate("MainWindow", "HMI"))
         self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabAsaProg), _translate("MainWindow", "燒錄M128"))
         self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabAvrdude), _translate("MainWindow", "STK500燒錄"))
-        self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabAdtSettings), _translate("MainWindow", "設定"))
+        self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tabAdtSettings), _translate("MainWindow", "設定與更新"))
 
