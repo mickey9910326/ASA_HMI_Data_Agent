@@ -1,1 +1,1 @@
-VERSION = '0.6.6'
+from asa_hmi_data_agent import __version__ as VERSION

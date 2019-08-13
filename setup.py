@@ -1,6 +1,7 @@
 import os
 import shutil
 from setuptools import setup, find_packages
+from asa_hmi_data_agent import __version__ as version
 
 REQUIREMENTS = [
     'py-asa-loader',
@@ -16,7 +17,7 @@ REQUIREMENTS = [
 def run():
     setup(
         name='asa-hmi-data-agent',
-        version='0.6.6',
+        version=version,
         description = 'ASA developing tools on PC.',
         long_description='',
         author = 'mickey9910326',
