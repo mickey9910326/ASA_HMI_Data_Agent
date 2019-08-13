@@ -24,7 +24,7 @@ def run():
         author_email = 'mickey9910326@gmail.com',
         url='https://github.com/mickey9910326/ASA_HMI_Data_Agent',
         license = 'GPL v3',
-        packages=find_packages(),
+        packages=['asa_hmi_data_agent'],
         package_data={ 'asa_hmi_data_agent': [ 'tools/*', 'settings/*', 'tmp/*', 'ui/*']},
         zip_safe=False,
         entry_points = {
