@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.7] - 2019-08-13
+### Added
+ - add scripts/release.py
+   - upload files to google drive
+   - get file share url in google drive
+   - release files in gitlab
+
+### Changed
+- add __version__ in asa_hmi_data_agent.__init__ as project version
+- change setup.py version usage
+- change scripts/setup_exec.py version usage
+
+
 ## [0.5.4] - 2019-02-14
 ### Fixed
 - fix hmi.SerialThread.decoder._state use the same mwmory

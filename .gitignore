@@ -12,3 +12,5 @@ tools
 *.egg-info
 
 .vscode
+
+env/
